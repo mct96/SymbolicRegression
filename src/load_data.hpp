@@ -1,0 +1,15 @@
+#pragma once
+
+#include <string>
+#include <vector>
+#include <utility>
+
+//namespace sr
+//{
+
+using data_t = std::vector<double>;
+using Xy = std::pair<data_t, double>;
+
+std::vector<Xy> load(std::string fileaname);
+
+//}

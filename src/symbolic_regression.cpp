@@ -318,8 +318,9 @@ double gp_operators_t::fitness(const individual_t& individual,
                                double target)
 {
     double predicted = eval(individual, 0, variables);
-    double error = target - predicted;
-    return error;
+    double error = abs(target - predicted);
+    double rel = error / target;
+    return max(0, 1 - rel * rel);
 }
 
 double gp_operators_t::population_error(const individuals_t& population,
@@ -344,11 +345,9 @@ double gp_operators_t::population_error(const individuals_t& population,
         break;
     }
     
-    double total_error = std::accumulate(b, e, 0);
-    if (error_metric == error_metric_t::rmse)
-        return sqrt(total_error);
-    else
-        return total_error / population.size();
+    double avg_error = std::accumulate(b, e, 0) / population.size();
+    auto is_rsme = error_metric == error_metric_t::rmse;
+    return is_rmse ? sqrt(avg_error) : avg_error;
 }
 
 symbolic_regression_t::symbolic_regression_t(parameters_t params)
