@@ -1,9 +1,72 @@
 #include "symbolic_regression.hpp"
 
+#include <cmath>
 #include <exception>
 
-namespace sr
+//namespace sr
+//{
+
+double eval_function(char codfunc, double x)
 {
+    double y = 0;
+
+    switch (codfunc) {
+    case 0: y = sin(x); break;
+    case 1: y = cos(x); break;        
+    case 2: y = tan(x); break;
+    case 3: y = sinh(x); break;
+    case 4: y = cosh(x); break;
+    case 5: y = tanh(x); break;
+    case 6: y = log10(x); break;
+    case 7: y = log(x); break;
+    default:
+        throw std::exception{};
+    }
+
+    return y;
+}
+
+double eval_operator(char codoper, double lop, double rop)
+{
+    double result = 0;
+
+    switch (codoper) {
+    case 0: result = lop + rop; break;
+    case 1: result = lop - rop; break;
+    case 2: result = lop * rop; break;
+    case 3: result = lop / rop; break;
+    case 4: result = lop ^ rop; break;
+    default:
+        throw std::exception{};
+    }
+
+    return result;
+}
+
+double eval(individual_t& individual,
+            std::size_t pos,
+            data_t& variables,
+            data_t& constants)
+{
+    gene_t gene = individual[pos];
+    std::size_t child_offset = pow(2, pos); // in a heap tree, the children are
+                                // 2^pos distant from parents. 
+
+    if (gene._class == class_t::op) {                          // eval operator.
+        double lop = eval(individual, child_offset, vars);     // extract lop.
+        double rop = eval(individual, child_offset + 1, vars); // extract rop.
+        return eval_operator(gene._cod, lop, rop);
+    } else if (gene._class == class_t::func) {           // eval function.
+        double x = eval(individual, child_offset, vars); // eval arguments.
+        return eval_function(gene._cod, x);
+    } else if (gene._class == class_t::var) { // eval variable.
+        return variables[gene._cod];
+    } else if (gene._class == class_t::cons) { // eval constant.
+        return constants[gene._cod];
+    } else {
+        throw std::exception{};
+    }
+}
 
 std::size_t state_t::generation() const
 {
@@ -151,24 +214,26 @@ bool parameters_t::eletism() const
 
 void parameters_t::reset()
 {
-    _population_sz = 0;
-    _max_depth = 0;
-    _max_generation = 0;
-    _threshold = 0.0;
+    _population_sz    = 0;
+    _max_depth        = 0;
+    _max_generation   = 0;
+    _threshold        = 0.0;
     _prob_m_one_point = 0.0;
     _prob_m_expansion = 0.0;
     _prob_m_reduction = 0.0;
-    _prob_crossover = 0.0;
+    _prob_crossover   = 0.0;
     _selection_method = selection_method_t::roulette_wheel;
-    _eletism = false;
+    _eletism          = false;
 }
 
-symbolic_regression_t::symbolic_regression_t()
+symbolic_regression_t::symbolic_regression_t(parameters_t params)
 {
 }
     
 symbolic_regression_t::~symbolic_regression_t()
 {
 }
+
     
-}
+    
+//}
