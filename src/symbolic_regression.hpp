@@ -9,6 +9,7 @@ struct gene_t;
 
 enum class selection_method_t{ roulette_wheel, tournament };
 enum class generation_method_t{ full, growth };
+enum class error_metric_t { mse, rmse, mae };
 
 class state_t;
 class parameters_t;
@@ -145,12 +146,22 @@ private:
     bool _eletism;
 };
 
+
+
 // gp_operators_t implementation of operators for gp.
 class gp_operators_t
 {
 public:
     // eval fitness. (used to sort).
-    double fitness(const individual_t& individual);
+    double fitness(const individual_t& individual,
+                   const data_t& variables,
+                   double target);
+
+    // MSE of population.
+    double population_error(const individuals_t& population,
+                            const data_t& variables,
+                            double target,
+                            error_metric_t error_metric = error_metric_t::mae);
 
     // 2 types of individual's generation (growth, full).
     individual_t gen_individual(generation_method_t generation_method);

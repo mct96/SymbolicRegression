@@ -313,6 +313,44 @@ void parameters_t::reset()
     _eletism          = false;
 }
 
+double gp_operators_t::fitness(const individual_t& individual,
+                               const data_t& variables,
+                               double target)
+{
+    double predicted = eval(individual, 0, variables);
+    double error = target - predicted;
+    return error;
+}
+
+double gp_operators_t::population_error(const individuals_t& population,
+                                        const data_t& variables,
+                                        double target,
+                                        error_metric_t error_metric)
+{
+    std::vector<double> individual_error(population.size());
+    for (const auto& individual: population) {
+        auto predicted = eval(individual, 0, variables);
+        individual_error.push_back(target - predicted);
+    }
+
+    auto b = individual_error.begin(), e = individual_error.end();
+    switch (error_metric) {
+    case error_metric_t::mae:
+        std::for_each(b, e, abs);
+        break;
+    case error_metric_t::mse:
+    case error_metric_t::rmse:
+        std::for_each(b, e, [](double e) { return e * e; });
+        break;
+    }
+    
+    double total_error = std::accumulate(b, e, 0);
+    if (error_metric == error_metric_t::rmse)
+        return sqrt(total_error);
+    else
+        return total_error / population.size();
+}
+
 symbolic_regression_t::symbolic_regression_t(parameters_t params)
 {
 }
@@ -348,8 +386,9 @@ int main() {
     individual[ 7]._code  = 0;
     individual[11]._class = class_t::variable_t;
     individual[11]._code  = 0;
-    
-    cout << individual << endl;
+
+    double x = eval(individual, 0, {1.2});
+    cout << individual << " = " << x << endl;
 
     individual[ 0]._class = class_t::operator_t;
     individual[ 0]._code  = 2;
@@ -366,7 +405,7 @@ int main() {
     individual[ 6]._class = class_t::constant_t;
     individual[ 6]._value = 1.0;
 
-    double x = eval(individual, 0, data_t{});
+    x = eval(individual, 0, data_t{});
     cout << individual << " = " << x << endl;
     return 0;
 }
