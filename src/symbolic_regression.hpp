@@ -1,11 +1,24 @@
 #pragma once
 
 #include <vector>
+#include <iostream>
 
 //namespace sr
 //{
-
 struct gene_t;
+
+enum class selection_method_t{ roulette_wheel, tournament };
+enum class generation_method_t{ full, growth };
+
+class state_t;
+class parameters_t;
+class gp_operators_t;
+class symbolic_regression_t;
+
+inline std::size_t lchild(std::size_t pos) { return 2 * pos + 1; };
+inline std::size_t rchild(std::size_t pos) { return 2 * pos + 2; };
+inline std::size_t parent(std::size_t pos) {
+    return static_cast<int>((pos + 1)/2 - 1); };
 
 // individual_t represents an individual: each gene can be a function,
 // an operator or a variable.
@@ -18,12 +31,17 @@ using individuals_t = std::vector<individual_t>;
 using data_t = std::vector<double>;
 
 // the eval_* functions are responsable for evaluate a tree.
-double eval_function(unsigned char codfunc, double x);
-double eval_operator(unsigned char codoper, double lop, double rop);
-double eval(individual_t individual,
-            std::size_t pos,
-            data_t& variables,
-            data_t& constants);
+double eval_function(gene_t func, double x);
+double eval_operator(gene_t oper, double lop, double rop);
+double eval(const individual_t& individual, std::size_t pos,
+            const data_t& variables);
+
+void print     (std::ostream& out, const individual_t& u, std::size_t pos); 
+void print_func(std::ostream& out, const individual_t& u, std::size_t pos);
+void print_oper(std::ostream& out, const individual_t& u, std::size_t pos);
+void print_var (std::ostream& out, const individual_t& u, std::size_t pos);
+void print_cons(std::ostream& out, const individual_t& u, std::size_t pos);
+std::ostream& operator<<(std::ostream& out, const individual_t& u); 
 
 // a gene is represented by two portions: class and code. Class can be an op,
 // func, var, nil. "op" represents an binary operator (+, -, /, *, ^); "func"
@@ -31,12 +49,12 @@ double eval(individual_t individual,
 // logarithmics functions); "var" represents a variable and the domain is defi-
 // ned by the dataset; "cons" represents numerics constants (their value is
 // random generated with a distribution with two peaks in -1 and 1).
-enum class class_t: unsigned char { op, func, var, cons, nil };
-
+enum class class_t: unsigned char { operator_t, function_t, variable_t,
+                                    constant_t, nill_t };
 // a gene can have from 0-7 class and 0-32 different codes.
 struct gene_t {
-    unsigned char _class: 3;
-    unsigned char _cod:   5;
+    class_t _class = class_t::nill_t;
+    union { unsigned short _code = 0; float _value; };
 };
 
 // state_t class is used to show the state of convergence of the algorithm.
@@ -59,9 +77,6 @@ private:
     double _min_fitness;
     double _avg_fitness;
 };
-
-enum class selection_method_t{ roulette_wheel, tournament };
-enum class generation_method_t{ full, growth };
 
 // parameters_t are the parameters of the algorithm.
 class parameters_t

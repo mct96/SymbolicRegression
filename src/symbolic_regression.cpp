@@ -1,16 +1,17 @@
 #include "symbolic_regression.hpp"
 
 #include <cmath>
-#include <exception>
+#include <stdexcept>
 
 //namespace sr
 //{
 
-double eval_function(char codfunc, double x)
+double eval_function(gene_t func, double x)
 {
+    auto code = func._code;
+ 
     double y = 0;
-
-    switch (codfunc) {
+    switch (code) {
     case 0: y = sin(x); break;
     case 1: y = cos(x); break;        
     case 2: y = tan(x); break;
@@ -20,52 +21,138 @@ double eval_function(char codfunc, double x)
     case 6: y = log10(x); break;
     case 7: y = log(x); break;
     default:
-        throw std::exception{};
+        throw std::invalid_argument{"eval function"};
     }
-
+    
     return y;
 }
 
-double eval_operator(char codoper, double lop, double rop)
+double eval_operator(gene_t oper, double lop, double rop)
 {
+    auto code = oper._code;
+    
     double result = 0;
-
-    switch (codoper) {
+    switch (code) {
     case 0: result = lop + rop; break;
     case 1: result = lop - rop; break;
     case 2: result = lop * rop; break;
     case 3: result = lop / rop; break;
-    case 4: result = lop ^ rop; break;
+    case 4: result = pow(lop, rop); break;
     default:
-        throw std::exception{};
+        throw std::invalid_argument{"eval operator"};
     }
 
     return result;
 }
 
-double eval(individual_t& individual,
+double eval(const individual_t& individual,
             std::size_t pos,
-            data_t& variables,
-            data_t& constants)
+            const data_t& variables)
 {
     gene_t gene = individual[pos];
-    std::size_t child_offset = pow(2, pos); // in a heap tree, the children are
-                                // 2^pos distant from parents. 
 
-    if (gene._class == class_t::op) {                          // eval operator.
-        double lop = eval(individual, child_offset, vars);     // extract lop.
-        double rop = eval(individual, child_offset + 1, vars); // extract rop.
-        return eval_operator(gene._cod, lop, rop);
-    } else if (gene._class == class_t::func) {           // eval function.
-        double x = eval(individual, child_offset, vars); // eval arguments.
-        return eval_function(gene._cod, x);
-    } else if (gene._class == class_t::var) { // eval variable.
-        return variables[gene._cod];
-    } else if (gene._class == class_t::cons) { // eval constant.
-        return constants[gene._cod];
+    if (gene._class == class_t::operator_t) {                  // eval operator.
+        double lop = eval(individual, lchild(pos), variables); // extract lop.
+        double rop = eval(individual, rchild(pos), variables); // extract rop.
+        return eval_operator(gene, lop, rop);
+        
+    } else if (gene._class == class_t::function_t) {         // eval function.
+        double x = eval(individual, lchild(pos), variables); // eval arguments.
+        return eval_function(gene, x);
+        
+    } else if (gene._class == class_t::variable_t) { // eval variable.
+        return variables[gene._code];
+        
+    } else if (gene._class == class_t::constant_t) { // eval constant.
+        return gene._value;
+        
     } else {
-        throw std::exception{};
+        throw std::invalid_argument{"general eval"};
     }
+}
+
+void print_func(std::ostream& out, const individual_t& u, std::size_t pos)
+{
+    gene_t func = u[pos];
+
+    switch (func._code) {
+    case 0: out << "sin"  ; break;        
+    case 1: out << "cos"  ; break;
+    case 2: out << "tan"  ; break;
+    case 3: out << "sinh" ; break;
+    case 4: out << "cosh" ; break;
+    case 5: out << "tanh" ; break;
+    case 6: out << "log10"; break;
+    case 7: out << "log"  ; break;
+    default:
+        throw std::invalid_argument{"print function"};
+    }
+
+    out << "("; print(out, u, lchild(pos)); out << ")";
+}
+
+void print_oper(std::ostream& out, const individual_t& u, std::size_t pos)
+{
+    gene_t oper = u[pos], loper = u[lchild(pos)], roper = u[rchild(pos)];
+    
+    // print left operand. surround lower precedence operator with parentheses.
+    if (loper._class == class_t::operator_t && loper._code < oper._code) {
+        out << "("; print(out, u, lchild(pos)); out << ")";
+    } else {
+        print(out, u, lchild(pos));
+    }
+
+    // print operator.
+    switch (oper._code) {
+    case 0: out << " + "; break;
+    case 1: out << " - "; break;
+    case 2: out << " * "; break;
+    case 3: out << " / "; break;
+    case 4: out << " ^ "; break;
+    default:
+        throw std::invalid_argument{"eval operator"};
+    }
+
+    // print right operand. surround lower precedence operator with parentheses.
+    if (roper._class == class_t::operator_t && roper._code < oper._code) {
+        out << "("; print(out, u, rchild(pos)); out << ")";
+    } else {
+        print(out, u, rchild(pos));
+    }
+}
+
+void print_var(std::ostream& out, const individual_t& u, std::size_t pos)
+{
+    gene_t var = u[pos];
+    out << "x_" << static_cast<int>(var._value);
+}
+
+void print_cons(std::ostream& out, const individual_t& u, std::size_t pos)
+{
+    gene_t cons = u[pos];
+    out << cons._value;
+}
+
+void print(std::ostream& out, const individual_t& u, std::size_t pos)
+{
+    // just boot.
+    gene_t head = u[pos];
+
+    switch (head._class) {
+    case class_t::operator_t: print_oper(out, u, pos); break;
+    case class_t::function_t: print_func(out, u, pos); break;
+    case class_t::variable_t: print_var (out, u, pos); break;
+    case class_t::constant_t: print_cons(out, u, pos); break;
+    default:
+        throw std::invalid_argument{"general print"};
+    }
+}
+
+std::ostream& operator<<(std::ostream& out, const individual_t& u)
+{
+    print(out, u, 0);
+    out << std::flush;
+    return out;
 }
 
 std::size_t state_t::generation() const
@@ -237,3 +324,49 @@ symbolic_regression_t::~symbolic_regression_t()
     
     
 //}
+
+#include <iostream>
+
+using namespace std;
+int main() {
+    individual_t individual(15);
+    individual[ 0]._class = class_t::operator_t;
+    individual[ 0]._code  = 0;
+    individual[ 1]._class = class_t::operator_t;
+    individual[ 1]._code  = 4;
+    individual[ 2]._class = class_t::operator_t;
+    individual[ 2]._code  = 4;
+    individual[ 3]._class = class_t::function_t;
+    individual[ 3]._code  = 0;
+    individual[ 4]._class = class_t::constant_t;
+    individual[ 4]._value = 2.0;
+    individual[ 5]._class = class_t::function_t;
+    individual[ 5]._code  = 1;
+    individual[ 6]._class = class_t::constant_t;
+    individual[ 6]._value = 2.0;
+    individual[ 7]._class = class_t::variable_t;
+    individual[ 7]._code  = 0;
+    individual[11]._class = class_t::variable_t;
+    individual[11]._code  = 0;
+    
+    cout << individual << endl;
+
+    individual[ 0]._class = class_t::operator_t;
+    individual[ 0]._code  = 2;
+    individual[ 1]._class = class_t::operator_t;
+    individual[ 1]._code  = 0;
+    individual[ 2]._class = class_t::operator_t;
+    individual[ 2]._code  = 0;
+    individual[ 3]._class = class_t::constant_t;
+    individual[ 3]._value = 3.0;
+    individual[ 4]._class = class_t::constant_t;
+    individual[ 4]._value = 2.0;
+    individual[ 5]._class = class_t::constant_t;
+    individual[ 5]._value = 2.0;
+    individual[ 6]._class = class_t::constant_t;
+    individual[ 6]._value = 1.0;
+
+    double x = eval(individual, 0, data_t{});
+    cout << individual << " = " << x << endl;
+    return 0;
+}
