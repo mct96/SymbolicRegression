@@ -16,6 +16,7 @@ class parameters_t;
 class gp_operators_t;
 class symbolic_regression_t;
 
+// consteval for C++ 20.
 inline std::size_t lchild(std::size_t pos) { return 2 * pos + 1; };
 inline std::size_t rchild(std::size_t pos) { return 2 * pos + 2; };
 inline std::size_t parent(std::size_t pos) {
@@ -24,7 +25,9 @@ inline std::size_t parent(std::size_t pos) {
 // individual_t represents an individual: each gene can be a function,
 // an operator or a variable.
 using individual_t = std::vector<gene_t>;
-using individuals_t = std::vector<individual_t>;
+
+// individual and score (fitness).
+using individuals_t = std::vector<std::pair<individual_t, double>>;
 
 // variable_t are terminals. Its size should be defined when the dataset
 // is loaded. For example, if dataset has N column + y output, the 
@@ -98,7 +101,7 @@ public:
     void max_depth(std::size_t value);
     std::size_t max_depth() const;
 
-    // tolerable error.
+    // tolerable error: [0, 1].
     void threshold(double value);
     double threshold() const;
 
@@ -122,6 +125,10 @@ public:
     void selection_method(selection_method_t method);
     selection_method_t selection_method() const;
 
+    // generation method.
+    void generation_method(generation_method_t method);
+    generation_method_t generation_method() const;
+    
     // enable eletism?
     void eletism(bool enable);
     bool eletism() const;
@@ -142,11 +149,11 @@ private:
     double _prob_crossover;
 
     selection_method_t _selection_method;
+    generation_method_t _generation_method;
+    error_metric_t _error_metric;
 
     bool _eletism;
 };
-
-
 
 // gp_operators_t implementation of operators for gp.
 class gp_operators_t
@@ -157,13 +164,18 @@ public:
                    const data_t& variables,
                    double target);
 
-    // MSE of population.
+    void population_fitness(individuals_t& population,
+                            const data_t& variables,
+                            double target);
+    
+    // population error.
     double population_error(const individuals_t& population,
                             const data_t& variables,
                             double target,
                             error_metric_t error_metric = error_metric_t::mae);
 
     // 2 types of individual's generation (growth, full).
+    gene_t rd_terminal();
     individual_t full_gen(std::size_t N);
     individual_t grow_gen(std::size_t N);
     individual_t gen_individual(generation_method_t generation_method,

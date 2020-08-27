@@ -373,31 +373,49 @@ double gp_operators_t::population_error(const individuals_t& population,
     return is_rmse ? sqrt(avg_error) : avg_error; // root, if rmse.
 }
 
+gene_t gp_operators_t::rd_terminal(std::size_t n_vars)
+{
+    gene_t gene;
+    auto constant_or_variable = rd_binary();
+    if (constant_or_variable) {
+        gene._class = class_t::variable_t;
+        gene._code = rd_variable(n_vars);
+    } else {
+        gene._class = class_t::constant_t;
+        gene._value = rd_value();
+    }
+
+    return gene;
+}
+
 individual_t gp_operators_t::full_gen(std::size_t max_depth,
                                       std::size_t n_vars)
 {
     individual_t individual{};
-    
-    for (std::size_t depth = 0; depth < max_depth-2; ++depth) {
-        std::size_t n_nodes = pow(2, depth);
-        for (std::size_t gene = 0; gene < n_nodes; ++gene) {
-            individual[gene]._class = class_t::operator_t;
-            individual[gene]._code = rd_operator(5);
-        }
-    }
 
-    auto begin = pow(2, max_depth-2), end = pow(2, max_depth-1); 
+    auto begin = 0, end = pow(2, max_depth - 2);
+    for (std::size_t gene = 0; gene < n_nodes; ++gene) {
+        individual[gene]._class = class_t::operator_t;
+        individual[gene]._code = rd_operator(5);
+    }
+    
+    begin = pow(2, max_depth-2), end = pow(2, max_depth-1); 
     for (std::size_t gene = begin; gene < end; ++gene) {
         auto function_or_operator = rd_binary();
 
         if (function_or_operator) {
             individual[gene]._class = class_t::function_t;
             individual[gene]._code = rd_function(8);
-            individual[lchild(gene)]._class = class_t::variable_t;
-            individual[lchild(gene)]._code = rd_variable(n_vars);
+            individual[lchild(gene)] = rd_terminal(n_vars);
         } else {
+            individual[gene]._class = class_t::operator_t;
+            individual[gene]._code = rd_operator(5);
+            individual[lchild(gene)] = rd_terminal(n_vars);
+            individual[rchild(gene)] = rd_terminal(n_vars);
         }
     }
+
+    return individual;
 }
 
 individual_t gp_operators_t::grow_gen(std::size_t N)

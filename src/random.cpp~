@@ -1,0 +1,8 @@
+#include "random.hpp"
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    for (int i = 0; i < 10; ++i)
+        cout << rd_function(10) << endl;

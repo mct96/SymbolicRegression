@@ -1,0 +1,9 @@
+#pragma once
+
+#include <random>
+
+constexpr int seeds_v[] = {7, 77, 777, 7777, 77777};
+std::seed_seq seeds{seeds_v, seeds_v + 5};
+std::mt19937 gen{seeds};
+
+
