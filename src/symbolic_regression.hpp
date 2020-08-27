@@ -164,7 +164,10 @@ public:
                             error_metric_t error_metric = error_metric_t::mae);
 
     // 2 types of individual's generation (growth, full).
-    individual_t gen_individual(generation_method_t generation_method);
+    individual_t full_gen(std::size_t N);
+    individual_t grow_gen(std::size_t N);
+    individual_t gen_individual(generation_method_t generation_method,
+                                std::size_t N);
 
     // 2 types of selection (roullet wheel, tournement).
     individuals_t selection_rw(const individuals_t& population);
@@ -181,7 +184,9 @@ public:
     void mutation_rd(individual_t& individual, double p);
 
 private:
-    void copy_subtree(const individual_t& src, individual_t& dst);
+    void copy_subtree(const individual_t& src,
+                      individual_t& dst,
+                      std::size_t start_point);
 };
     
 class symbolic_regression_t

@@ -350,6 +350,70 @@ double gp_operators_t::population_error(const individuals_t& population,
     return is_rmse ? sqrt(avg_error) : avg_error;
 }
 
+individual_t gp_operators_t::full_gen(std::size_t N)
+{
+}
+
+individual_t gp_operators_t::grow_gen(std::size_t N)
+{
+}
+
+individual_t gp_operators_t::gen_individual(generation_method_t gm,
+                                            std::size_t N)
+{
+    if (gm == generation_method_t::full)
+        return full_gen(N);
+    else if (gm == generation_method_t::grow)
+        return grow_gen(N);
+}
+
+individuals_t gp_operators_t::selection_rw(const individuals_t& population)
+{
+}
+
+individuals_t gp_operator_t::selection_t(const individuals_t& population,
+                                         std::size_t sz)
+{
+}
+
+individuals_t gp_operator_t::crossover(const individual_t& p1,
+                                       const individual_t& p2)
+{
+    
+}
+
+void gp_operator_t::mutation_op(individual_t& individual, double p)
+{
+}
+
+void gp_operator_t::mutation_ex(individual_t& individual, double p)
+{
+}
+
+void gp_operator_t::mutation_rd(individual_t& individual, double p)
+{
+}
+
+void gp_operator_t::copy_subtree(const individual_t& src,
+                                 individual_t& dst,
+                                 std::size_t sp)
+{
+    auto maxsz = dst.size();    // longest child.
+    auto buffer = std::vector<std::size_t>{sp}; // to do list.
+
+    while (buffer.size() > 0) {
+        auto point = buffer.pop_back();
+        dst[point] = src[point]; // copy.
+
+        auto lc = lchild(point), rc = rchild(point);
+        if (lc < maxsz)         // if lchild exists.
+            buffer.push_back(lc);
+        
+        if (rc < maxdz)         // if rchild exists.
+            buffer.push_back(rc);
+    }
+}
+
 symbolic_regression_t::symbolic_regression_t(parameters_t params)
 {
 }
