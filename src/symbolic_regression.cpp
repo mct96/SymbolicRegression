@@ -409,7 +409,7 @@ void gp_operator_t::copy_subtree(const individual_t& src,
         if (lc < maxsz)         // if lchild exists.
             buffer.push_back(lc);
         
-        if (rc < maxdz)         // if rchild exists.
+        if (rc < maxsz)         // if rchild exists.
             buffer.push_back(rc);
     }
 }
