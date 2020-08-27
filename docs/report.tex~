@@ -1,0 +1,14 @@
+\documentclass{paper}
+
+\usepackage[portuguese]{babel}
+
+\begin{document}
+\title{{\itshape Symbolic Regression}}
+\author{Matheus Cândido Teixeira}
+\maketitle
+
+\section{Introdução}
+\section{Metodologia}
+\section{Experimentos}
+\section{Conclusão}
+\end{document}

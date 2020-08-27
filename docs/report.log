@@ -1,0 +1,119 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.6.29) (preloaded format=pdflatex 2020.8.17)  27 AUG 2020 11:01
+entering extended mode
+**./report.tex
+(report.tex
+LaTeX2e <2020-02-02> patch level 5
+L3 programming layer <2020-08-07>
+(/home/matheusc/.miktex/texmfs/install/tex/latex/paper/paper.cls
+Document Class: paper 2008/05/30 1.0l LaTeX document class (wm).
+\hours=\count168
+\minutes=\count169
+(/home/matheusc/.miktex/texmfs/install/tex/latex/base/size10.clo
+File: size10.clo 2019/12/20 v1.4l Standard LaTeX file (size option)
+)
+\beforetitlespace=\skip47
+\c@part=\count170
+\c@section=\count171
+\c@subsection=\count172
+\c@subsubsection=\count173
+\c@paragraph=\count174
+\c@subparagraph=\count175
+\exampleindent=\skip48
+\c@figure=\count176
+\c@table=\count177
+\abovecaptionskip=\skip49
+\belowcaptionskip=\skip50
+\bibindent=\dimen134
+)
+(/home/matheusc/.miktex/texmfs/install/tex/generic/babel/babel.sty
+Package: babel 2020/07/13 3.47 The Babel package
+
+(/home/matheusc/.miktex/texmfs/install/tex/generic/babel/babel.def
+File: babel.def 2020/07/13 3.47 Babel common definitions
+\babel@savecnt=\count178
+\U@D=\dimen135
+\l@babelnohyphens=\language2
+
+(/home/matheusc/.miktex/texmfs/install/tex/generic/babel/txtbabel.def)
+\bbl@readstream=\read2
+)
+\bbl@dirlevel=\count179
+
+*************************************
+* Local config file bblopts.cfg used
+*
+(/home/matheusc/.miktex/texmfs/install/tex/latex/arabi/bblopts.cfg
+File: bblopts.cfg 2005/09/08 v0.1 add Arabic and Farsi to "declared" options of
+ babel
+)
+(/home/matheusc/.miktex/texmfs/install/tex/latex/babel-portuges/portuguese.ldf
+Language: portuges 2020/05/04 v1.2r Portuguese support from the babel system
+
+
+Package babel Warning: No hyphenation patterns were preloaded for
+(babel)                the language `Portuguese' into the format.
+(babel)                Please, configure your TeX system to add them and
+(babel)                rebuild the format. Now I will use the patterns
+(babel)                preloaded for \language=0 instead on input line 53.
+
+Package babel Info: \l@portuges = using hyphenrules for english
+(babel)             (\language0) on input line 54.
+Package babel Info: Making " an active character on input line 143.
+))
+(/home/matheusc/.miktex/texmfs/install/tex/latex/l3backend/l3backend-pdfmode.de
+f
+File: l3backend-pdfmode.def 2020-08-07 L3 backend support: PDF mode
+\l__kernel_color_stack_int=\count180
+\l__pdf_internal_box=\box45
+) (report.aux)
+\openout1 = `report.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+
+
+LaTeX Font Warning: Font shape `OT1/cmss/bx/it' undefined
+(Font)              using `OT1/cmss/bx/n' instead on input line 8.
+
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <14.4> on input line 8.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 8.
+[1
+
+
+{/home/matheusc/.miktex/texmfs/data/pdftex/config/pdftex.map}] (report.aux)
+
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 1285 strings out of 483120
+ 19040 string characters out of 2956793
+ 264822 words of memory out of 3000000
+ 16696 multiletter control sequences out of 15000+200000
+ 538465 words of font info for 40 fonts, out of 3000000 for 9000
+ 14 hyphenation exceptions out of 8191
+ 25i,7n,25p,134b,191s stack positions out of 5000i,500n,10000p,200000b,50000s
+</home/matheusc/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cmr10.p
+fb></home/matheusc/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cmssbx
+10.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cm
+ssi12.pfb>
+Output written on report.pdf (1 page, 30930 bytes).
+PDF statistics:
+ 18 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+
