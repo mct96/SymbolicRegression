@@ -1,10 +1,39 @@
 #include "symbolic_regression.hpp"
+#include "random.hpp"
 
 #include <cmath>
+#include <type_traits>
 #include <stdexcept>
+#include <iterator>
+
 
 //namespace sr
 //{
+
+// safe operators and functions.
+double stan(double x)
+{
+    if (cos(x) == 0)
+        x += 0.01;
+
+    return tan(x);
+}
+
+double slog10(double x)
+{
+    return log10(std::max(0.00001, x));
+}
+
+double slog(double x)
+{
+    return log(std::max(0.00001, x));
+}
+
+double div(double a, double b)
+{
+    if (b == 0) return 1000 * a;
+    return a / b;
+}
 
 double eval_function(gene_t func, double x)
 {
@@ -14,12 +43,12 @@ double eval_function(gene_t func, double x)
     switch (code) {
     case 0: y = sin(x); break;
     case 1: y = cos(x); break;        
-    case 2: y = tan(x); break;
-    case 3: y = sinh(x); break;
-    case 4: y = cosh(x); break;
-    case 5: y = tanh(x); break;
-    case 6: y = log10(x); break;
-    case 7: y = log(x); break;
+    case 2: y = stan(x); break;
+        //    case 3: y = sinh(x); break;
+        //    case 4: y = cosh(x); break;
+        //    case 5: y = tanh(x); break;
+    case 3: y = slog10(x); break;
+    case 4: y = slog(x); break;
     default:
         throw std::invalid_argument{"eval function"};
     }
@@ -36,8 +65,8 @@ double eval_operator(gene_t oper, double lop, double rop)
     case 0: result = lop + rop; break;
     case 1: result = lop - rop; break;
     case 2: result = lop * rop; break;
-    case 3: result = lop / rop; break;
-    case 4: result = pow(lop, rop); break;
+    case 3: result = div(lop, rop); break;
+        //case 4: result = pow(lop, rop); break;
     default:
         throw std::invalid_argument{"eval operator"};
     }
@@ -79,11 +108,11 @@ void print_func(std::ostream& out, const individual_t& u, std::size_t pos)
     case 0: out << "sin"  ; break;        
     case 1: out << "cos"  ; break;
     case 2: out << "tan"  ; break;
-    case 3: out << "sinh" ; break;
-    case 4: out << "cosh" ; break;
-    case 5: out << "tanh" ; break;
-    case 6: out << "log10"; break;
-    case 7: out << "log"  ; break;
+        //    case 3: out << "sinh" ; break;
+        //    case 4: out << "cosh" ; break;
+        //    case 5: out << "tanh" ; break;
+    case 3: out << "log10"; break;
+    case 4: out << "log"  ; break;
     default:
         throw std::invalid_argument{"print function"};
     }
@@ -96,7 +125,7 @@ void print_oper(std::ostream& out, const individual_t& u, std::size_t pos)
     gene_t oper = u[pos], loper = u[lchild(pos)], roper = u[rchild(pos)];
     
     // print left operand. surround lower precedence operator with parentheses.
-    if (loper._class == class_t::operator_t && loper._code < oper._code) {
+    if (loper._class == class_t::operator_t && loper._code <= oper._code) {
         out << "("; print(out, u, lchild(pos)); out << ")";
     } else {
         print(out, u, lchild(pos));
@@ -108,13 +137,13 @@ void print_oper(std::ostream& out, const individual_t& u, std::size_t pos)
     case 1: out << " - "; break;
     case 2: out << " * "; break;
     case 3: out << " / "; break;
-    case 4: out << " ^ "; break;
+        //case 4: out << " ^ "; break;
     default:
         throw std::invalid_argument{"eval operator"};
     }
 
     // print right operand. surround lower precedence operator with parentheses.
-    if (roper._class == class_t::operator_t && roper._code < oper._code) {
+    if (roper._class == class_t::operator_t && roper._code <= oper._code) {
         out << "("; print(out, u, rchild(pos)); out << ")";
     } else {
         print(out, u, rchild(pos));
@@ -124,7 +153,7 @@ void print_oper(std::ostream& out, const individual_t& u, std::size_t pos)
 void print_var(std::ostream& out, const individual_t& u, std::size_t pos)
 {
     gene_t var = u[pos];
-    out << "x_" << static_cast<int>(var._value);
+    out << "x_" << static_cast<int>(var._code);
 }
 
 void print_cons(std::ostream& out, const individual_t& u, std::size_t pos)
@@ -144,6 +173,11 @@ void print(std::ostream& out, const individual_t& u, std::size_t pos)
     case class_t::variable_t: print_var (out, u, pos); break;
     case class_t::constant_t: print_cons(out, u, pos); break;
     default:
+        //        out << "pos: " << pos << std::endl;
+        //for (auto g: u) {
+        //    out << "(" << (int)g._class << ", " << (int)g._code << ") ";
+        //}
+        //out << std::endl;
         throw std::invalid_argument{"general print"};
     }
 }
@@ -340,7 +374,7 @@ double gp_operators_t::fitness(const individual_t& individual,
     double predicted = eval(individual, 0, variables);
     double error = abs(target - predicted);
     double rel = error / target;
-    return max(0, 1 - rel * rel);
+    return std::max(0.0, 1 - rel * rel);
 }
 
 void gp_operators_t::population_fitness(individuals_t& population,
@@ -367,97 +401,229 @@ double gp_operators_t::population_error(const individuals_t& population,
             auto e = target - individual.second;
             individual_error.push_back(e * e);
         }
-      
+
+    auto b = individual_error.begin(), e = individual_error.end();
     double avg_error = std::accumulate(b, e, 0) / population.size();
     auto is_rsme = error_metric == error_metric_t::rmse;
-    return is_rmse ? sqrt(avg_error) : avg_error; // root, if rmse.
+    return is_rsme ? sqrt(avg_error) : avg_error; // root, if rmse.
 }
 
 individual_t gp_operators_t::full_gen(std::size_t max_depth,
                                       std::size_t n_vars)
 {
-    individual_t individual{};
+    if (max_depth <= 1) return individual_t{rd_terminal(n_vars)};
     
-    for (std::size_t depth = 0; depth < max_depth-2; ++depth) {
-        std::size_t n_nodes = pow(2, depth);
-        for (std::size_t gene = 0; gene < n_nodes; ++gene) {
-            individual[gene]._class = class_t::operator_t;
-            individual[gene]._code = rd_operator(5);
-        }
-    }
+    individual_t individual((int)pow(2, max_depth) - 1);
 
-    auto begin = pow(2, max_depth-2), end = pow(2, max_depth-1); 
-    for (std::size_t gene = begin; gene < end; ++gene) {
+    for (std::size_t i = 0; i < (std::size_t)pow(2, max_depth - 2) - 1; ++i) {
+        individual[i]._class = class_t::operator_t;
+        individual[i]._code = rd_operator(n_operators);
+    }
+    
+    for (std::size_t i = pow(2, max_depth - 2) - 1;
+                     i < pow(2, max_depth - 1) - 1; ++i) {
         auto function_or_operator = rd_binary();
 
         if (function_or_operator) {
-            individual[gene]._class = class_t::function_t;
-            individual[gene]._code = rd_function(8);
-            individual[lchild(gene)]._class = class_t::variable_t;
-            individual[lchild(gene)]._code = rd_variable(n_vars);
+            individual[i]._class = class_t::function_t;
+            individual[i]._code = rd_function(n_functions);
+            individual[lchild(i)] = rd_terminal(n_vars);
         } else {
+            individual[i]._class = class_t::operator_t;
+            individual[i]._code = rd_operator(n_operators);
+            individual[lchild(i)] = rd_terminal(n_vars);
+            individual[rchild(i)] = rd_terminal(n_vars);
         }
     }
+
+    return individual;
 }
 
-individual_t gp_operators_t::grow_gen(std::size_t N)
+individual_t gp_operators_t::grow_gen(std::size_t max_depth,
+                                      std::size_t n_vars)
 {
+    individual_t new_individual(pow(2, max_depth) - 1);
+    clear_subtree(new_individual, 0);
+    grow_gen_recursive(new_individual, n_vars, max_depth, 0);
+    //   for (auto g: new_individual)
+    //  std::cout << (int)g._class << " ";
+    //    std::cout << std::endl;
+    return new_individual;
 }
 
 individual_t gp_operators_t::gen_individual(generation_method_t gm,
-                                            std::size_t N)
+                                            std::size_t max_depth,
+                                            std::size_t n_vars)
 {
     if (gm == generation_method_t::full)
-        return full_gen(N);
+        return full_gen(max_depth, n_vars);
     else if (gm == generation_method_t::grow)
-        return grow_gen(N);
+        return grow_gen(max_depth, n_vars);
+
+    return {};
 }
 
 individuals_t gp_operators_t::selection_rw(const individuals_t& population)
 {
+    return {};
 }
 
-individuals_t gp_operator_t::selection_t(const individuals_t& population,
-                                         std::size_t sz)
+individuals_t gp_operators_t::selection_t(const individuals_t& population,
+                                         std::size_t k)
 {
+    return sample<typename individuals_t::value_type>(population, k); 
 }
 
-individuals_t gp_operator_t::crossover(const individual_t& p1,
-                                       const individual_t& p2)
+individual_t gp_operators_t::crossover(const individual_t& p1,
+                                       const individual_t& p2,
+                                       std::size_t max_depth)
 {
+    std::size_t p1_pt = 0, p2_pt = 0;
+    do {
+        p1_pt = rd_gene(p1); p2_pt = rd_gene(p2);
+    } while ((p1_pt + (max_depth - p2_pt - 1)) >= max_depth);
     
-}
+    std::size_t p1_parent_pt = parent(p1_pt);
 
-void gp_operator_t::mutation_op(individual_t& individual, double p)
-{
-}
-
-void gp_operator_t::mutation_ex(individual_t& individual, double p)
-{
-}
-
-void gp_operator_t::mutation_rd(individual_t& individual, double p)
-{
-}
-
-void gp_operator_t::copy_subtree(const individual_t& src,
-                                 individual_t& dst,
-                                 std::size_t sp)
-{
-    auto maxsz = dst.size();    // longest child.
-    auto buffer = std::vector<std::size_t>{sp}; // to do list.
-
-    while (buffer.size() > 0) {
-        auto point = buffer.pop_back();
-        dst[point] = src[point]; // copy.
-
-        auto lc = lchild(point), rc = rchild(point);
-        if (lc < maxsz)         // if lchild exists.
-            buffer.push_back(lc);
-        
-        if (rc < maxsz)         // if rchild exists.
-            buffer.push_back(rc);
+    if (p1_parent_pt < 0) {
+        individual_t new_individual(pow(2, max_depth) - 1);
+        copy_subtree(p2, p2_pt, new_individual, 0);
+        return new_individual;
+    } else {
+        individual_t new_individual = p1;
+        clear_subtree(new_individual, p1_pt);
+        copy_subtree(p2, p2_pt, new_individual, p1_pt);
+        return new_individual;
     }
+}
+
+individual_t gp_operators_t::mutation_op(const individual_t& individual,
+                                         std::size_t n_vars,
+                                         double prob)
+{
+    individual_t new_individual = individual;
+    for (std::size_t point = 0; point < individual.size() ; ++point) {
+
+        if (rd_real() > prob) continue;
+        
+        gene_t gene = individual[point];
+        switch (gene._class) {
+        case class_t::operator_t:
+            gene._code = rd_operator(n_operators); break;
+        case class_t::function_t:
+            gene._code = rd_function(n_functions); break;
+        case class_t::variable_t:
+            gene._code = rd_variable(n_vars); break;
+        case class_t::constant_t:
+            gene._value = rd_value(); break;
+        }
+
+        new_individual[point] = gene;
+    }
+    
+    return new_individual;
+}
+
+individual_t gp_operators_t::mutation_sb(const individual_t& individual,
+                                        std::size_t n_vars)
+{
+    std::size_t point = rd_gene(individual);
+    std::size_t point_depth = get_depth(point);
+    std::size_t tree_depth = get_depth(individual.size()-1);
+
+    individual_t new_individual = individual;
+    individual_t subtree = full_gen(tree_depth - point_depth, n_vars);
+
+    clear_subtree(new_individual, point);
+    copy_subtree(subtree, 0, new_individual, point);
+
+    return new_individual;
+}
+
+void gp_operators_t::grow_gen_recursive(individual_t& individual,
+                                        std::size_t n_vars,
+                                        std::size_t max_depth,
+                                        std::size_t point)
+{
+    //if (get_depth(point) > max_depth - 1) {
+        // std::cout << "max depth: " << max_depth << "\ndepth: " << get_depth(point) << std::endl;
+        //std::cout << "stopped at: " << point << std::endl;
+    //  return; // for safety.
+    //}
+    //std::cout << individual.size() << " " << point << std::endl;
+    if (max_depth - 1 == get_depth(point)) {
+        if (rd_binary()) {
+            individual[point]._class = class_t::variable_t;
+            individual[point]._code = rd_variable(n_vars);
+        } else {
+            individual[point]._class = class_t::constant_t;
+            individual[point]._value = rd_value();
+        }
+    } else {
+        if (rd_binary()) {
+            individual[point]._class = class_t::function_t;
+            individual[point]._code = rd_operator(n_functions);
+            grow_gen_recursive(individual, n_vars, max_depth, lchild(point));
+        } else {
+            individual[point]._class = class_t::operator_t;
+            individual[point]._code = rd_operator(n_operators);
+            grow_gen_recursive(individual, n_vars, max_depth, lchild(point));
+            grow_gen_recursive(individual, n_vars, max_depth, rchild(point));
+        }
+    }
+}
+
+std::size_t gp_operators_t::rd_gene(const individual_t& individual)
+{
+    std::vector<std::size_t> points{};
+    for (std::size_t pos = 0; pos < individual.size(); ++pos) {
+        gene_t gene = individual[pos];
+        if (gene._class != class_t::nill_t)
+            points.push_back(pos);
+    }
+
+    return points[rd_integer(points.size())];
+}
+
+gene_t gp_operators_t::rd_terminal(std::size_t n_vars)
+{
+    gene_t gene;
+    auto constant_or_variable = rd_binary();
+    if (constant_or_variable) {
+        gene._class = class_t::variable_t;
+        gene._code = rd_variable(n_vars);
+    } else {
+        gene._class = class_t::constant_t;
+        gene._value = rd_value();
+    }
+
+    return gene;
+}
+
+void gp_operators_t::copy_subtree(const individual_t& src,
+                                 std::size_t src_point,
+                                 individual_t& dst,
+                                 std::size_t dst_point)
+{
+    dst[dst_point] = src[src_point];
+    
+    auto src_lc = lchild(src_point), dst_lc = lchild(dst_point);
+    if (src_lc < src.size() && dst_lc < dst.size())
+        copy_subtree(src, src_lc, dst, dst_lc);
+
+    auto src_rc = rchild(src_point), dst_rc = rchild(dst_point);
+    if (src_rc < src.size() && dst_rc < dst.size())
+        copy_subtree(src, src_rc, dst, dst_rc);
+}
+
+void gp_operators_t::clear_subtree(individual_t& individual, std::size_t point)
+{
+    if (point >= individual.size())
+        return;
+ 
+    individual[point]._class = class_t::nill_t;
+    clear_subtree(individual, lchild(point));
+    clear_subtree(individual, rchild(point));
 }
 
 symbolic_regression_t::symbolic_regression_t(parameters_t params)
@@ -473,48 +639,32 @@ symbolic_regression_t::~symbolic_regression_t()
 //}
 
 #include <iostream>
-
+#include <iomanip>
 using namespace std;
 int main() {
-    individual_t individual(15);
-    individual[ 0]._class = class_t::operator_t;
-    individual[ 0]._code  = 0;
-    individual[ 1]._class = class_t::operator_t;
-    individual[ 1]._code  = 4;
-    individual[ 2]._class = class_t::operator_t;
-    individual[ 2]._code  = 4;
-    individual[ 3]._class = class_t::function_t;
-    individual[ 3]._code  = 0;
-    individual[ 4]._class = class_t::constant_t;
-    individual[ 4]._value = 2.0;
-    individual[ 5]._class = class_t::function_t;
-    individual[ 5]._code  = 1;
-    individual[ 6]._class = class_t::constant_t;
-    individual[ 6]._value = 2.0;
-    individual[ 7]._class = class_t::variable_t;
-    individual[ 7]._code  = 0;
-    individual[11]._class = class_t::variable_t;
-    individual[11]._code  = 0;
 
-    double x = eval(individual, 0, {1.2});
-    cout << individual << " = " << x << endl;
+    gp_operators_t gpo{};
+    individual_t individual{};
 
-    individual[ 0]._class = class_t::operator_t;
-    individual[ 0]._code  = 2;
-    individual[ 1]._class = class_t::operator_t;
-    individual[ 1]._code  = 0;
-    individual[ 2]._class = class_t::operator_t;
-    individual[ 2]._code  = 0;
-    individual[ 3]._class = class_t::constant_t;
-    individual[ 3]._value = 3.0;
-    individual[ 4]._class = class_t::constant_t;
-    individual[ 4]._value = 2.0;
-    individual[ 5]._class = class_t::constant_t;
-    individual[ 5]._value = 2.0;
-    individual[ 6]._class = class_t::constant_t;
-    individual[ 6]._value = 1.0;
-
-    x = eval(individual, 0, data_t{});
-    cout << individual << " = " << x << endl;
+    individual = gpo.gen_individual(generation_method_t::grow, 4, 5);
+    //    cout << individual << endl;
+    data_t input = {0.1, -.3, 2.0, 0.0, -.5, 1.8, -2.4, .3, -.5, 1};
+    
+    for (int i = 0; i < 0xFFFFFFF; ++i) {
+        auto max_depth = std::max(3, rd_integer(15));
+        auto m1 = (generation_method_t)rd_binary(), m2 =(generation_method_t)rd_binary();
+        cout << i << endl;
+        individual = gpo.gen_individual(m1, max_depth, 10);
+        individual_t mother = gpo.gen_individual(m2, max_depth, 10);
+        cout << "mother :" << mother << " = " << eval(mother, 0, input) << endl;
+        cout << "original: " << individual << " = " << eval(individual, 0, input) << endl;
+        individual = gpo.mutation_op(individual, 5, 0.15);
+        cout << "new     : " << individual << " = " << eval(individual, 0, input) << endl;
+        individual = gpo.mutation_sb(individual, 5);
+        cout << "mutation: " << individual << " = " << eval(individual, 0, input) << endl;
+        individual_t offspring = gpo.crossover(individual, mother, max_depth);
+        cout << "cross   : " << offspring << " = " << eval(offspring, 0, input) << endl << endl;
+    }
+    
     return 0;
 }

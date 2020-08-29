@@ -1,9 +1,0 @@
-#pragma once
-
-#include <vector>
-#include <string>
-
-std::vector<> _operators{'+', '-', '*', '/'};
-std::vector<int>
-
-double eval()

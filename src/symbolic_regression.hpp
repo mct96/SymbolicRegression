@@ -1,26 +1,15 @@
-#pragma once
+
 
 #include <vector>
+#include <cmath>
 #include <iostream>
 
 //namespace sr
 //{
+
+static std::size_t n_functions = 5, n_operators = 4; 
+
 struct gene_t;
-
-enum class selection_method_t{ roulette_wheel, tournament };
-enum class generation_method_t{ full, growth };
-enum class error_metric_t { mse, rmse, mae };
-
-class state_t;
-class parameters_t;
-class gp_operators_t;
-class symbolic_regression_t;
-
-// consteval for C++ 20.
-inline std::size_t lchild(std::size_t pos) { return 2 * pos + 1; };
-inline std::size_t rchild(std::size_t pos) { return 2 * pos + 2; };
-inline std::size_t parent(std::size_t pos) {
-    return static_cast<int>((pos + 1)/2 - 1); };
 
 // individual_t represents an individual: each gene can be a function,
 // an operator or a variable.
@@ -33,6 +22,24 @@ using individuals_t = std::vector<std::pair<individual_t, double>>;
 // is loaded. For example, if dataset has N column + y output, the 
 // variables_t's length should be N.
 using data_t = std::vector<double>;
+
+enum class selection_method_t{ roulette_wheel, tournament };
+enum class generation_method_t{ full, grow };
+enum class error_metric_t { mse, rmse, mae };
+
+// consteval for C++ 20.
+inline std::size_t lchild(std::size_t pos) { return 2 * pos + 1; };
+inline std::size_t rchild(std::size_t pos) { return 2 * pos + 2; };
+inline std::size_t parent(std::size_t pos) {
+    return static_cast<int>((pos + 1)/2 - 1); };
+
+std::size_t get_depth(std::size_t pos) {
+    std::size_t lvl = 0, accum = 0;
+    for (std::size_t i = 0; accum < pos; ++i, accum += pow(2, i)) 
+        if (accum < pos) ++lvl;
+
+    return lvl;        
+}
 
 // the eval_* functions are responsable for evaluate a tree.
 double eval_function(gene_t func, double x);
@@ -47,6 +54,13 @@ void print_var (std::ostream& out, const individual_t& u, std::size_t pos);
 void print_cons(std::ostream& out, const individual_t& u, std::size_t pos);
 std::ostream& operator<<(std::ostream& out, const individual_t& u); 
 
+
+class state_t;
+class parameters_t;
+class gp_operators_t;
+class symbolic_regression_t;
+
+
 // a gene is represented by two portions: class and code. Class can be an op,
 // func, var, nil. "op" represents an binary operator (+, -, /, *, ^); "func"
 // represents a function (trigonometric functions, hiberbolic functions,
@@ -60,6 +74,15 @@ struct gene_t {
     class_t _class = class_t::nill_t;
     union { unsigned short _code = 0; float _value; };
 };
+
+std::size_t get_max_depth(const individual_t& pos) {
+    for (std::size_t i = pos.size() - 1; i >= 0; --i) {
+        if (pos[i]._class != class_t::nill_t)
+            return get_depth(i);
+    }
+    
+    return -1; // 0xFFFFFFFF
+}
 
 // state_t class is used to show the state of convergence of the algorithm.
 // its purpouse is to plot the progress in realtime.
@@ -128,6 +151,10 @@ public:
     // generation method.
     void generation_method(generation_method_t method);
     generation_method_t generation_method() const;
+
+    // error metric.
+    void error_metric(error_metric_t metric);
+    error_metric_t error_metric() const;
     
     // enable eletism?
     void eletism(bool enable);
@@ -175,30 +202,57 @@ public:
                             error_metric_t error_metric = error_metric_t::mae);
 
     // 2 types of individual's generation (growth, full).
-    gene_t rd_terminal();
-    individual_t full_gen(std::size_t N);
-    individual_t grow_gen(std::size_t N);
+    individual_t full_gen(std::size_t max_depth, std::size_t n_vars);
+    individual_t grow_gen(std::size_t max_depth, std::size_t n_vars);
+
     individual_t gen_individual(generation_method_t generation_method,
-                                std::size_t N);
+                                std::size_t max_depth,
+                                std::size_t n_vars);
 
     // 2 types of selection (roullet wheel, tournement).
     individuals_t selection_rw(const individuals_t& population);
     individuals_t selection_t(const individuals_t& population, std::size_t sz);
 
     // crossover: copy subtree.
-    individuals_t crossover(const individual_t& p1, const individual_t& p2);
+    individual_t crossover(const individual_t& p1,
+                           const individual_t& p2,
+                           std::size_t max_depth);
 
     // 3 types of mutation (one point, expansion, reduction). Note: one point
     // mutation change the code not the class, except for variable that can
     // exchange with constant.
-    void mutation_op(individual_t& individual, double p);
-    void mutation_ex(individual_t& individual, double p);
-    void mutation_rd(individual_t& individual, double p);
+    individual_t mutation_op(const individual_t& individual,
+                             std::size_t n_vars,
+                             double prob);
+    
+    individual_t mutation_sb(const individual_t& individual,
+                             std::size_t n_vars);
+
+    //individual_t mutation_ex(const individual_t& individual,
+    //                         std::size_t n_vars);
+    //individual_t mutation_rd(const individual_t& individual,
+    //                         std::size_t n_vars);
+
+    // reproduction choose one individual from population.
+    individual_t reproduction(const individuals_t& population,
+                              selection_method_t sm);
 
 private:
+    void grow_gen_recursive(individual_t& individual,
+                            std::size_t n_vars,
+                            std::size_t max_depth,
+                            std::size_t cur_point);
+    
+    std::size_t rd_gene(const individual_t& individual);
+    
+    gene_t rd_terminal(std::size_t n_vars);
+
     void copy_subtree(const individual_t& src,
+                      std::size_t src_point,
                       individual_t& dst,
-                      std::size_t start_point);
+                      std::size_t dst_point);
+
+    void clear_subtree(individual_t& individual, std::size_t point);
 };
     
 class symbolic_regression_t
