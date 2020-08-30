@@ -22,6 +22,7 @@ using individuals_t = std::vector<std::pair<individual_t, double>>;
 // is loaded. For example, if dataset has N column + y output, the 
 // variables_t's length should be N.
 using data_t = std::vector<double>;
+using training_set_t = std::vector<std::pair<std::vector<double>, double>>;
 
 enum class selection_method_t{ roulette_wheel, tournament };
 enum class generation_method_t{ full, grow };
@@ -54,12 +55,10 @@ void print_var (std::ostream& out, const individual_t& u, std::size_t pos);
 void print_cons(std::ostream& out, const individual_t& u, std::size_t pos);
 std::ostream& operator<<(std::ostream& out, const individual_t& u); 
 
-
 class state_t;
 class parameters_t;
 class gp_operators_t;
 class symbolic_regression_t;
-
 
 // a gene is represented by two portions: class and code. Class can be an op,
 // func, var, nil. "op" represents an binary operator (+, -, /, *, ^); "func"
@@ -188,12 +187,12 @@ class gp_operators_t
 public:
     // eval fitness. (used to sort).
     double fitness(const individual_t& individual,
-                   const data_t& variables,
-                   double target);
+                   const training_set_t& input_data,
+                   error_metric_t metric);
 
     void population_fitness(individuals_t& population,
-                            const data_t& variables,
-                            double target);
+                            const training_set_t& input_data,
+                            error_metric_t metric);
     
     // population error.
     double population_error(const individuals_t& population,
@@ -261,9 +260,24 @@ public:
     symbolic_regression_t(parameters_t params);
     ~symbolic_regression_t();
 
+    const state_t& state();
 
+    void parameters(parameters_t params);
+    parameters_t parameters() const;
+    
+    void initialize_population();
+    void next_generation();
+    void report();
+    
 private:
-
+    individuals_t do_crossover(std::size_t n_individuals);
+    individuals_t do_mutation(std::size_t n_individuals);
+    individuals_t do_reproduction(std::size_t n_individuals);
+    
+    state_t _state;
+    individuals_t _population;
+    parameters_t _parameters;
+    gp_operators_t _gpo;
 };
 
 //}

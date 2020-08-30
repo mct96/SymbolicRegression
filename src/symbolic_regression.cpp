@@ -368,21 +368,35 @@ void parameters_t::reset()
 }
 
 double gp_operators_t::fitness(const individual_t& individual,
-                               const data_t& variables,
-                               double target)
+                               const training_set_t& input_data,
+                               error_metric_t err_m)
 {
-    double predicted = eval(individual, 0, variables);
-    double error = abs(target - predicted);
-    double rel = error / target;
-    return std::max(0.0, 1 - rel * rel);
+    std::vector<double> error{};
+
+    for (auto xy: input_data) {
+        std::vector<double> x = xy.first;
+
+        double y = xy.second;
+        double y_pred = eval(individual, 0, x);
+        double dy = y - y_pred;
+        
+        error.push_back(err_m == error_metric_t::mae ? fabs(dy) : dy * dy);
+    }
+
+    auto b = error.begin(), e = error.end();
+    double me = std::accumulate(b, e, 0.0)/error.size(); // mean error.
+
+    return (err_m == error_metric_t::rmse) ? sqrt(me) : me; 
 }
 
 void gp_operators_t::population_fitness(individuals_t& population,
-                                        const data_t& variables,
-                                        double target)
+                                        const training_set_t& input_data,
+                                        error_metric_t err_m)
 {
-    for (auto& individual : population) 
-        individual.second = fitness(individual.first, variables, target);
+    for (auto& individual : population) {
+        double error = fitness(individual.first, input_data, err_m);
+        individual.second = error;
+    }
 }
 
 double gp_operators_t::population_error(const individuals_t& population,
@@ -634,9 +648,54 @@ symbolic_regression_t::~symbolic_regression_t()
 {
 }
 
+const state_t& symbolic_regression_t::state()
+{
+}
+
+void symbolic_regression_t::parameters(parameters_t params)
+{
+    _parameters = params;
+}
+
+parameters_t symbolic_regression_t::parameters() const
+{
+    return _parameters;
+}
+
+void symbolic_regression_t::initialize_population()
+{
+    for (std::size_t i = 0; i < _parameters._population_sz; ++i) {
+        auto method = _parameters._generation_method;
+        auto max_depth = _parameters._max_depth;
+        individual_t individual = _gpo.gen_individual(method, max_depth, 1);
+        double fitness = gpo.
+        _population.emplace_back(individual, 0.0);
+    }
+}
+
+void symbolic_regression_t::next_generation()
+{
     
-    
-//}
+}
+
+void symbolic_regression_t::report()
+{
+}
+
+individuals_t symbolic_regression_t::do_crossover(std::size_t n_individuals)
+{
+    return {};
+}
+
+individuals_t symbolic_regression_t::do_mutation(std::size_t n_individuals)
+{
+    return {};
+}
+
+individuals_t symbolic_regression_t::do_reproduction(std::size_t n_individuals)
+{
+    return {};
+}
 
 #include <iostream>
 #include <iomanip>
@@ -647,24 +706,26 @@ int main() {
     individual_t individual{};
 
     individual = gpo.gen_individual(generation_method_t::grow, 4, 5);
-    //    cout << individual << endl;
-    data_t input = {0.1, -.3, 2.0, 0.0, -.5, 1.8, -2.4, .3, -.5, 1};
-    
-    for (int i = 0; i < 0xFFFFFFF; ++i) {
-        auto max_depth = std::max(3, rd_integer(15));
-        auto m1 = (generation_method_t)rd_binary(), m2 =(generation_method_t)rd_binary();
-        cout << i << endl;
-        individual = gpo.gen_individual(m1, max_depth, 10);
-        individual_t mother = gpo.gen_individual(m2, max_depth, 10);
-        cout << "mother :" << mother << " = " << eval(mother, 0, input) << endl;
-        cout << "original: " << individual << " = " << eval(individual, 0, input) << endl;
-        individual = gpo.mutation_op(individual, 5, 0.15);
-        cout << "new     : " << individual << " = " << eval(individual, 0, input) << endl;
-        individual = gpo.mutation_sb(individual, 5);
-        cout << "mutation: " << individual << " = " << eval(individual, 0, input) << endl;
-        individual_t offspring = gpo.crossover(individual, mother, max_depth);
-        cout << "cross   : " << offspring << " = " << eval(offspring, 0, input) << endl << endl;
+
+    training_set_t training{};
+    for (double v = -1; v < 1; v += 0.15) 
+        training.emplace_back(std::vector<double>{v}, v+1/v+rd_value()/10);
+        
+    individuals_t population{};    
+    for (int i = 0; i < 7000; ++i) {
+        auto max_depth = std::max(2, rd_integer(15));
+        auto method = (generation_method_t)rd_binary();
+        population.emplace_back(gpo.gen_individual(method, max_depth, 1), 0);
     }
-    
+
+    gpo.population_fitness(population, training, error_metric_t::mse);
+
+    auto b = population.begin(), e = population.end();
+    std::sort(b, e, [](auto l, auto r) { return l.second < r.second; });
+
+    for (int i = 0; i < 5; ++i) {
+        cout << "f(x) = " << population[i].first << "  error: " << ((double)population[i].second) << endl;
+        
+    }
     return 0;
 }
