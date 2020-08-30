@@ -1,6 +1,7 @@
 #include "symbolic_regression.hpp"
 #include "random.hpp"
 
+#include <functional>
 #include <cmath>
 #include <type_traits>
 #include <stdexcept>
@@ -214,6 +215,16 @@ double state_t::avg_fitness() const
     return _avg_fitness;
 }
 
+double state_t::med_fitness() const
+{
+    return _med_fitness;
+}
+
+double state_t::std_fitness() const
+{
+    return _std_fitness;
+}
+
 void state_t::reset()
 {
     _generation    = 0;
@@ -271,35 +282,25 @@ double parameters_t::threshold() const
     return _threshold;
 }
 
-void parameters_t::prob_matation_one_point(double prob)
+void parameters_t::prob_one_point_matation(double prob)
 {
-    _prob_m_one_point = prob;
+    _prob_one_point_mutation = prob;
 }
 
-double parameters_t::prob_mutation_one_point() const
+double parameters_t::prob_one_point_mutation() const
 {
-    return _prob_m_one_point;
+    return _prob_one_point_mutation;
 }
 
-void parameters_t::prob_matation_expansion(double prob)
+void parameters_t::prob_subtree_mutation(double prob)
 {
     
-    _prob_m_expansion = prob;
+    _prob_subtree_mutation = prob;
 }
 
-double parameters_t::prob_mutation_expasion() const
+double parameters_t::prob_subtree_mutation() const
 {
-    return _prob_m_expansion;
-}
-
-void parameters_t::prob_matation_reduction(double prob)
-{
-    _prob_m_reduction = prob;
-}
-
-double parameters_t::prob_mutation_reduction() const
-{
-    return _prob_m_reduction;
+    return _prob_subtree_mutation;
 }
 
 void parameters_t::prob_crossover(double prob)
@@ -310,6 +311,11 @@ void parameters_t::prob_crossover(double prob)
 double parameters_t::prob_crossover() const
 {
     return _prob_crossover;
+}
+
+double parameters_t::prob_reproduction() const
+{
+    return _prob_reproduction;
 }
 
 void parameters_t::selection_method(selection_method_t method)
@@ -359,9 +365,9 @@ void parameters_t::reset()
     _max_depth        = 0;
     _max_generation   = 0;
     _threshold        = 0.0;
-    _prob_m_one_point = 0.0;
-    _prob_m_expansion = 0.0;
-    _prob_m_reduction = 0.0;
+    _prob_one_point_mutation = 0.0;
+    _prob_subtree_mutation = 0.0;
+    _prob_reproduction = 0.0;
     _prob_crossover   = 0.0;
     _selection_method = selection_method_t::roulette_wheel;
     _eletism          = false;
@@ -397,29 +403,6 @@ void gp_operators_t::population_fitness(individuals_t& population,
         double error = fitness(individual.first, input_data, err_m);
         individual.second = error;
     }
-}
-
-double gp_operators_t::population_error(const individuals_t& population,
-                                        const data_t& variables,
-                                        double target,
-                                        error_metric_t error_metric)
-{
-    std::vector<double> individual_error(population.size());
-
-    // calculate error.
-    for (const auto& individual: population)
-        if (error_metric == error_metric_t::mae) {
-            individual_error.push_back(abs(target - individual.second));
-        } else if (error_metric == error_metric_t::mse ||
-                   error_metric == error_metric_t::rmse) {
-            auto e = target - individual.second;
-            individual_error.push_back(e * e);
-        }
-
-    auto b = individual_error.begin(), e = individual_error.end();
-    double avg_error = std::accumulate(b, e, 0) / population.size();
-    auto is_rsme = error_metric == error_metric_t::rmse;
-    return is_rsme ? sqrt(avg_error) : avg_error; // root, if rmse.
 }
 
 individual_t gp_operators_t::full_gen(std::size_t max_depth,
@@ -479,13 +462,26 @@ individual_t gp_operators_t::gen_individual(generation_method_t gm,
 
 individuals_t gp_operators_t::selection_rw(const individuals_t& population)
 {
-    return {};
+    auto b = population.begin(), e = population.end();
+    double total_fitness = std::acumulate(b, e, 0.0, std::plus<double>{});
+
+    double prob = rd_real();
+    
+    // HYPOTHESIS population should be sorted here.
+    for (auto individual: population) {
+        auto individual_prob = individual.second / total_fitness;
+        if (prob < individual_prob)
+            return individual.first;
+        else
+            prob -= individual_prob;
+    }
 }
 
 individuals_t gp_operators_t::selection_t(const individuals_t& population,
-                                         std::size_t k)
+                                          std::size_t k)
 {
-    return sample<typename individuals_t::value_type>(population, k); 
+    auto selected = sample<typename individuals_t::value_type>(population, k);
+    return selected[0].first;
 }
 
 individual_t gp_operators_t::crossover(const individual_t& p1,
@@ -559,12 +555,6 @@ void gp_operators_t::grow_gen_recursive(individual_t& individual,
                                         std::size_t max_depth,
                                         std::size_t point)
 {
-    //if (get_depth(point) > max_depth - 1) {
-        // std::cout << "max depth: " << max_depth << "\ndepth: " << get_depth(point) << std::endl;
-        //std::cout << "stopped at: " << point << std::endl;
-    //  return; // for safety.
-    //}
-    //std::cout << individual.size() << " " << point << std::endl;
     if (max_depth - 1 == get_depth(point)) {
         if (rd_binary()) {
             individual[point]._class = class_t::variable_t;
@@ -642,6 +632,7 @@ void gp_operators_t::clear_subtree(individual_t& individual, std::size_t point)
 
 symbolic_regression_t::symbolic_regression_t(parameters_t params)
 {
+    _parameters = params;
 }
     
 symbolic_regression_t::~symbolic_regression_t()
@@ -650,6 +641,7 @@ symbolic_regression_t::~symbolic_regression_t()
 
 const state_t& symbolic_regression_t::state()
 {
+    return _state;
 }
 
 void symbolic_regression_t::parameters(parameters_t params)
@@ -662,39 +654,112 @@ parameters_t symbolic_regression_t::parameters() const
     return _parameters;
 }
 
-void symbolic_regression_t::initialize_population()
+void symbolic_regression_t::initialize_population(std::size_t n_vars)
 {
     for (std::size_t i = 0; i < _parameters._population_sz; ++i) {
         auto method = _parameters._generation_method;
         auto max_depth = _parameters._max_depth;
         individual_t individual = _gpo.gen_individual(method, max_depth, 1);
-        double fitness = gpo.
         _population.emplace_back(individual, 0.0);
     }
 }
 
-void symbolic_regression_t::next_generation()
+void symbolic_regression_t::next_generation(const training_set_t& data)
 {
+    const parameters_t& params = _parameters; 
+
+    std::size_t pop_sz = params._population_sz;
+    std::size_t n_vars = data[0].first.size(); of pairs of <V, D>
+            
+    gpo.population_fitness(_population, data, params._error_metric);
+
+    double pc = params._prob_crossover, pm = params._prob_mutation;
+    std::size_t crossover_sz    = pc * pop_sz;
+    std::size_t mutation_sz     = pm * pop_sz;
+    std::size_t reproduction_sz = pop_sz - crossover_sz - mutation_sz;
+
+    individuals_t new_pop{};
+    do_crossover(new_pop, crossover_sz);
+    do_mutation(new_pop, n_vars, mutation_sz);
+    do_reproduction(new_pop, reproduction_sz);
     
+    gpo.population_fitness(new_pop, data, _parameters._error_metric);
+    
+    std::sort(new_pop.begin(), new_pop.end(), std::less<double>{});
+
+    if (params._eletism) {
+        new_pop.insert(new_pop.end(), _population.begin(), _population.end());
+
+        std::inplace_merge(new_pop.begin(), new_pop.begin() + pop_sz,
+                           new_pop.end());
+
+        new_pop.erase(new_pop.begin() + pop_sz, new_pop.end());
+    }
+
+    _population = new_pop;
 }
 
 void symbolic_regression_t::report()
 {
 }
 
-individuals_t symbolic_regression_t::do_crossover(std::size_t n_individuals)
+void symbolic_regression_t::do_crossover(individuals_t& individuals,
+                                         std::size_t n)
 {
-    return {};
+    std::size_t max_depth = _parameters._max_depth;    
+    selection_method_t sm = _parameters._selection_method;
+    error_metric_t em = _parameters._error_metric;
+    std::size_t k = 5;
+
+    for (std::size_t i = 0; i < n; ++i) {
+        auto p1 = gpo.selection(_population, sm, k);
+        auto p2 = gpo.selection(_population, sm, k);
+        individual_t offspring = gpo.crossover(p1, p2, max_depth);
+        individuals.emplace_back(offspring, 0.0);
+    }
 }
 
-individuals_t symbolic_regression_t::do_mutation(std::size_t n_individuals)
+void symbolic_regression_t::do_mutation(individual_t& individuals,
+                                        std::size_t n_vars,
+                                        std::size_t n)
 {
-    return {};
+    std::size_t max_depth = _parameters._max_depth;    
+    selection_method_t sm = _parameters._selection_method;
+    
+    double prob_op_mut = _parameters._prob_one_point_mutation;
+    double prob_st_mut = _parameters._prob_subtree_mutation;
+    double prob_total = prob_op_mut + prob_st_mut;
+    double p1 = prob_op_mut / prob_total, p2 = prob_st_mut / prob_total;
+
+    std::size_t op_sz = (std::size_t)p1 * n, sb_sz = n - op_sz;
+    std::size_t k = 5;
+    
+    // one point mutation.
+    for (std::size_t i = 0; i < op_sz; ++i) {
+        auto p = gpo.selection(_population, sm, k);
+        individual_t offspring = gpo.mutation_op(p, n_vars, prob_op_mut);
+        individuals.emplace_back(offspring, 0.0);
+    }
+
+    // subtree mutation.
+    for (std::size_t i = 0; i < sb_sz; ++i) {
+        auto p = gpo.selection(_population, sm, k);
+        individual_t offspring = gpo.mutation_sb(p, n_vars);
+        individuals.emplace_back(offspring, 0.0);
+    }
 }
 
-individuals_t symbolic_regression_t::do_reproduction(std::size_t n_individuals)
+void symbolic_regression_t::do_reproduction(std::individuals_t& individuals,
+                                            std::size_t n)
 {
-    return {};
+    std::size_t max_depth = _parameters._max_depth;    
+    selection_method_t sm = _parameters._selection_method;
+    std::size_t k = 5;
+    
+    for (std::size_t i = 0; i < n; ++i) {
+        individual_t offspring = gpo.selection(_population, sm, k);
+        individuals.emplace_back(offspring, 0.0);
+    }
 }
 
 #include <iostream>

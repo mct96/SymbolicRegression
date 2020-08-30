@@ -91,17 +91,23 @@ class state_t
 public:
     std::size_t generation() const;
     std::size_t population_sz() const;
+
     double max_fitness() const;
     double min_fitness() const;
     double avg_fitness() const;
+    double med_fitness() const;
+    double std_fitness() const;
 
     void reset();
 private:
     std::size_t _generation;
     std::size_t _population_sz;
+
     double _max_fitness;
     double _min_fitness;
     double _avg_fitness;
+    double _med_fitness;
+    double _std_fitness;
 };
 
 // parameters_t are the parameters of the algorithm.
@@ -128,21 +134,20 @@ public:
     double threshold() const;
 
     // probability of one point mutation.
-    void prob_matation_one_point(double prob);
-    double prob_mutation_one_point() const;
+    void prob_one_point_mutation(double prob);
+    double prob_one_point_mutation() const;
 
     // probability of expansion mutation.
-    void prob_matation_expansion(double prob);
-    double prob_mutation_expasion() const;
-
-    // probability of reduction mutation.
-    void prob_matation_reduction(double prob);
-    double prob_mutation_reduction() const;
+    void prob_subtree_mutation(double prob);
+    double prob_subtree_mutation() const;
 
     // probability of crossover.
     void prob_crossover(double prob);
     double prob_crossover() const;
 
+    // prob = 1 - prob_mutation - prob_crossover.
+    double prob_reproduction() const;
+    
     // selection method.
     void selection_method(selection_method_t method);
     selection_method_t selection_method() const;
@@ -167,12 +172,14 @@ private:
     std::size_t _max_generation;
 
     double _threshold;
-    
-    double _prob_m_one_point;
-    double _prob_m_expansion;
-    double _prob_m_reduction;
+
+    double _prob_mutation; // TODO should be equal to the sum:
+    double _prob_one_point_mutation;
+    double _prob_subtree_mutation;
 
     double _prob_crossover;
+
+    double _prob_reproduction;
 
     selection_method_t _selection_method;
     generation_method_t _generation_method;
@@ -194,12 +201,7 @@ public:
                             const training_set_t& input_data,
                             error_metric_t metric);
     
-    // population error.
-    double population_error(const individuals_t& population,
-                            const data_t& variables,
-                            double target,
-                            error_metric_t error_metric = error_metric_t::mae);
-
+    
     // 2 types of individual's generation (growth, full).
     individual_t full_gen(std::size_t max_depth, std::size_t n_vars);
     individual_t grow_gen(std::size_t max_depth, std::size_t n_vars);
@@ -209,8 +211,12 @@ public:
                                 std::size_t n_vars);
 
     // 2 types of selection (roullet wheel, tournement).
-    individuals_t selection_rw(const individuals_t& population);
-    individuals_t selection_t(const individuals_t& population, std::size_t sz);
+    // TODO implement this method.
+    individual_t selection(const individuals_t& population,
+                           selection_method_t sm,
+                           std::size_t k);
+    individual_t selection_rw(const individuals_t& population);
+    individual_t selection_t(const individuals_t& population, std::size_t k);
 
     // crossover: copy subtree.
     individual_t crossover(const individual_t& p1,
@@ -266,13 +272,15 @@ public:
     parameters_t parameters() const;
     
     void initialize_population();
-    void next_generation();
+    void next_generation(const training_set_t& data);
     void report();
     
 private:
-    individuals_t do_crossover(std::size_t n_individuals);
-    individuals_t do_mutation(std::size_t n_individuals);
-    individuals_t do_reproduction(std::size_t n_individuals);
+    void do_crossover(individuals_t& individuals, std::size_t n);
+    void do_mutation(individuals_t& individuals,
+                     std::size_t n_vars,
+                     std::size_t n);
+    void do_reproduction(individuals_t& n_individuals, std::size_t n);
     
     state_t _state;
     individuals_t _population;
