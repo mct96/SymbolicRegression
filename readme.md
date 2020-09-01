@@ -1,4 +1,4 @@
-´´´bash
+```bash
 +-------------------------------------------------------------------------------+                                     
 |                              Symbolic Regression                              |
 |    Author: Matheus Cândido Teixeira.                                          |
@@ -30,4 +30,4 @@
 |   Repository: https://github.com/MatheusCTeixeira/SymbolicRegression          |
 |   E-mail: matheuscandido2009@gmail.com, matheus.candido@dcc.ufmg.br           |
 +-------------------------------------------------------------------------------+
-´´´
+```
