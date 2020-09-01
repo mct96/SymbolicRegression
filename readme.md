@@ -1,3 +1,33 @@
-# Symbolic Regression
-
-Author: Teixeira, Matheus Cândido
+´´´bash
++-------------------------------------------------------------------------------+                                     
+|                              Symbolic Regression                              |
+|    Author: Matheus Cândido Teixeira.                                          |
+|    Date: 31/08/2020                                                           |
+|    Cuiabá - MT                                                                |
+|                                                                               |
++-------------------------------------------------------------------------------+
+|                                     USAGE                                     |
+|                                                                               |
+|./sreg DATASET [-p POP_SZ] [-g GEN_M] [-s SEL_M] [-m PROB_MUT] [-c PROB_CROSS] |
+|               [-M OP_MUT] [-k TORNM] [-e ERR_M] [-f MIN_FITN] [-G MAX_GENENT] |
+|               [-o LOG_OT]                                                     |
++------------------------------------------+------------------------------------+
+|              Parameters                  |        Domain                      |
++------------------------------------------+------------------------------------+
+| DATASET                                  |     Filename (*.CSV)               |
+| -p - population size                     |     [1, ∞]                         |
+| -g - generation method                   |     Full, Grow, RampedHH           |
+| -s - selection method                    |     Roulette, Tournament           |
+| -M - mutation probability                |     [0, 1]                         |
+| -c - crossover probability               |     [0, 1]                         |
+| -o - one point mutation probability      |     [0, 1]                         |
+| -k - k's tournament selections method    |     [1, ∞]                         |
+| -e - error metric                        |     [MAE, MSE, RMSE]               |
+| -f - fitness stop condition              |     (0, ∞]                         |
+| -G - max generation                      |     [1, ∞]                         |
+| -o - log file to output                  |     Filename (*.CSV)               | 
++------------------------------------------+------------------------------------+
+|   Repository: https://github.com/MatheusCTeixeira/SymbolicRegression          |
+|   E-mail: matheuscandido2009@gmail.com, matheus.candido@dcc.ufmg.br           |
++-------------------------------------------------------------------------------+
+´´´
