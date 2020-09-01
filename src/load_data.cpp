@@ -2,7 +2,7 @@
 
 #include <chrono>
 #include <iostream>
-#include "rapidcsv/rapidcsv.h"
+#include "rapidcsv.h"
 
 namespace sr
 {

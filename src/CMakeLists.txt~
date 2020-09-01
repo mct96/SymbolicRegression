@@ -1,0 +1,7 @@
+# Load rapid_csv Library
+add_library(load_data STATIC load_data.cpp)
+target_link_libraries(load_data PRIVATE rapid_csv)
+
+# Link agains sreg
+add_executable(sreg main.cpp symbolic_regression.cpp)
+target_link_libraries(sreg load_data)                    

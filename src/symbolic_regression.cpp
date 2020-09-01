@@ -174,11 +174,6 @@ void print(std::ostream& out, const individual_t& u, std::size_t pos)
     case class_t::variable_t: print_var (out, u, pos); break;
     case class_t::constant_t: print_cons(out, u, pos); break;
     default:
-        //        out << "pos: " << pos << std::endl;
-        //for (auto g: u) {
-        //    out << "(" << (int)g._class << ", " << (int)g._code << ") ";
-        //}
-        //out << std::endl;
         throw std::invalid_argument{"general print"};
     }
 }
@@ -234,7 +229,9 @@ void state_t::reset()
     _avg_fitness   = 0;
 }
 
-parameters_t::parameters_t()
+parameters_t::parameters_t(std::size_t n_vars)
+    :
+    _n_vars{n_vars}
 {
 }
 
@@ -272,6 +269,16 @@ std::size_t parameters_t::max_depth() const
     return _max_depth;
 }
 
+void parameters_t::n_vars(std::size_t n)
+{
+    _n_vars = n;
+}
+
+std::size_t parameters_t::n_vars() const
+{
+    return _n_vars;
+}
+
 void parameters_t::threshold(double value)
 {
     _threshold = value;
@@ -282,25 +289,24 @@ double parameters_t::threshold() const
     return _threshold;
 }
 
-void parameters_t::prob_one_point_matation(double prob)
+void parameters_t::prob_mutation(double prob)
 {
-    _prob_one_point_mutation = prob;
+    _prob_mutation = prob;
+}
+
+double parameters_t::prob_mutation() const
+{
+    return _prob_mutation;
+}
+
+void parameters_t::prob_one_point_mutation(double prob)
+{
+    _prob_op_mutation = prob;
 }
 
 double parameters_t::prob_one_point_mutation() const
 {
-    return _prob_one_point_mutation;
-}
-
-void parameters_t::prob_subtree_mutation(double prob)
-{
-    
-    _prob_subtree_mutation = prob;
-}
-
-double parameters_t::prob_subtree_mutation() const
-{
-    return _prob_subtree_mutation;
+    return _prob_op_mutation;
 }
 
 void parameters_t::prob_crossover(double prob)
@@ -326,6 +332,16 @@ void parameters_t::selection_method(selection_method_t method)
 selection_method_t parameters_t::selection_method() const
 {
     return _selection_method;
+}
+
+void parameters_t::tournament(std::size_t k)
+{
+    _k = k;
+}
+
+std::size_t parameters_t::tournament() const
+{
+    return _k;
 }
 
 void parameters_t::generation_method(generation_method_t method)
@@ -361,16 +377,15 @@ bool parameters_t::eletism() const
 
 void parameters_t::reset()
 {
-    _population_sz    = 0;
-    _max_depth        = 0;
-    _max_generation   = 0;
-    _threshold        = 0.0;
-    _prob_one_point_mutation = 0.0;
-    _prob_subtree_mutation = 0.0;
+    _population_sz     = 0;
+    _max_depth         = 0;
+    _max_generation    = 0;
+    _threshold         = 0.0;
+    _prob_mutation     = 0.0;
     _prob_reproduction = 0.0;
-    _prob_crossover   = 0.0;
-    _selection_method = selection_method_t::roulette_wheel;
-    _eletism          = false;
+    _prob_crossover    = 0.0;
+    _selection_method  = selection_method_t::roulette_wheel;
+    _eletism           = false;
 }
 
 double gp_operators_t::fitness(const individual_t& individual,
@@ -442,9 +457,6 @@ individual_t gp_operators_t::grow_gen(std::size_t max_depth,
     individual_t new_individual(pow(2, max_depth) - 1);
     clear_subtree(new_individual, 0);
     grow_gen_recursive(new_individual, n_vars, max_depth, 0);
-    //   for (auto g: new_individual)
-    //  std::cout << (int)g._class << " ";
-    //    std::cout << std::endl;
     return new_individual;
 }
 
@@ -452,18 +464,40 @@ individual_t gp_operators_t::gen_individual(generation_method_t gm,
                                             std::size_t max_depth,
                                             std::size_t n_vars)
 {
-    if (gm == generation_method_t::full)
+    auto gm_f = generation_method_t::full, gm_g = generation_method_t::grow;
+    if (gm == gm_f)
         return full_gen(max_depth, n_vars);
-    else if (gm == generation_method_t::grow)
+    else if (gm == gm_g)
         return grow_gen(max_depth, n_vars);
-
+    else if (gm == generation_method_t::ramped_hh)
+        return gen_individual((rd_value() < 0.5) ? gm_f : gm_g,
+                              max_depth,
+                              n_vars);
     return {};
 }
 
-individuals_t gp_operators_t::selection_rw(const individuals_t& population)
+individual_t gp_operators_t::selection(const individuals_t& population,
+                                       selection_method_t sm,
+                                       std::size_t k)
+{
+    auto sm_rw = selection_method_t::roulette_wheel,
+         sm_t  = selection_method_t::tournament;
+
+    if (sm == sm_rw)
+        return selection_rw(population);
+    else if (sm == sm_t)
+        return selection_t(population, k);
+    else
+        throw std::invalid_argument{"gp_operators_t::selection"};
+}
+           
+            
+
+individual_t gp_operators_t::selection_rw(const individuals_t& population)
 {
     auto b = population.begin(), e = population.end();
-    double total_fitness = std::acumulate(b, e, 0.0, std::plus<double>{});
+    auto sum_callable = [](auto acc, auto v) { return acc + v.second; };
+    double total_fitness = std::accumulate(b, e, 0.0, sum_callable);
 
     double prob = rd_real();
     
@@ -475,9 +509,11 @@ individuals_t gp_operators_t::selection_rw(const individuals_t& population)
         else
             prob -= individual_prob;
     }
+
+    throw std::invalid_argument{"gp_operators_t::selection_rw"};
 }
 
-individuals_t gp_operators_t::selection_t(const individuals_t& population,
+individual_t gp_operators_t::selection_t(const individuals_t& population,
                                           std::size_t k)
 {
     auto selected = sample<typename individuals_t::value_type>(population, k);
@@ -567,12 +603,24 @@ void gp_operators_t::grow_gen_recursive(individual_t& individual,
         if (rd_binary()) {
             individual[point]._class = class_t::function_t;
             individual[point]._code = rd_operator(n_functions);
-            grow_gen_recursive(individual, n_vars, max_depth, lchild(point));
+            if (rd_binary())
+                individual[lchild(point)] = rd_terminal(n_vars);
+            else
+                grow_gen_recursive(individual, n_vars, max_depth,
+                                   lchild(point));
         } else {
             individual[point]._class = class_t::operator_t;
             individual[point]._code = rd_operator(n_operators);
-            grow_gen_recursive(individual, n_vars, max_depth, lchild(point));
-            grow_gen_recursive(individual, n_vars, max_depth, rchild(point));
+            if (rd_binary())
+                individual[lchild(point)] = rd_terminal(n_vars);
+            else
+                grow_gen_recursive(individual, n_vars, max_depth,
+                                   lchild(point));
+            if (rd_binary())
+                individual[rchild(point)] = rd_terminal(n_vars);
+            else
+                grow_gen_recursive(individual, n_vars, max_depth,
+                                   rchild(point));
         }
     }
 }
@@ -630,18 +678,23 @@ void gp_operators_t::clear_subtree(individual_t& individual, std::size_t point)
     clear_subtree(individual, rchild(point));
 }
 
-symbolic_regression_t::symbolic_regression_t(parameters_t params)
+symbolic_regression_t::symbolic_regression_t(parameters_t params,
+                                             const training_set_t& data)
+    :
+    _parameters{params},
+    _input_data{data}
 {
-    _parameters = params;
+
 }
     
 symbolic_regression_t::~symbolic_regression_t()
 {
+    //    report();
 }
 
 const state_t& symbolic_regression_t::state()
 {
-    return _state;
+    return _state.back();
 }
 
 void symbolic_regression_t::parameters(parameters_t params)
@@ -654,25 +707,32 @@ parameters_t symbolic_regression_t::parameters() const
     return _parameters;
 }
 
-void symbolic_regression_t::initialize_population(std::size_t n_vars)
+void symbolic_regression_t::initialize_population()
 {
-    for (std::size_t i = 0; i < _parameters._population_sz; ++i) {
-        auto method = _parameters._generation_method;
-        auto max_depth = _parameters._max_depth;
-        individual_t individual = _gpo.gen_individual(method, max_depth, 1);
-        _population.emplace_back(individual, 0.0);
+    auto params = _parameters;
+    auto em = params._error_metric;
+    auto method = params._generation_method;    
+    auto max_depth = params._max_depth;
+    auto n_vars = params._n_vars;
+    
+    for (std::size_t i = 0; i < params._population_sz; ++i) {
+        auto individual = _gpo.gen_individual(method, max_depth, n_vars);
+        auto fitness = _gpo.fitness(individual, _input_data, em); 
+        _population.emplace_back(individual, fitness);
     }
+
+    auto b = _population.begin(), e = _population.end();
+    std::sort(b, e, [](auto a, auto b) {return a.second < b.second;});
+
+    update_state();
 }
 
-void symbolic_regression_t::next_generation(const training_set_t& data)
+void symbolic_regression_t::next_generation()
 {
-    const parameters_t& params = _parameters; 
-
-    std::size_t pop_sz = params._population_sz;
-    std::size_t n_vars = data[0].first.size(); of pairs of <V, D>
-            
-    gpo.population_fitness(_population, data, params._error_metric);
-
+    auto params = _parameters; 
+    auto em = params._error_metric;
+    auto pop_sz = params._population_sz;
+    
     double pc = params._prob_crossover, pm = params._prob_mutation;
     std::size_t crossover_sz    = pc * pop_sz;
     std::size_t mutation_sz     = pm * pop_sz;
@@ -680,117 +740,129 @@ void symbolic_regression_t::next_generation(const training_set_t& data)
 
     individuals_t new_pop{};
     do_crossover(new_pop, crossover_sz);
-    do_mutation(new_pop, n_vars, mutation_sz);
-    do_reproduction(new_pop, reproduction_sz);
-    
-    gpo.population_fitness(new_pop, data, _parameters._error_metric);
-    
-    std::sort(new_pop.begin(), new_pop.end(), std::less<double>{});
+    do_mutation(new_pop, mutation_sz);
+    do_reproduction(new_pop, reproduction_sz);    
+    _gpo.population_fitness(new_pop, _input_data, em);
+
+    using Tp = typename individuals_t::value_type;
+    auto cmp_less = [](Tp a, Tp b) { return a.second < b.second; };
+    std::sort(new_pop.begin(), new_pop.end(), cmp_less);
 
     if (params._eletism) {
         new_pop.insert(new_pop.end(), _population.begin(), _population.end());
 
-        std::inplace_merge(new_pop.begin(), new_pop.begin() + pop_sz,
-                           new_pop.end());
+        auto b = new_pop.begin(), e = new_pop.end();
+        std::inplace_merge(b, b + pop_sz, e, cmp_less);
 
-        new_pop.erase(new_pop.begin() + pop_sz, new_pop.end());
+        b = new_pop.begin(), e = new_pop.end();
+        new_pop.erase(b + pop_sz, e);
     }
 
     _population = new_pop;
+    update_state();
 }
 
 void symbolic_regression_t::report()
 {
+    for (auto individual: _population)
+        std::cout << individual.first << "  " << individual.second << std::endl;
 }
+
+void symbolic_regression_t::update_state()
+{
+    std::vector<double> all_fitness{};
+    for (auto individual: _population)
+        all_fitness.push_back(individual.second);
+
+    state_t current_state{};
+    // TODO calc statistics.
+    _state.push_back(current_state);
+}
+
 
 void symbolic_regression_t::do_crossover(individuals_t& individuals,
                                          std::size_t n)
 {
-    std::size_t max_depth = _parameters._max_depth;    
-    selection_method_t sm = _parameters._selection_method;
-    error_metric_t em = _parameters._error_metric;
-    std::size_t k = 5;
+    auto params = _parameters;
+    std::size_t max_depth = params._max_depth;    
+    selection_method_t sm = params._selection_method;
+    std::size_t k = params._k;
+    error_metric_t em = params._error_metric;
 
     for (std::size_t i = 0; i < n; ++i) {
-        auto p1 = gpo.selection(_population, sm, k);
-        auto p2 = gpo.selection(_population, sm, k);
-        individual_t offspring = gpo.crossover(p1, p2, max_depth);
+        auto p1 = _gpo.selection(_population, sm, k);
+        auto p2 = _gpo.selection(_population, sm, k);
+        individual_t offspring = _gpo.crossover(p1, p2, max_depth);
         individuals.emplace_back(offspring, 0.0);
     }
 }
 
-void symbolic_regression_t::do_mutation(individual_t& individuals,
-                                        std::size_t n_vars,
+void symbolic_regression_t::do_mutation(individuals_t& individuals,
                                         std::size_t n)
 {
-    std::size_t max_depth = _parameters._max_depth;    
-    selection_method_t sm = _parameters._selection_method;
+    auto params = _parameters;
+    auto max_depth = params._max_depth;
+    auto n_vars = params._n_vars;
+    auto sm = params._selection_method;
+    auto k = params._k;
+    auto em = params._error_metric;
+    auto prob_op_mut = params._prob_op_mutation;
+    std::size_t op_sz = (std::size_t)0.5 * n, sb_sz = n - op_sz;
     
-    double prob_op_mut = _parameters._prob_one_point_mutation;
-    double prob_st_mut = _parameters._prob_subtree_mutation;
-    double prob_total = prob_op_mut + prob_st_mut;
-    double p1 = prob_op_mut / prob_total, p2 = prob_st_mut / prob_total;
-
-    std::size_t op_sz = (std::size_t)p1 * n, sb_sz = n - op_sz;
-    std::size_t k = 5;
-    
-    // one point mutation.
     for (std::size_t i = 0; i < op_sz; ++i) {
-        auto p = gpo.selection(_population, sm, k);
-        individual_t offspring = gpo.mutation_op(p, n_vars, prob_op_mut);
-        individuals.emplace_back(offspring, 0.0);
+        individual_t p = _gpo.selection(_population, sm, k);
+        individual_t offspring = _gpo.mutation_op(p, n_vars, prob_op_mut);
+        double fitness = _gpo.fitness(offspring, _input_data, em);
+        individuals.emplace_back(offspring, fitness);
     }
 
-    // subtree mutation.
     for (std::size_t i = 0; i < sb_sz; ++i) {
-        auto p = gpo.selection(_population, sm, k);
-        individual_t offspring = gpo.mutation_sb(p, n_vars);
-        individuals.emplace_back(offspring, 0.0);
+        individual_t p = _gpo.selection(_population, sm, k);
+        individual_t offspring = _gpo.mutation_sb(p, n_vars);
+        double fitness = _gpo.fitness(offspring, _input_data, em);
+        individuals.emplace_back(offspring, fitness);
     }
 }
 
-void symbolic_regression_t::do_reproduction(std::individuals_t& individuals,
+void symbolic_regression_t::do_reproduction(individuals_t& individuals,
                                             std::size_t n)
 {
-    std::size_t max_depth = _parameters._max_depth;    
-    selection_method_t sm = _parameters._selection_method;
-    std::size_t k = 5;
+    auto params = _parameters;
+    auto sm = params._selection_method;
+    auto k = params._k;
+    auto em = params._error_metric;
     
     for (std::size_t i = 0; i < n; ++i) {
-        individual_t offspring = gpo.selection(_population, sm, k);
-        individuals.emplace_back(offspring, 0.0);
+        individual_t offspring = _gpo.selection(_population, sm, k);
+        double fitness = _gpo.fitness(offspring, _input_data, em);
+        individuals.emplace_back(offspring, fitness);
     }
 }
 
-#include <iostream>
-#include <iomanip>
-using namespace std;
-int main() {
-
-    gp_operators_t gpo{};
-    individual_t individual{};
-
-    individual = gpo.gen_individual(generation_method_t::grow, 4, 5);
-
-    training_set_t training{};
-    for (double v = -1; v < 1; v += 0.15) 
-        training.emplace_back(std::vector<double>{v}, v+1/v+rd_value()/10);
-        
-    individuals_t population{};    
-    for (int i = 0; i < 7000; ++i) {
-        auto max_depth = std::max(2, rd_integer(15));
-        auto method = (generation_method_t)rd_binary();
-        population.emplace_back(gpo.gen_individual(method, max_depth, 1), 0);
-    }
-
-    gpo.population_fitness(population, training, error_metric_t::mse);
-
-    auto b = population.begin(), e = population.end();
-    std::sort(b, e, [](auto l, auto r) { return l.second < r.second; });
-
-    for (int i = 0; i < 5; ++i) {
-        cout << "f(x) = " << population[i].first << "  error: " << ((double)population[i].second) << endl;
-        
-    }
-    return 0;
-}
+// #include <iostream>
+// #include <iomanip>
+// using namespace std;
+// int main() {
+    
+//     training_set_t training{};
+//     for (double x = -1; x < 1; x += 0.15)  {
+//         for (double y = -1; y < 1; y += 0.15) {
+//             training.emplace_back(std::vector<double>{x, y},
+//                                   cos(x)*x + sin(y)/2 + x * y);
+//         }
+//     }
+       
+//     parameters_t params{2};
+//     params.selection_method(selection_method_t::tournament);
+//     params.error_metric(error_metric_t::rmse);
+//     params.tournament(5);
+//     params.max_depth(5);
+//     params.eletism(true);
+    
+//     symbolic_regression_t sm{params, training};
+//     sm.initialize_population();
+//     for (auto g = 0; g < 30; ++g)
+//         sm.next_generation();
+//     sm.report();
+//     return 0;
+// }

@@ -1,0 +1,6 @@
+
+add_library(rapidcsv)
+target_include_directories(rapidcsv INTERFACE rapidcsv/)
+
+add_library(argh)
+target_include_directories(argh INTERFACE argh/)

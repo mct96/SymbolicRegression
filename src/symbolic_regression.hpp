@@ -1,4 +1,4 @@
-
+#pragma once
 
 #include <vector>
 #include <cmath>
@@ -25,7 +25,7 @@ using data_t = std::vector<double>;
 using training_set_t = std::vector<std::pair<std::vector<double>, double>>;
 
 enum class selection_method_t{ roulette_wheel, tournament };
-enum class generation_method_t{ full, grow };
+enum class generation_method_t{ full, grow, ramped_hh };
 enum class error_metric_t { mse, rmse, mae };
 
 // consteval for C++ 20.
@@ -113,8 +113,9 @@ private:
 // parameters_t are the parameters of the algorithm.
 class parameters_t
 {
+    friend class symbolic_regression_t;
 public:
-    parameters_t();
+    parameters_t(std::size_t n_vars);
     ~parameters_t();
 
     // size of population.
@@ -129,18 +130,20 @@ public:
     void max_depth(std::size_t value);
     std::size_t max_depth() const;
 
+    void n_vars(std::size_t n);
+    std::size_t n_vars() const;
+
     // tolerable error: [0, 1].
     void threshold(double value);
     double threshold() const;
 
     // probability of one point mutation.
+    void prob_mutation(double prob);
+    double prob_mutation() const;
+
     void prob_one_point_mutation(double prob);
     double prob_one_point_mutation() const;
-
-    // probability of expansion mutation.
-    void prob_subtree_mutation(double prob);
-    double prob_subtree_mutation() const;
-
+    
     // probability of crossover.
     void prob_crossover(double prob);
     double prob_crossover() const;
@@ -151,7 +154,9 @@ public:
     // selection method.
     void selection_method(selection_method_t method);
     selection_method_t selection_method() const;
-
+    void tournament(std::size_t k);
+    std::size_t tournament() const;
+    
     // generation method.
     void generation_method(generation_method_t method);
     generation_method_t generation_method() const;
@@ -167,25 +172,26 @@ public:
     void reset();
     
 private:
-    std::size_t _population_sz;
-    std::size_t _max_depth;
-    std::size_t _max_generation;
+    std::size_t _population_sz = 3000;
+    std::size_t _max_depth = 5;
+    std::size_t _max_generation = 1000;
+    std::size_t _n_vars;
 
-    double _threshold;
+    double _threshold = 1E-3;
 
-    double _prob_mutation; // TODO should be equal to the sum:
-    double _prob_one_point_mutation;
-    double _prob_subtree_mutation;
+    double _prob_mutation = .15;
+    double _prob_op_mutation = .3;
+    double _prob_crossover = .8;
 
-    double _prob_crossover;
+    double _prob_reproduction = .05;
 
-    double _prob_reproduction;
+    selection_method_t _selection_method = selection_method_t::roulette_wheel;
+    std::size_t _k = 10;
+    
+    generation_method_t _generation_method = generation_method_t::ramped_hh;
+    error_metric_t _error_metric = error_metric_t::mae;
 
-    selection_method_t _selection_method;
-    generation_method_t _generation_method;
-    error_metric_t _error_metric;
-
-    bool _eletism;
+    bool _eletism = true;
 };
 
 // gp_operators_t implementation of operators for gp.
@@ -201,7 +207,6 @@ public:
                             const training_set_t& input_data,
                             error_metric_t metric);
     
-    
     // 2 types of individual's generation (growth, full).
     individual_t full_gen(std::size_t max_depth, std::size_t n_vars);
     individual_t grow_gen(std::size_t max_depth, std::size_t n_vars);
@@ -211,21 +216,19 @@ public:
                                 std::size_t n_vars);
 
     // 2 types of selection (roullet wheel, tournement).
-    // TODO implement this method.
     individual_t selection(const individuals_t& population,
                            selection_method_t sm,
                            std::size_t k);
+
     individual_t selection_rw(const individuals_t& population);
     individual_t selection_t(const individuals_t& population, std::size_t k);
 
-    // crossover: copy subtree.
+    
     individual_t crossover(const individual_t& p1,
                            const individual_t& p2,
                            std::size_t max_depth);
 
-    // 3 types of mutation (one point, expansion, reduction). Note: one point
-    // mutation change the code not the class, except for variable that can
-    // exchange with constant.
+    
     individual_t mutation_op(const individual_t& individual,
                              std::size_t n_vars,
                              double prob);
@@ -233,12 +236,6 @@ public:
     individual_t mutation_sb(const individual_t& individual,
                              std::size_t n_vars);
 
-    //individual_t mutation_ex(const individual_t& individual,
-    //                         std::size_t n_vars);
-    //individual_t mutation_rd(const individual_t& individual,
-    //                         std::size_t n_vars);
-
-    // reproduction choose one individual from population.
     individual_t reproduction(const individuals_t& population,
                               selection_method_t sm);
 
@@ -263,7 +260,9 @@ private:
 class symbolic_regression_t
 {
 public:
-    symbolic_regression_t(parameters_t params);
+    symbolic_regression_t(parameters_t params,
+                          const training_set_t& data);
+    
     ~symbolic_regression_t();
 
     const state_t& state();
@@ -272,20 +271,23 @@ public:
     parameters_t parameters() const;
     
     void initialize_population();
-    void next_generation(const training_set_t& data);
+    void next_generation();
     void report();
+    void update_state();
     
 private:
     void do_crossover(individuals_t& individuals, std::size_t n);
-    void do_mutation(individuals_t& individuals,
-                     std::size_t n_vars,
-                     std::size_t n);
+
+    void do_mutation(individuals_t& individuals, std::size_t n);
+
     void do_reproduction(individuals_t& n_individuals, std::size_t n);
     
-    state_t _state;
+    std::vector<state_t> _state;
     individuals_t _population;
-    parameters_t _parameters;
+    parameters_t  _parameters;
     gp_operators_t _gpo;
+
+    const training_set_t& _input_data;
 };
 
 //}

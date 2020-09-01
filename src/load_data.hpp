@@ -10,6 +10,6 @@
 using data_t = std::vector<double>;
 using Xy = std::pair<data_t, double>;
 
-std::vector<Xy> load(std::string fileaname);
+std::vector<Xy> load(std::string filename);
 
 //}
