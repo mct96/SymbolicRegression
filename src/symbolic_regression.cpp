@@ -11,6 +11,23 @@
 //namespace sr
 //{
 
+std::size_t get_depth(std::size_t pos) {
+    std::size_t lvl = 0, accum = 0;
+    for (std::size_t i = 0; accum < pos; ++i, accum += pow(2, i)) 
+        if (accum < pos) ++lvl;
+
+    return lvl;        
+}
+
+std::size_t get_max_depth(const individual_t& pos) {
+    for (std::size_t i = pos.size() - 1; i >= 0; --i) {
+        if (pos[i]._class != class_t::nill_t)
+            return get_depth(i);
+    }
+    
+    return -1; // 0xFFFFFFFF
+}
+
 // safe operators and functions.
 double stan(double x)
 {

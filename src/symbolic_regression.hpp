@@ -34,13 +34,7 @@ inline std::size_t rchild(std::size_t pos) { return 2 * pos + 2; };
 inline std::size_t parent(std::size_t pos) {
     return static_cast<int>((pos + 1)/2 - 1); };
 
-std::size_t get_depth(std::size_t pos) {
-    std::size_t lvl = 0, accum = 0;
-    for (std::size_t i = 0; accum < pos; ++i, accum += pow(2, i)) 
-        if (accum < pos) ++lvl;
-
-    return lvl;        
-}
+std::size_t get_depth(std::size_t pos);
 
 // the eval_* functions are responsable for evaluate a tree.
 double eval_function(gene_t func, double x);
@@ -74,14 +68,7 @@ struct gene_t {
     union { unsigned short _code = 0; float _value; };
 };
 
-std::size_t get_max_depth(const individual_t& pos) {
-    for (std::size_t i = pos.size() - 1; i >= 0; --i) {
-        if (pos[i]._class != class_t::nill_t)
-            return get_depth(i);
-    }
-    
-    return -1; // 0xFFFFFFFF
-}
+std::size_t get_max_depth(const individual_t& pos);
 
 // state_t class is used to show the state of convergence of the algorithm.
 // its purpouse is to plot the progress in realtime.

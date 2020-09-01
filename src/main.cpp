@@ -18,11 +18,32 @@ void usage_message() {
 
 int main(int argc, char **argv)
 {
-    if (argc <= 1) {
+    if (argc <= 1 && 0) {
         usage_message();
         return 1;
     }
 
+    training_set_t training{};
+
+    for (double x = -1; x < 1; x += 0.15)  {
+        for (double y = -1; y < 1; y += 0.15) {
+            training.emplace_back(std::vector<double>{x, y},
+                                  cos(x)*x + sin(y)/2 + x * y);
+        }
+    }
+       
+    parameters_t params{2};
+    params.selection_method(selection_method_t::tournament);
+    params.error_metric(error_metric_t::rmse);
+    params.tournament(5);
+    params.max_depth(5);
+    params.eletism(true);
+    
+    symbolic_regression_t sm{params, training};
+    sm.initialize_population();
+    for (auto g = 0; g < 30; ++g)
+        sm.next_generation();
+    sm.report();
     
     return 0;
 }
