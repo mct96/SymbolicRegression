@@ -4,6 +4,7 @@
 #include <random>
 #include <utility>
 #include <iterator>
+#include <string>
 
 constexpr int seeds_v[] = {7, 77, 777, 7777, 77777};
 std::seed_seq seeds(seeds_v, seeds_v + 5);
@@ -60,3 +61,7 @@ inline int rd_binary()
 {
     return rd_integer(2);
 }
+
+
+
+

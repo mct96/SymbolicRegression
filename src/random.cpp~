@@ -1,8 +1,46 @@
 #include "random.hpp"
-#include <iostream>
 
-using namespace std;
+random_t::random_t(std::vector<int> seeds)
+    :
+    _seeds{seeds},
+    _gen{std::seed_seq{_seeds.begin(), _seeds.end()}
+{
+}
 
-int main() {
-    for (int i = 0; i < 10; ++i)
-        cout << rd_function(10) << endl;
+std::size_t random_t::variable(std::size_t low, std::size_t high) const
+{
+    std::uniform_int_distribution<std::size_t> uniform{low, high};
+    return uniform(_gen);
+}
+
+std::size_t random_t::binary() const
+{
+    std::uniform_int_distribution<std::size_t> uniform{0, 1};
+    return uniform(_gen);
+}
+
+std::size_t random_t::function(std::size_t low, std::size_t high) const
+{
+}
+
+bool random_t::choose() const
+{
+    return 
+}
+
+int random_t::real(double m1, double m2, ) const
+{
+    std::normal_distribution<> dist{choose() ? from : to, };
+    return dist(gen);
+}
+
+random_t::operator std::string() const
+{
+    
+}
+
+template <typename T>
+std::vector<T> random_t::sample(std::vector<T> population)
+{
+    
+}
