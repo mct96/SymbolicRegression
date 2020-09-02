@@ -4,6 +4,8 @@
 #include <cmath>
 #include <iostream>
 
+#include "random.hpp"
+
 //namespace sr
 //{
 
@@ -85,7 +87,8 @@ public:
     double med_fitness() const;
     double std_fitness() const;
 
-    // TODO add population, best and worst individual.
+    operator std::string() const;
+    
     void reset();
 private:
     std::size_t _generation;
@@ -103,9 +106,11 @@ class parameters_t
 {
     friend class symbolic_regression_t;
 public:
-    parameters_t(std::size_t n_vars);
+    parameters_t(std::size_t n_vars, std::vector<int> seeds);
     ~parameters_t();
 
+    operator std::string() const;
+    
     // size of population.
     void population_sz(std::size_t value);
     std::size_t population_sz() const;
@@ -160,6 +165,8 @@ public:
     void reset();
     
 private:
+    std::vector<int> _seeds;
+    
     std::size_t _population_sz = 3000;
     std::size_t _max_depth = 5;
     std::size_t _max_generation = 1000;
@@ -180,12 +187,18 @@ private:
     error_metric_t _error_metric = error_metric_t::mae;
 
     bool _eletism = true;
+
+    std::string selec_met_str() const;
+    std::string gen_met_str() const;
+    std::string err_met_str() const;
 };
 
 // gp_operators_t implementation of operators for gp.
 class gp_operators_t
 {
 public:
+    gp_operators_t(std::vector<int> seeds);
+    
     // eval fitness. (used to sort).
     double fitness(const individual_t& individual,
                    const training_set_t& input_data,
@@ -243,6 +256,8 @@ private:
                       std::size_t dst_point);
 
     void clear_subtree(individual_t& individual, std::size_t point);
+
+    random_t _rd;
 };
     
 class symbolic_regression_t
@@ -257,20 +272,27 @@ public:
 
     void parameters(parameters_t params);
     parameters_t parameters() const;
-    
-    void initialize_population();
-    void next_generation();
+            
     void report();
+
     void update_state();
+
+    void train(double *cur_fitness = nullptr);
     
 private:
+    void initialize_population();
+    double next_generation();
+
+    
     void do_crossover(individuals_t& individuals, std::size_t n);
 
     void do_mutation(individuals_t& individuals, std::size_t n);
 
     void do_reproduction(individuals_t& n_individuals, std::size_t n);
+
+    bool check_stop_condition() const;
     
-    std::vector<state_t> _state;
+    std::vector<state_t> _states;
     individuals_t _population;
     parameters_t  _parameters;
     gp_operators_t _gpo;

@@ -16,8 +16,6 @@ std::vector<Xy> load_data(std::string filename)
     
     Document doc{filename, LabelParams{-1, -1}, SeparatorParams{'\t'}};
     auto rows = doc.GetRowCount(), cols = doc.GetColumnCount();
-    cout << rows << "×" << cols << endl;
-    cout << "starting read." << endl;
 
     steady_clock::time_point start = steady_clock::now();
 
@@ -31,7 +29,7 @@ std::vector<Xy> load_data(std::string filename)
 
     steady_clock::time_point end = steady_clock::now();
     auto dur =  duration_cast<seconds>(end - start);
-    cout << "finished [" << dur.count() << "s]" << endl;
+
 
     return output;
 }

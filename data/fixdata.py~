@@ -1,0 +1,4 @@
+import pandas as pd
+
+data = pd.from_csv(open("SR_circle.txt", "rt", encoding="utf-8"))
+print(data)
