@@ -1,8 +1,9 @@
-#include "symbolic_regression.hpp"
-
 #include <iostream>
 #include <fstream>
 #include <string>
+
+#include "symbolic_regression.hpp"
+#include "load_data.hpp"
 
 void usage_message() {
     std::ifstream ofs{"../docs/usage.txt"};
@@ -32,16 +33,23 @@ int main(int argc, char **argv)
         }
     }
        
-    parameters_t params{2};
+    auto data = sr::load_data("../../data/concrete.txt");
+
+    for (int i = 0; i < data.size(); ++i)
+        if (i % 5 == 0)
+            training.push_back(data[i]);
+        
+    parameters_t params{8};
     params.selection_method(selection_method_t::tournament);
-    params.error_metric(error_metric_t::rmse);
-    params.tournament(5);
-    params.max_depth(5);
-    params.eletism(true);
+    params.error_metric(error_metric_t::mae);
+    params.tournament(12);
+    params.max_depth(7);
+    params.prob_one_point_mutation(0.2);
+    params.eletism(false);
     
     symbolic_regression_t sm{params, training};
     sm.initialize_population();
-    for (auto g = 0; g < 30; ++g)
+    for (auto g = 0; g < 50; ++g)
         sm.next_generation();
     sm.report();
     

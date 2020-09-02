@@ -1,0 +1,20 @@
+#include "statistics.hpp"
+
+#include <cmath>
+#include <algorithm>
+
+statistics_t::statistics_t(const std::vector<double>& values)
+    :
+    _values{values}
+{
+    update_values();
+}
+
+void statistics_t::update_values()
+{
+    auto b = _values.begin(), e = _values.end();
+    _total = std::accumalate(b, e, 0.0);
+    _mean = _total / _values.size();
+    _max = std::max_element(b, e);
+    _min = std::min_element(b, e);
+}

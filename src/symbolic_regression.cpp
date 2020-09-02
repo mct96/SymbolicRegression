@@ -1,5 +1,6 @@
 #include "symbolic_regression.hpp"
 #include "random.hpp"
+#include "statistics.hpp"
 
 #include <functional>
 #include <cmath>
@@ -31,25 +32,25 @@ std::size_t get_max_depth(const individual_t& pos) {
 // safe operators and functions.
 double stan(double x)
 {
-    if (cos(x) == 0)
-        x += 0.01;
+    if (std::abs(cos(x)) < 0.1)
+        return sin(x)/cos(0.1);
 
     return tan(x);
 }
 
 double slog10(double x)
 {
-    return log10(std::max(0.00001, x));
+    return log10(std::max(0.01, x));
 }
 
 double slog(double x)
 {
-    return log(std::max(0.00001, x));
+    return log(std::max(0.01, x));
 }
 
 double div(double a, double b)
 {
-    if (b == 0) return 1000 * a;
+    if (std::abs(b) < 0.001) return 1000 * a;
     return a / b;
 }
 
@@ -417,13 +418,14 @@ double gp_operators_t::fitness(const individual_t& individual,
         double y = xy.second;
         double y_pred = eval(individual, 0, x);
         double dy = y - y_pred;
-        
+
+        if (std::isnan(y_pred)) throw std::logic_error{"NAN"};
         error.push_back(err_m == error_metric_t::mae ? fabs(dy) : dy * dy);
     }
 
     auto b = error.begin(), e = error.end();
     double me = std::accumulate(b, e, 0.0)/error.size(); // mean error.
-
+    
     return (err_m == error_metric_t::rmse) ? sqrt(me) : me; 
 }
 
@@ -791,9 +793,15 @@ void symbolic_regression_t::update_state()
     for (auto individual: _population)
         all_fitness.push_back(individual.second);
 
-    state_t current_state{};
-    // TODO calc statistics.
-    _state.push_back(current_state);
+    statistics_t stats{all_fitness};
+    std::cout << static_cast<std::string>(stats) << std::endl;
+    state_t cur_state{};
+    cur_state._max_fitness = stats.max();
+    cur_state._min_fitness = stats.min();
+    cur_state._avg_fitness = stats.mean();
+    cur_state._med_fitness = stats.median();
+    cur_state._std_fitness = stats.stddev();
+    _state.push_back(cur_state);
 }
 
 
@@ -855,31 +863,3 @@ void symbolic_regression_t::do_reproduction(individuals_t& individuals,
         individuals.emplace_back(offspring, fitness);
     }
 }
-
-// #include <iostream>
-// #include <iomanip>
-// using namespace std;
-// int main() {
-    
-//     training_set_t training{};
-//     for (double x = -1; x < 1; x += 0.15)  {
-//         for (double y = -1; y < 1; y += 0.15) {
-//             training.emplace_back(std::vector<double>{x, y},
-//                                   cos(x)*x + sin(y)/2 + x * y);
-//         }
-//     }
-       
-//     parameters_t params{2};
-//     params.selection_method(selection_method_t::tournament);
-//     params.error_metric(error_metric_t::rmse);
-//     params.tournament(5);
-//     params.max_depth(5);
-//     params.eletism(true);
-    
-//     symbolic_regression_t sm{params, training};
-//     sm.initialize_population();
-//     for (auto g = 0; g < 30; ++g)
-//         sm.next_generation();
-//     sm.report();
-//     return 0;
-// }

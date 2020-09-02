@@ -74,7 +74,7 @@ std::size_t get_max_depth(const individual_t& pos);
 // its purpouse is to plot the progress in realtime.
 class state_t
 {
-    friend class symbolic_regression;
+    friend class symbolic_regression_t;
 public:
     std::size_t generation() const;
     std::size_t population_sz() const;
@@ -85,6 +85,7 @@ public:
     double med_fitness() const;
     double std_fitness() const;
 
+    // TODO add population, best and worst individual.
     void reset();
 private:
     std::size_t _generation;

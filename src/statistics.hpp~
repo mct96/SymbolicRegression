@@ -1,0 +1,28 @@
+#include <cmath>
+#include <algorithm>
+#include <vector>
+
+class statistics_t
+{
+public:
+    statistics_t(const std::vector<double>& values);
+    void update_values();
+    
+    double mean();
+    double median();
+    double max();
+    double min();
+    double var();
+    double stddev();
+
+private:
+    const std::vector<double>& _values;
+    double _mean;
+    double _median;
+    double _max;
+    double _min;
+    double _var;
+    double _stddev;
+    
+};
+          

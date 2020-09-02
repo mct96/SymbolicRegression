@@ -35,24 +35,4 @@ std::vector<Xy> load_data(std::string filename)
 
     return output;
 }
-
-/*
-int main(int argc, char **argv) {
-    if (argc != 2) {
-        std::cout << "Just one file name" << std::endl;
-        return 1;
-    }
-    
-    std::string filename = argv[1];
-    std::vector<Xy> data = load_data(filename);
-
-    for (auto row: data) {
-        for (auto x: row.first)
-            std::cout << x << " ";
-        std::cout << " -> " << row.second << std::endl;
-    }
-
-    return 0;
-}
-*/
 }
