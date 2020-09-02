@@ -20,7 +20,19 @@ else()
 endif()
 
 target_link_libraries(load_data PRIVATE rapidcsv)
-target_link_libraries(sreg PRIVATE load_data)                    
+
+if (TARGET load_data)
+   target_link_libraries(sreg PRIVATE load_data)
+else()
+    message("load_data NOT FOUND")
+endif()
+
+if (TARGET stats)
+   target_link_libraries(sreg PRIVATE stats)
+else()
+    message("stats NOT FOUND")
+endif()
+
 set_property(TARGET sreg PROPERTY CXX_STANDARD 17)
 
 # Export usage to docs directory.
