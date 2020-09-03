@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <iterator>
 #include <set>
+#include <iomanip>
 
 //namespace sr
 //{
@@ -204,6 +205,11 @@ std::ostream& operator<<(std::ostream& out, const individual_t& u)
     return out;
 }
 
+state_t::state_t()
+{
+    reset();
+}
+
 std::size_t state_t::generation() const
 {
     return _generation;
@@ -217,6 +223,11 @@ std::size_t state_t::population_sz() const
 std::size_t state_t::unique_individuals() const
 {
     return _unique_individuals;
+}
+
+std::size_t state_t::better_than_med() const
+{
+    return _better_than_med;
 }
 
 double state_t::max_fitness() const
@@ -249,23 +260,29 @@ state_t::operator std::string() const
     using namespace std;
     string out{};
     out += to_string(_generation);
-    out += string{","} + to_string(_population_sz);
-    out += string{","} + to_string(_unique_individuals);
-    out += string{","} + to_string(_max_fitness);
-    out += string{","} + to_string(_min_fitness);
-    out += string{","} + to_string(_avg_fitness);
-    out += string{","} + to_string(_med_fitness);
-    out += string{","} + to_string(_std_fitness);
+    out += string{", "} + to_string(_population_sz);
+    out += string{", "} + to_string(_unique_individuals);
+    out += string{", "} + to_string(_better_than_med);
+    out += string{", "} + to_string(_min_fitness);
+    out += string{", "} + to_string(_max_fitness);    
+    out += string{", "} + to_string(_med_fitness);    
+    out += string{", "} + to_string(_std_fitness);
+    out += string{", "} + to_string(_avg_fitness);        
     return out;
 }
 
 void state_t::reset()
 {
-    _generation    = 0;
+    _generation = 0;
     _population_sz = 0;
-    _max_fitness   = 0;
-    _min_fitness   = 0;
-    _avg_fitness   = 0;
+    _unique_individuals = 0;
+    _better_than_med = 0;
+ 
+    _max_fitness = 0;
+    _min_fitness = 0;
+    _avg_fitness = 0;
+    _med_fitness = 0;
+    _std_fitness = 0;
 }
 
 parameters_t::parameters_t(std::size_t n_vars,
@@ -364,6 +381,16 @@ void parameters_t::n_vars(std::size_t n)
 std::size_t parameters_t::n_vars() const
 {
     return _n_vars;
+}
+
+void parameters_t::seeds(std::vector<int> sds)
+{
+    _seeds = sds;
+}
+
+std::vector<int> parameters_t::seeds() const
+{
+    return _seeds;
 }
 
 void parameters_t::threshold(double value)
@@ -880,7 +907,7 @@ symbolic_regression_t::symbolic_regression_t(parameters_t params,
 {
 
 }
-    
+
 symbolic_regression_t::~symbolic_regression_t()
 {
     //    report();
@@ -918,33 +945,35 @@ void symbolic_regression_t::update_state()
         all_fitness.push_back(individual.second);
 
     statistics_t stats{all_fitness};
-    state_t cur_state{};
-    cur_state._generation = _states.size();
-    cur_state._population_sz = _population.size();
-    cur_state._unique_individuals = _gpo.count_unique(_population);
-    cur_state._max_fitness = stats.max();
-    cur_state._min_fitness = stats.min();
-    cur_state._avg_fitness = stats.mean();
-    cur_state._med_fitness = stats.median();
-    cur_state._std_fitness = stats.stddev();
-    _states.push_back(cur_state);
+    _cur_state._generation = _states.size() + 1;
+    _cur_state._population_sz = _population.size();
+    _cur_state._unique_individuals = _gpo.count_unique(_population);
+    _cur_state._max_fitness = stats.max();
+    _cur_state._min_fitness = stats.min();
+    _cur_state._avg_fitness = stats.mean();
+    _cur_state._med_fitness = stats.median();
+    _cur_state._std_fitness = stats.stddev();
+    _states.push_back(_cur_state);
+
+    _cur_state = state_t{};
+    _cur_state._generation = _states.size() + 1;
 }
 
 void symbolic_regression_t::train(bool verbose)
 {
     initialize_population();
     while (!check_stop_condition()) {
-        double fit = next_generation();
         if (verbose) print_progress();
+        next_generation();
     }
-    if (verbose)
-        clear_line();
+    
+    if (verbose) clear_line();
 }
 
 void symbolic_regression_t::clear_line() const
 {
     std::cout << "\r" << std::flush;
-    for (int i = 0; i < 300; ++i)
+    for (int i = 0; i < 120; ++i)
         std::cout << " ";
     std::cout << "\r" << std::flush;
 }
@@ -954,14 +983,15 @@ void symbolic_regression_t::print_progress() const
     if (_states.size() == 0) return;
 
     state_t cur_state = _states.back();
-    std::cout << "[ gen #: " << cur_state._generation << "] "
+    std::cout << std::setprecision(3);
+    std::cout << "[ gen #: " << cur_state._generation        << "] "
               << "[ unique ind.: " << cur_state._unique_individuals << "] "
-              << "[ min. fit.: " << cur_state._min_fitness << "] "
-              << "[ avg. fit.: " << cur_state._avg_fitness << "] "
+              << "[ min. fit.: " << cur_state._min_fitness   << "] "
+              << "[ avg. fit.: " << cur_state._avg_fitness   << "] "
               << "[ median fit.: " << cur_state._med_fitness << "] "
-              << "[ std. fit.: " << cur_state._std_fitness << "] "
-              << "[ max.fit.: " << cur_state._max_fitness << "] "
-              << "\r" << std::flush;
+              << "[ std. fit.: " << cur_state._std_fitness   << "] "
+              << "[ max.fit.: " << cur_state._max_fitness    << "] "
+              << "                         \r" << std::flush;
 }
 
 void symbolic_regression_t::initialize_population()
@@ -983,7 +1013,7 @@ void symbolic_regression_t::initialize_population()
     update_state();
 }
 
-double symbolic_regression_t::next_generation()
+void symbolic_regression_t::next_generation()
 {
     auto params = _parameters; 
     auto em = params._error_metric;
@@ -1017,9 +1047,9 @@ double symbolic_regression_t::next_generation()
 
     _population = new_pop;
     update_state();
-    return _states.back()._min_fitness;
 }
 
+// WARNING this function change the current state.
 void symbolic_regression_t::do_crossover(individuals_t& individuals,
                                          std::size_t n)
 {
@@ -1033,8 +1063,14 @@ void symbolic_regression_t::do_crossover(individuals_t& individuals,
         auto p1 = _gpo.selection(_population, sm, k);
         auto p2 = _gpo.selection(_population, sm, k);
         individual_t offspring = _gpo.crossover(p1, p2, max_depth);
-        individuals.emplace_back(offspring, 0.0);
+        double fitness = _gpo.fitness(offspring, _input_data, em);
+        individuals.emplace_back(offspring, fitness);
     }
+    // calculate how many individuals are better than the old population.
+    auto b = individuals.end() - n, e = individuals.end();
+    auto pop_med_fit = _states.back()._med_fitness;
+    auto fn = [&](auto ind) { return ind.second < pop_med_fit; };
+    _cur_state._better_than_med = std::count_if(b, e, fn);
 }
 
 void symbolic_regression_t::do_mutation(individuals_t& individuals,
@@ -1081,6 +1117,6 @@ void symbolic_regression_t::do_reproduction(individuals_t& individuals,
 
 bool symbolic_regression_t::check_stop_condition() const
 {
-    return (_states.back()._generation >= _parameters._max_generation ||
-            _states.back()._min_fitness <= _parameters._threshold);
+    return (_cur_state._generation > _parameters._max_generation ||
+            _states.back()._min_fitness < _parameters._threshold);
 }

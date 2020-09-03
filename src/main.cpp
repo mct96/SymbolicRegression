@@ -52,7 +52,7 @@ int main(int argc, char **argv)
     }
     
     auto data = sr::load_data(filename); // loading dataset.
-    training_set_t training = random_t{{1}}.sample(data, (int)data.size()/10);
+    training_set_t training = random_t{{1}}.sample(data, (int)data.size()/2);
 
     std::string outfile{};
     if (cmdl({"-o", "--output"}) >> outfile) {
@@ -137,11 +137,26 @@ int main(int argc, char **argv)
     }
 
     bool eletism = false;
-    if (cmdl({"-E", "--eletism"}, false) >> eletism) {
-        std::cout << "eletism: " << (eletism ? "true" : "false") << std::endl;
-    }
+    eletism = (cmdl[{"-E", "--eletism"}]);
+    std::cout << "eletism: " << (eletism ? "true" : "false") << std::endl;
 
-    parameters_t params{n_vars, {1, 2, 6, 3}};
+    std::string seeds_file = "";
+    std::vector<std::vector<int>> seeds{};
+    if (cmdl({"-t", "--test"}) >> seeds_file) {
+        seeds = sr::load_seeds(seeds_file);
+        if (seeds.size() > 0)  {
+            std::cout << "seeds loaded: " << seeds.size() << std::endl;
+        } else {
+            std::cout << "no seeds found in " << seeds_file << "!" << std::endl;
+            return 1;
+        }            
+    } else {
+        seeds.push_back({18, -1, -6, 12, -19, 15, 9, -13, -15, -5, 7, 17});
+    }
+    
+
+    parameters_t params{n_vars, seeds[0]};
+    
     params.selection_method(selection_method);
     params.generation_method(generation_method);
     params.error_metric(error_metric);
@@ -153,11 +168,19 @@ int main(int argc, char **argv)
     params.eletism(eletism);
     params.threshold(fitness_threshold);
     params.max_generation(max_generation);
-    symbolic_regression_t sr{params, training};
 
-    sr.train();
+    // NOTE
+    // If you are using Emacs, I created a script named "random_generator.el"
+    // to generate a list of random numbers.
 
-    std::string report = sr.report();
+    std::string report{};
+    for (auto seed: seeds) {
+        params.seeds(seed);
+        symbolic_regression_t sr{params, training};
+        sr.train();
+        report += sr.report() + "\n\n";
+    }
+
     if (!outfile.empty()) {
         std::ofstream ofs{outfile};
         ofs << report;

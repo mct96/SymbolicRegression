@@ -79,10 +79,13 @@ class state_t
 {
     friend class symbolic_regression_t;
 public:
+    state_t();
+    
     std::size_t generation() const;
     std::size_t population_sz() const;
     std::size_t unique_individuals() const;
-    
+    std::size_t better_than_med() const;
+        
     double max_fitness() const;
     double min_fitness() const;
     double avg_fitness() const;
@@ -96,6 +99,7 @@ private:
     std::size_t _generation;
     std::size_t _population_sz;
     std::size_t _unique_individuals;
+    std::size_t _better_than_med;
     
     double _max_fitness;
     double _min_fitness;
@@ -144,6 +148,9 @@ public:
     void n_vars(std::size_t n);
     std::size_t n_vars() const;
 
+    void seeds(std::vector<int> sds);
+    std::vector<int> seeds() const;
+    
     // tolerable error: [0, 1].
     void threshold(double value);
     double threshold() const;
@@ -309,7 +316,7 @@ private:
     
     void initialize_population();
 
-    double next_generation();
+    void next_generation();
 
     void do_crossover(individuals_t& individuals, std::size_t n);
 
@@ -320,6 +327,7 @@ private:
     bool check_stop_condition() const;
     
     std::vector<state_t> _states;
+    state_t _cur_state;
     individuals_t _population;
     parameters_t  _parameters;
     gp_operators_t _gpo;
