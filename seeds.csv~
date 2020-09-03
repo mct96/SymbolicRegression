@@ -1,0 +1,21 @@
+(defun generate-random-numbers (n limit)
+  (let ((seq ())
+        (text ""))
+    (while (< (length seq) n)
+      (setq seq (cons (% (random) limit) seq)))
+    (dolist (number seq text)
+      (setq text (concat text ", " (number-to-string number))))
+    text))
+    
+  
+
+(generate-random-numbers 10 200)
+(148 -144 87 21 -105 -100 -145 -4 112 159)
+
+
+    (add-to-list 'v (% (random) 20)))
+-14 19 -8 -7 5 -3 2 -16 -4 -12 11 8
+19 -8 -7 5 -3 2 -16 -4 -12 11 8 14
+-8 -7 5 -3 2 -16 -4 -12 11 8 14 18
+-7 5 -3 2 -16 -4 -12 11 8 14 18 -1
+2 -16 -4 -12 11 8 14 18 -1 -6 12 -19
