@@ -1,10 +1,18 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cctype>
 
 #include "symbolic_regression.hpp"
 #include "load_data.hpp"
 #include "argh.h"
+
+std::string to_lower(std::string str)
+{
+    std::transform(str.begin(), str.end(), str.begin(),
+                       [&](auto c) { return std::tolower(c); });
+    return str;
+}
 
 void usage_message() {
     std::ifstream ofs{"../docs/usage.txt"};
@@ -31,7 +39,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    argh::parser cmdl(argv);
+    argh::parser cmdl{argc, argv, argh::parser::PREFER_PARAM_FOR_UNREG_OPTION};
     if (cmdl[{"-h", "--help"}]) {
         usage_message();
         return 0;
@@ -54,8 +62,10 @@ int main(int argc, char **argv)
     }
 
     std::size_t n_vars = 1;
-    if (cmdl({"-n", "-nvar"}, 1) >> n_vars) {
+    if ((cmdl({"-n", "--nvar"}, 1) >> n_vars)) {
         std::cout << "number of variables: " << n_vars << std::endl;
+    } else {
+        std::cout << "number of variables: " << n_vars;
     }
 
     int population_sz = 0;
@@ -64,22 +74,37 @@ int main(int argc, char **argv)
     }
 
     int max_generation = 0;
-    if (cmdl({"-g", "--generation-max"}, 50) >> max_generation) {
+    if (cmdl({"-G", "--generation-max"}, 50) >> max_generation) {
         std::cout << "maximum generation: " << max_generation << std::endl;
     }
- 
+
+    generation_method_t generation_method{};
+    std::string g_met{};
+    if (cmdl({"-g", "--generation-method"}, "full") >> g_met) {
+        g_met = to_lower(g_met);
+        if (g_met == "full")
+            generation_method = generation_method_t::full;
+        if (g_met == "grow")
+            generation_method = generation_method_t::grow;
+        if (g_met == "ramped_hh")
+            generation_method = generation_method_t::ramped_hh;
+        std::cout << "generation method: " << g_met << std::endl;
+    }
+    
     int max_depth = 5;
     if (cmdl({"-d", "--max-depth"}, 5) >> max_depth) {
         std::cout << "max-depth: " << max_depth << std::endl;
     }
 
-    int selection_method = 0;
-    if (cmdl({"-s", "--selection-method"}, 1) >> selection_method) {
-        std::cout << "selection method: ";
-        auto s = (selection_method_t)selection_method;
-        if (s == selection_method_t::roulette_wheel) std::cout  << "roulette";
-        if (s == selection_method_t::tournament) std::cout << "tournament";
-        std::cout << std::endl;
+    selection_method_t selection_method = selection_method_t::tournament;
+    std::string s_met{};
+    if (cmdl({"-s", "--selection-method"}, "tournament") >> s_met) {
+        s_met = to_lower(s_met);
+        if (s_met == "roulette")
+            selection_method = selection_method_t::roulette_wheel;
+        if (s_met == "tournament")
+            selection_method = selection_method_t::tournament;
+        std::cout << "selection method: " << s_met << std::endl;
     }
 
     int k = 2;
@@ -97,18 +122,17 @@ int main(int argc, char **argv)
         std::cout << "crossover probability: " << prob_crossover << std::endl;
     }
     
-    int error_metric = 0;
-    if (cmdl({"-e", "--error_metric"}, 1) >> error_metric) {
-        std::cout << "error metric: ";
-        auto e = (error_metric_t)error_metric;
-        if (e == error_metric_t::mae) std::cout << "MAE";
-        if (e == error_metric_t::mse) std::cout << "MSE";            
-        if (e == error_metric_t::rmse) std::cout << "RMSE";
-        std::cout << std::endl;
+    error_metric_t error_metric; std::string e_metric;
+    if (cmdl({"-e", "--error_metric"}, "mae") >> e_metric) {
+        e_metric = to_lower(e_metric);
+        if (e_metric == "mae") error_metric = error_metric_t::mae;
+        if (e_metric == "mse") error_metric = error_metric_t::mse;            
+        if (e_metric == "rmse") error_metric = error_metric_t::rmse;
+        std::cout << "error metric: " << e_metric << std::endl;
     }
 
     double fitness_threshold = 0.2;
-    if (cmdl({"-f", "--fitness-threshold"}, 0.2) >> fitness_threshold) {
+    if (cmdl({"-f", "--fitness-threshold"}, 0.3) >> fitness_threshold) {
         std::cout << "fitness threshold: " << fitness_threshold << std::endl;
     }
 
@@ -117,24 +141,30 @@ int main(int argc, char **argv)
         std::cout << "eletism: " << (eletism ? "true" : "false") << std::endl;
     }
 
-
     parameters_t params{n_vars, {1, 2, 6, 3}};
-    params.selection_method((selection_method_t)selection_method);
-    params.error_metric((error_metric_t)error_metric);
+    params.selection_method(selection_method);
+    params.generation_method(generation_method);
+    params.error_metric(error_metric);
     params.tournament(k);
     params.population_sz(population_sz);
     params.max_depth(max_depth);
     params.prob_mutation(prob_mutation);
-    params.prob_mutation(prob_crossover);
+    params.prob_crossover(prob_crossover);
     params.eletism(eletism);
     params.threshold(fitness_threshold);
     
     symbolic_regression_t sr{params, training};
 
+    sr.train();
 
-
-    std::cout << "Training started." << std::endl;
-    sr.report();
+    std::string report = sr.report();
+    if (!outfile.empty()) {
+        std::ofstream ofs{outfile};
+        ofs << report;
+        std::cout << "report saved in: " << outfile << "!" << std::endl;
+    } else {
+        std::cout << report << std::endl;
+    }
     
     return 0;
 }

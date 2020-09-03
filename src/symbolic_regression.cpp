@@ -8,7 +8,7 @@
 #include <type_traits>
 #include <stdexcept>
 #include <iterator>
-
+#include <set>
 
 //namespace sr
 //{
@@ -214,6 +214,11 @@ std::size_t state_t::population_sz() const
     return _population_sz;
 }    
 
+std::size_t state_t::unique_individuals() const
+{
+    return _unique_individuals;
+}
+
 double state_t::max_fitness() const
 {
     return _max_fitness;
@@ -245,6 +250,7 @@ state_t::operator std::string() const
     string out{};
     out += to_string(_generation);
     out += string{","} + to_string(_population_sz);
+    out += string{","} + to_string(_unique_individuals);
     out += string{","} + to_string(_max_fitness);
     out += string{","} + to_string(_min_fitness);
     out += string{","} + to_string(_avg_fitness);
@@ -689,6 +695,15 @@ individual_t gp_operators_t::mutation_sb(const individual_t& individual,
     return new_individual;
 }
 
+std::size_t gp_operators_t::count_unique(const individuals_t& population)
+{
+    std::set<double> counter{};
+    for (auto individual: population)
+        counter.insert(individual.second);
+
+    return counter.size();
+}
+
 void gp_operators_t::grow_gen_recursive(individual_t& individual,
                                         std::size_t n_vars,
                                         std::size_t max_depth,
@@ -811,11 +826,14 @@ parameters_t symbolic_regression_t::parameters() const
     return _parameters;
 }
 
-void symbolic_regression_t::report()
+std::string symbolic_regression_t::report() const
 {
-    std::cout << static_cast<std::string>(_parameters) << std::endl;
+    std::string report_text{};
+    report_text = static_cast<std::string>(_parameters) +  "\n";
     for (auto state: _states)
-        std::cout << static_cast<std::string>(state) << std::endl;
+        report_text += static_cast<std::string>(state) + "\n";
+
+    return report_text;
 }
 
 void symbolic_regression_t::update_state()
@@ -828,6 +846,7 @@ void symbolic_regression_t::update_state()
     state_t cur_state{};
     cur_state._generation = _states.size();
     cur_state._population_sz = _population.size();
+    cur_state._unique_individuals = _gpo.count_unique(_population);
     cur_state._max_fitness = stats.max();
     cur_state._min_fitness = stats.min();
     cur_state._avg_fitness = stats.mean();
@@ -841,6 +860,7 @@ void symbolic_regression_t::train(double* cur_fitness)
     initialize_population();
     while (!check_stop_condition()) {
         double fit = next_generation();
+        std::cout  << "running... (" << fit << ")" << std::endl;
         if (cur_fitness != nullptr)
             *cur_fitness = fit;
     }
@@ -862,7 +882,6 @@ void symbolic_regression_t::initialize_population()
 
     auto b = _population.begin(), e = _population.end();
     std::sort(b, e, [](auto a, auto b) {return a.second < b.second;});
-
     update_state();
 }
 
@@ -882,7 +901,7 @@ double symbolic_regression_t::next_generation()
     do_mutation(new_pop, mutation_sz);
     do_reproduction(new_pop, reproduction_sz);
     _gpo.population_fitness(new_pop, _input_data, em);
-
+    std::cout << "pc: " << pc << " pm: " << pm << std::endl;
     using Tp = typename individuals_t::value_type;
     auto cmp_less = [](Tp a, Tp b) { return a.second < b.second; };
     std::sort(new_pop.begin(), new_pop.end(), cmp_less);
@@ -896,7 +915,7 @@ double symbolic_regression_t::next_generation()
         b = new_pop.begin(), e = new_pop.end();
         new_pop.erase(b + pop_sz, e);
     }
-
+    
     _population = new_pop;
     update_state();
     return _states.back()._min_fitness;

@@ -36,7 +36,7 @@ inline std::size_t rchild(std::size_t pos) { return 2 * pos + 2; };
 inline std::size_t parent(std::size_t pos) {
     return static_cast<int>((pos + 1)/2 - 1); };
 
-std::size_t get_depth(std::size_t pos);
+
 
 // the eval_* functions are responsable for evaluate a tree.
 double eval_function(gene_t func, double x);
@@ -70,6 +70,7 @@ struct gene_t {
     union { unsigned short _code = 0; float _value; };
 };
 
+std::size_t get_depth(std::size_t pos);
 std::size_t get_max_depth(const individual_t& pos);
 
 // state_t class is used to show the state of convergence of the algorithm.
@@ -80,7 +81,8 @@ class state_t
 public:
     std::size_t generation() const;
     std::size_t population_sz() const;
-
+    std::size_t unique_individuals() const;
+    
     double max_fitness() const;
     double min_fitness() const;
     double avg_fitness() const;
@@ -93,7 +95,8 @@ public:
 private:
     std::size_t _generation;
     std::size_t _population_sz;
-
+    std::size_t _unique_individuals;
+    
     double _max_fitness;
     double _min_fitness;
     double _avg_fitness;
@@ -240,7 +243,10 @@ public:
     individual_t reproduction(const individuals_t& population,
                               selection_method_t sm);
 
+    std::size_t count_unique(const individuals_t& population);
 private:
+
+    
     void grow_gen_recursive(individual_t& individual,
                             std::size_t n_vars,
                             std::size_t max_depth,
@@ -271,19 +277,20 @@ public:
     const state_t& state();
 
     void parameters(parameters_t params);
+
     parameters_t parameters() const;
             
-    void report();
-
-    void update_state();
+    std::string report() const;
 
     void train(double *cur_fitness = nullptr);
     
 private:
+    void update_state();
+    
     void initialize_population();
+
     double next_generation();
 
-    
     void do_crossover(individuals_t& individuals, std::size_t n);
 
     void do_mutation(individuals_t& individuals, std::size_t n);
@@ -296,7 +303,6 @@ private:
     individuals_t _population;
     parameters_t  _parameters;
     gp_operators_t _gpo;
-
     const training_set_t& _input_data;
 };
 
