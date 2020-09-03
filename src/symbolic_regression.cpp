@@ -268,10 +268,37 @@ void state_t::reset()
     _avg_fitness   = 0;
 }
 
-parameters_t::parameters_t(std::size_t n_vars, std::vector<int> seeds)
+parameters_t::parameters_t(std::size_t n_vars,
+                           std::vector<int> seeds,
+                           std::size_t population_sz,
+                           std::size_t max_depth,
+                           std::size_t max_generation,
+                           double threshold,
+                           double prob_crossover,
+                           double prob_mutation,
+                           double prob_op_mutation,
+                           double prob_reproduction,
+                           selection_method_t selection_method,
+                           std::size_t k,
+                           generation_method_t generation_method,
+                           error_metric_t error_metric,
+                           bool eletism)
     :
     _n_vars{n_vars},
-    _seeds{seeds}
+    _seeds{seeds},
+    _population_sz{population_sz},
+    _max_depth{max_depth},
+    _max_generation{max_generation},
+    _threshold{threshold},
+    _prob_crossover{prob_crossover},
+    _prob_mutation{prob_mutation},
+    _prob_op_mutation{prob_op_mutation},
+    _prob_reproduction{prob_reproduction},
+    _selection_method{selection_method},
+    _k{k},
+    _generation_method{generation_method},
+    _error_metric{error_metric},
+    _eletism{eletism}
 {
 }
 
@@ -283,6 +310,7 @@ parameters_t::operator std::string() const
 {
     using namespace std;
     string out{};
+    out += string{"; seeds: "} + seeds_str() + "\n";
     out += string{"; population size: "} + to_string(_population_sz) + "\n";
     out += string{"; max. depth: "} + to_string(_max_depth) + "\n";
     out += string{"; max. generation: "} + to_string(_max_generation) + "\n";
@@ -350,7 +378,18 @@ double parameters_t::threshold() const
 
 void parameters_t::prob_mutation(double prob)
 {
-    _prob_mutation = prob;
+    if (prob > 1)
+        throw std::invalid_argument{"mutation probability > 1 (" +
+                std::to_string(prob) + ")."};
+
+    if (prob + _prob_crossover > 1) {
+        _prob_mutation = prob;
+        _prob_crossover = 1 - prob;
+        _prob_reproduction = 0;
+    } else {        
+        _prob_mutation = prob;
+        _prob_reproduction = 1 - prob - _prob_crossover;
+    }
 }
 
 double parameters_t::prob_mutation() const
@@ -370,12 +409,36 @@ double parameters_t::prob_one_point_mutation() const
 
 void parameters_t::prob_crossover(double prob)
 {
-    _prob_crossover = prob;
+    if (prob > 1) throw std::invalid_argument{"crossover probability > 1 (" +
+                          std::to_string(prob) + ")."};
+
+    if (prob + _prob_mutation > 1) {
+        _prob_crossover = prob;
+        _prob_mutation = 1 - prob;
+        _prob_reproduction = 0;
+    } else {
+        _prob_crossover = prob;
+        _prob_reproduction = 1 - prob - _prob_mutation;
+    }
 }
 
 double parameters_t::prob_crossover() const
 {
     return _prob_crossover;
+}
+
+void parameters_t::prob_reproduction(double prob)
+{
+    if (prob > 1) throw std::invalid_argument{"reproduction probability > 1 (" +
+                          std::to_string(prob) + ")."};
+
+    // HYPOTHESIS scale the values. WORKS!!1: 1) calculates the proportion of
+    // each prob and 2) scale for the new possible probability (the complement
+    // of prob).
+    double total = _prob_crossover + _prob_mutation;
+    _prob_mutation = (1 - prob) * (_prob_mutation / total);
+    _prob_crossover = (1 - prob) * (_prob_crossover / total);
+    _prob_reproduction = prob;
 }
 
 double parameters_t::prob_reproduction() const
@@ -489,6 +552,18 @@ std::string parameters_t::err_met_str() const
     }
 
     return "";
+}
+
+std::string parameters_t::seeds_str() const
+{
+    std::string out{};
+
+    for (int i = 0; i < _seeds.size(); ++i)
+        out += std::to_string(_seeds[i]) + ", ";
+
+    out += std::to_string(_seeds.back());
+
+    return out;
 }
 
 gp_operators_t::gp_operators_t(std::vector<int> seeds)
@@ -855,15 +930,38 @@ void symbolic_regression_t::update_state()
     _states.push_back(cur_state);
 }
 
-void symbolic_regression_t::train(double* cur_fitness)
+void symbolic_regression_t::train(bool verbose)
 {
     initialize_population();
     while (!check_stop_condition()) {
         double fit = next_generation();
-        std::cout  << "running... (" << fit << ")" << std::endl;
-        if (cur_fitness != nullptr)
-            *cur_fitness = fit;
+        if (verbose) print_progress();
     }
+    if (verbose)
+        clear_line();
+}
+
+void symbolic_regression_t::clear_line() const
+{
+    std::cout << "\r" << std::flush;
+    for (int i = 0; i < 300; ++i)
+        std::cout << " ";
+    std::cout << "\r" << std::flush;
+}
+
+void symbolic_regression_t::print_progress() const
+{
+    if (_states.size() == 0) return;
+
+    state_t cur_state = _states.back();
+    std::cout << "[ gen #: " << cur_state._generation << "] "
+              << "[ unique ind.: " << cur_state._unique_individuals << "] "
+              << "[ min. fit.: " << cur_state._min_fitness << "] "
+              << "[ avg. fit.: " << cur_state._avg_fitness << "] "
+              << "[ median fit.: " << cur_state._med_fitness << "] "
+              << "[ std. fit.: " << cur_state._std_fitness << "] "
+              << "[ max.fit.: " << cur_state._max_fitness << "] "
+              << "\r" << std::flush;
 }
 
 void symbolic_regression_t::initialize_population()
@@ -891,17 +989,18 @@ double symbolic_regression_t::next_generation()
     auto em = params._error_metric;
     auto pop_sz = params._population_sz;
     
-    double pc = params._prob_crossover, pm = params._prob_mutation;
-    std::size_t crossover_sz    = pc * pop_sz;
-    std::size_t mutation_sz     = pm * pop_sz;
-    std::size_t reproduction_sz = pc + pm < 1 ? pop_sz - (pc + pc) * pop_sz : 0;
+    double pc = params._prob_crossover, pm = params._prob_mutation,
+           pr = params._prob_reproduction;
+    
+    std::size_t crossover_sz = pc * pop_sz, mutation_sz = pm * pop_sz,
+        reproduction_sz = pr * pop_sz;
     
     individuals_t new_pop{};
     do_crossover(new_pop, crossover_sz);
     do_mutation(new_pop, mutation_sz);
     do_reproduction(new_pop, reproduction_sz);
     _gpo.population_fitness(new_pop, _input_data, em);
-    std::cout << "pc: " << pc << " pm: " << pm << std::endl;
+
     using Tp = typename individuals_t::value_type;
     auto cmp_less = [](Tp a, Tp b) { return a.second < b.second; };
     std::sort(new_pop.begin(), new_pop.end(), cmp_less);
@@ -915,7 +1014,7 @@ double symbolic_regression_t::next_generation()
         b = new_pop.begin(), e = new_pop.end();
         new_pop.erase(b + pop_sz, e);
     }
-    
+
     _population = new_pop;
     update_state();
     return _states.back()._min_fitness;

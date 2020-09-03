@@ -152,7 +152,7 @@ int main(int argc, char **argv)
     params.prob_crossover(prob_crossover);
     params.eletism(eletism);
     params.threshold(fitness_threshold);
-    
+    params.max_generation(max_generation);
     symbolic_regression_t sr{params, training};
 
     sr.train();

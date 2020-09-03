@@ -109,7 +109,22 @@ class parameters_t
 {
     friend class symbolic_regression_t;
 public:
-    parameters_t(std::size_t n_vars, std::vector<int> seeds);
+    parameters_t(std::size_t n_vars,
+                 std::vector<int> seeds,
+                 std::size_t population_sz = 1000,
+                 std::size_t max_depth = 5,
+                 std::size_t max_generation = 50,
+                 double threshold = 1.0,
+                 double prob_crossover = 0.8,
+                 double prob_mutation = 0.15,
+                 double prob_op_mutation = 0.15,
+                 double prob_reproduction = 0.05,
+                 selection_method_t selection_method = selection_method_t::tournament,
+                 std::size_t k = 5,
+                 generation_method_t generation_method = generation_method_t::ramped_hh,
+                 error_metric_t error_metric = error_metric_t::mae,
+                 bool eletism = false);
+    
     ~parameters_t();
 
     operator std::string() const;
@@ -145,6 +160,7 @@ public:
     double prob_crossover() const;
 
     // prob = 1 - prob_mutation - prob_crossover.
+    void prob_reproduction(double prob);
     double prob_reproduction() const;
     
     // selection method.
@@ -167,33 +183,33 @@ public:
     
     void reset();
     
-private:
+private:    
     std::vector<int> _seeds;
     
-    std::size_t _population_sz = 3000;
-    std::size_t _max_depth = 5;
-    std::size_t _max_generation = 1000;
+    std::size_t _population_sz;
+    std::size_t _max_depth;
+    std::size_t _max_generation;
     std::size_t _n_vars;
 
-    double _threshold = 1E-3;
+    double _threshold;
 
-    double _prob_mutation = .15;
-    double _prob_op_mutation = .3;
-    double _prob_crossover = .8;
+    double _prob_crossover;
+    double _prob_mutation;
+    double _prob_op_mutation;
+    double _prob_reproduction;
 
-    double _prob_reproduction = .05;
-
-    selection_method_t _selection_method = selection_method_t::roulette_wheel;
-    std::size_t _k = 10;
+    selection_method_t _selection_method;
+    std::size_t _k;
     
-    generation_method_t _generation_method = generation_method_t::ramped_hh;
-    error_metric_t _error_metric = error_metric_t::mae;
+    generation_method_t _generation_method;
+    error_metric_t _error_metric;
 
-    bool _eletism = true;
+    bool _eletism;
 
     std::string selec_met_str() const;
     std::string gen_met_str() const;
     std::string err_met_str() const;
+    std::string seeds_str() const;
 };
 
 // gp_operators_t implementation of operators for gp.
@@ -282,9 +298,13 @@ public:
             
     std::string report() const;
 
-    void train(double *cur_fitness = nullptr);
+    void train(bool verbose = true);
     
 private:
+    void clear_line() const;
+    
+    void print_progress() const;
+    
     void update_state();
     
     void initialize_population();
