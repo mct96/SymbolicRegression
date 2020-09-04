@@ -1,4 +1,5 @@
 \documentclass[a4paper]{paper}
+\usepackage[left=3cm, right=3cm, top=2cm, bottom=3cm]{geometry}
 
 \usepackage[portuguese]{babel}
 \usepackage{xcolor}
@@ -138,7 +139,93 @@ O restante deste relatório é dividido em 3 seções:
 \item Por fim, a seção de conclusão analisa os resultados obtidos da seção de
   experimentos.
 \end{ilist}
+
 \section{Metodologia}
+Nesta seção é descrito os datelhes de implementação e as decisões de design
+aplicadas neste projeto. A descrição e detalhes são apresentados na ordem:
+representação dos indivíduos, métodos de geração de indivíduos, métodos de
+seleção, operador de crossover, operador de mutação, eletismo e mecânismos de
+controle (ou de parada).
+
+\subsection{Reprentação dos indivíduos}
+A representação dos indivíduos impacta diretamente na performance do sistema e
+na expressividade dos invidívuos. Portanto, a princípio é apresentado como o
+genótipo do indivíduo é definido e como ele é codificado.
+
+
+Os indivíduos em GP são representados por árvores sintáticas, que possuem nós e
+terminais. Os nós são operadores aritméticos ou funções e os terminais são
+constantes ou variáveis. O conjunto de nós e terminais juntos formam o
+\textit{primitive set} do GP. Neste sistema o conjunto de funções são as funções
+trigonométricas ($\sin$, $\cos$ e $\tan$) e o logaritmo com bases diferentes
+($\log$ e $\log10$). As constantes são geradas aleatóriamente utilizando uma
+distribuição multimodal. A escolha desse método se deve ao fato que muitas
+função matemáticas possuem contantes no intervalo $(0, 1]$ e com sinal variado.
+  As variáveis são geradas aleatóriamente, onde um número inteiro no intervalo
+  $(0, N]$, onde $N$ deve ser menor ou igual ao número de colunas no dado de
+    entrada, ou seja, se há 10 colunas de \textit{features} e uma que representa
+    a variável de resposta, então $N$ deve ser igual ao número de
+    \textit{features} ou menor.
+
+Outro aspecto importante na representação dos invíduos são, geralmente,
+representados utilizam a estrutura de árvore. A literatura define diversas
+estruturas de árvores, como árvores binárias, B-\textit{tree}, entre outras. Um
+problema na representação utilizando esses tipos de árvores é a indireção, que
+pode afetar a performance do sistema, portanto, para evitar os efeitos da
+indireção de ponteiros, os indivíduos são representados utilizando
+\textit{Heaps}, que são árvores especializadas. Nesse tipo de estrutura, os
+ponteiro são implicitamente substituidos por indices. O nó a esquerda está na
+posição $2n+1$ e $2n + 2$. Outra vantagem no use de \textit{Heaps} está no fato
+dos dados serem armazenados linearmente, o que reduz os efeitos do \textit{cache
+  miss}, causado por dados espalhados na memória.
+
+O sistema é flexível na máxima profundidade da indivíduo (representado por uma
+árvore) e permite ao usuário especificar qualquer profundidade aos indivíduos.
+Um fator que pode ser vantajoso ou não é que o espaço ocupado por um indivíduo
+é determinístico, ou seja, cada nível possui $2^l$ nós, onde $l$ é o nível.
+Cada indivíduo possui $\sum_{l=0}^{L}2^l=2^{L}-1$, onde $L$ é a profundidade máxima
+da árvore. Portanto, para uma população com $N$ indivíduos e profundidade máxima
+$L$, há $N\times(2^{L}-1)\times\texttt{sizeof(nó)}$.
+
+Em conclusão, os indivíduos são representados como árvore no ponto de vista
+semântico e como vetor contíguo na memória.  Espera-se que com essa estrutura
+haja um ganho na performance devido a redução dos efeitos da indireção e por
+conseguência de \textit{cache miss}.
+
+\subsection{Operadores de Geração}
+
+A literatura de define vários operadores de geração de indivíduos, como o método
+\textit{Full}, \textit{Grow} e a combinação de ambos, denominado \textit{Ramped
+  Half and Half}. O método \textit{Full}, gerada um indivíduo preenchendo todos os
+seus nós. O método \textit{Grow}, em contraste com o método anterior, preenche
+um usuário não necessariamente preenchendo todos os nós. Por fim, o último método
+gera individuos utilizando os dois métodos anteriores, com 50\% de probabilidade
+para ambos.
+
+Nessa implementação, há suporte para os três tipos de geração. O método
+\textit{Full} é gerado iterativamente, preenchendo os $L-1$ niveis da árvore do
+indívido com funções ou operadores e a última camada com terminais (constantes
+ou variáveis).  O método \textit{Grow} é gerado com uma função recursiva, que
+escolhe um operador ou função como raíz e utiliza uma função de distribuição
+uniforme para decidir se avança ou não mais um nível em cada ramo da árvore,
+isto é, o filho à esquerda ou à direita. Já o método \textit{Ramped
+  Half-and-Half} utiliza também uma função de distruibuição uniforme para
+decidir qual dos dois métodos utilizar.
+
+\subsection{Operadores de Seleção}
+
+Dois operadores de seleção que são frequentemente utilizados são o
+\textit{Roulette Wheel} e o \textit{k-Tournament}. O primeiro método seleciona
+algum indivíduo da população com probabilidade proporcional a sua
+\textit{fitness}, isto é, $p(i)=f_i\sum_{k=0}^{N}f_k$. Já o último método
+amostra \textit{k} indivíduos aleatoriamente e seleciona o indivíduo que possui
+a maior \textit{fitness} dessa amostragem.
+
+\subsection{Operadores de Crossover}
+\subsection{Operadores de Mutação}
+\subsection{Eletismo}
+\subsection{\textit{Fitness}}
+
 \section{Experimentos}
 \section{Conclusão}
 \end{document}
