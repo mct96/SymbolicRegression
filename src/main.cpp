@@ -178,7 +178,7 @@ int main(int argc, char **argv)
         params.seeds(seed);
         symbolic_regression_t sr{params, training};
         sr.train();
-        report += sr.report() + "\n\n";
+        report += sr.report();
     }
 
     if (!outfile.empty()) {

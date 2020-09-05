@@ -931,10 +931,10 @@ parameters_t symbolic_regression_t::parameters() const
 std::string symbolic_regression_t::report() const
 {
     std::string report_text{};
-    report_text = static_cast<std::string>(_parameters) +  "\n";
-    for (auto state: _states)
-        report_text += static_cast<std::string>(state) + "\n";
-
+    //report_text = static_cast<std::string>(_parameters) +  "\n";
+    //    for (auto state: _states)
+    //  report_text += static_cast<std::string>(state) + "\n";
+    report_text += static_cast<std::string>(_states.back()) + "\n";
     return report_text;
 }
 
@@ -1023,7 +1023,7 @@ void symbolic_regression_t::next_generation()
            pr = params._prob_reproduction;
     
     std::size_t crossover_sz = pc * pop_sz, mutation_sz = pm * pop_sz,
-        reproduction_sz = pr * pop_sz;
+        reproduction_sz = pop_sz - crossover_sz - mutation_sz;
     
     individuals_t new_pop{};
     do_crossover(new_pop, crossover_sz);

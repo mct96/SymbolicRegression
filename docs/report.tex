@@ -1,10 +1,15 @@
 \documentclass[a4paper]{paper}
 \usepackage[left=3cm, right=3cm, top=2cm, bottom=3cm]{geometry}
 
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage[sort&compress]{natbib}
 \usepackage[portuguese]{babel}
+\usepackage[hidelinks]{hyperref}
 \usepackage{xcolor}
 \usepackage[inline]{enumitem}
 \usepackage{amsmath}
+\usepackage{mathtools}
 \usepackage{tikz}
 \usetikzlibrary{trees}
 
@@ -140,14 +145,14 @@ O restante deste relatório é dividido em 3 seções:
   experimentos.
 \end{ilist}
 
-\section{Metodologia}
+\section{Metodologia} \label{sec:metodologia}
 Nesta seção é descrito os datelhes de implementação e as decisões de design
 aplicadas neste projeto. A descrição e detalhes são apresentados na ordem:
 representação dos indivíduos, métodos de geração de indivíduos, métodos de
 seleção, operador de crossover, operador de mutação, eletismo e mecânismos de
 controle (ou de parada).
 
-\subsection{Reprentação dos indivíduos}
+\subsection{Reprentação dos indivíduos} \label{subsec:representacao}
 A representação dos indivíduos impacta diretamente na performance do sistema e
 na expressividade dos invidívuos. Portanto, a princípio é apresentado como o
 genótipo do indivíduo é definido e como ele é codificado.
@@ -192,7 +197,7 @@ semântico e como vetor contíguo na memória.  Espera-se que com essa estrutura
 haja um ganho na performance devido a redução dos efeitos da indireção e por
 conseguência de \textit{cache miss}.
 
-\subsection{Operadores de Geração}
+\subsection{Operadores de Geração} \label{subsec:generation}
 
 A literatura de define vários operadores de geração de indivíduos, como o método
 \textit{Full}, \textit{Grow} e a combinação de ambos, denominado \textit{Ramped
@@ -212,20 +217,202 @@ isto é, o filho à esquerda ou à direita. Já o método \textit{Ramped
   Half-and-Half} utiliza também uma função de distruibuição uniforme para
 decidir qual dos dois métodos utilizar.
 
-\subsection{Operadores de Seleção}
+\subsection{Operadores de Seleção} \label{subsec:selection}
 
 Dois operadores de seleção que são frequentemente utilizados são o
 \textit{Roulette Wheel} e o \textit{k-Tournament}. O primeiro método seleciona
 algum indivíduo da população com probabilidade proporcional a sua
-\textit{fitness}, isto é, $p(i)=f_i\sum_{k=0}^{N}f_k$. Já o último método
+\textit{fitness}, isto é, $p(i)=f_i/\sum_{k=0}^{N}f_k$. Já o último método
 amostra \textit{k} indivíduos aleatoriamente e seleciona o indivíduo que possui
 a maior \textit{fitness} dessa amostragem.
 
-\subsection{Operadores de Crossover}
-\subsection{Operadores de Mutação}
+Na aplicação desenvolvida é possível utilizar ambos os métodos de seleção. Para
+o \textit{k-Tournament} também é possível especificar o valor de \textit{k}.
+Essa flexibilidade facilita os testes e a escolha do valor adequado para o
+parâmetro, que ajusta a pressão seletiva da seleção e, assim, na interfere na
+convergência da população.
+
+\subsection{Operadores de \textit{Crossover}} \label{subsec:crossover}
+
+A operação de \textit{crossover} utiliza o \hyperref[subsec:selection]{operador
+  de seleção} para a escolha de dois indivíduos para que eles possam
+reproduzir. A reprodução depende de dois fatores: a probabilidade de
+\textit{crossover} ($p_c$) e o método de \textit{crossover}.  Uma método comum
+para realizar esse evento é denominado troca de sub-árvore, onde duas árvores
+são selecionadas utilizando os operadores de seleção e para cada árvore um ponto
+é selecionado aleatóriamente. Para uma árvore, o pai, a sub-árvore com raíz no
+ponto selecionado é removido e no lugar é inserido a sub-árvore com raíz no
+ponto selecionado na outra árvore, a mãe. A escolha do ponto que determina a
+raíz da sub-árvore é feito aleatóriamente, porém , na implementação do
+algoritmo, a escolha desses pontos é feita de tal modo que a soma da
+profundidade da árvore pai da raíz até o ponto selecionado com a profundidade da
+sub-árvore oriunda dá árvore mãe não seja maior de que o comprimento máximo que
+um indivíduo pode possuir.
+
+No que tange a implementação, o parâmetro $p_c$ pode assumir qualquer valor no
+intervalo $(0, 1)$. A decisão desse parâmetro pode alterar o valor dos
+\hyperref[subsec:mutation]{operadores de mutação} ($p_m$) e do
+\hyperref[subsec:reproduction]{operador de reprodução} ($p_r$). A forma como a
+probabilidade deles pode ser ajustada automaticamente em situações específicas é
+descrito na seção \nameref{subsec:smart_par}.
+
+\subsection{Operadores de Mutação} \label{subsec:mutation}
+
+A literatura define os operadores de dois tipos de operadores de mutação:
+mutação de sub-árvore e \textit{one-point mutation} (OPM). No primeiro método um
+ponto é escolhido aleatóriamente na árvore e, a partir desse ponto, uma
+sub-árvore é gerada aleatóriamente. No algoritmo implementado, o método de
+geração da sub-árvore é o mesmo empregado no método \textit{grow} de geração
+(veja Seção \ref{subsec:generation}). O outro método de mutação é o OPM. Esse
+método é aplicado sobre todos os nós e terminais da árvore do indivíduo, onde há
+a probabilidade de $p_op$ de haver mutação nesse nó. A mutação em um nó
+específico ocorre alterando o elemento contido nele por outro da mesma classe,
+por exemplo, em um nó contendo a função $\sin$, a OPM pode alterá-lo para
+$\tan$, ou seja, manteve a classe (uma função), porém alterou o elemento contido
+no nó.
+
+Na implementação, ambos os métodos possuem igual probabilidade de serem
+empregados (50\%-50\%, respectivamente), porém no caso do OPM a probabilidade de
+mutação de cada nós é especificado separadamente e é possível controlar o valor
+dessa probabilidade através da constante $p_op$, que controla a probabilidade de
+OPM.
+
+\subsection{Operador de Reprodução} \label{subsec:reproduction}
+
+Quando a probabilidade de \textit{crossover} e de mutação somadas é menor do que
+100\%, algebricamente expresso por $p_c + p_m < 1$, entra em ação o operador
+de reprodução, que basicamente seleciona indivíduos da população utilizando
+o operador de seleção selecionado até que a próxima geração atinja o tamanho
+máximo da população.
+
+Esse parâmetro pode ser ajustado na aplicação através do parâmetro $p_r$, e,
+dessa forma, os operadores de mutação ($p_m$) e de \textit{crossover} ($p_c$)
+são ajustados automaticamente.
+
 \subsection{Eletismo}
+
+Após a geração da próxima geração de indivíduos há duas possibilidades:
+descartar a população anterior ou manter os indivíduos da população anterior
+com a nova população e selecionar os que possuem maior \textit{fitness} em ambas
+as populações. Essa última abordagem é denominada eletismo.
+
+O sistema desenvolvido permite que a aplicação do eletismo seja controlado pelo
+parâmetro $E$, que indica se deve ou não ocorrer eletismo.
+
 \subsection{\textit{Fitness}}
 
+A \textit{Fitness} determina o quão adaptado um indivíduo está e é utilizado
+para comparação entre os indivíduos. A função para calcular a \textit{fitness}
+está relacionada ao problema e no caso da RS algumas formas de mensurar a
+\textit{fitness} de um indivíduos são o erro médio absoluto (MSA), o error médio
+quadrado (MSE) e a raiz do erro médio quadrado (RMSE). Independente da métrica
+utilizada para calcular a \textit{fitness}, o objetivo é minimizar o erro.
+
+Na implementação desenvolvida todas as três métricas descritas estão disponíveis
+e fica a critério do usuário a escolha de qual métrica de erro utilizar.
+
+\subsection{Ajuste Inteligente de Parâmetros}\label{subsec:smart_par}
+
+As probabilidades de \textit{crossover} ($p_c$), de mutação ($p_m$) e de reprodução
+($p_r$) estão relacionadas através da seguinte equação:
+\begin{equation} \label{eq:prob_stability}
+  p_c + p_m + p_r = 1
+\end{equation}
+Geralmente, é comum atribuir valores altos para $p_c$ e mais baixos $p_m$, porém
+quando eles não somam a 1, o operador de recombinação $p_r$ é atribuido ao
+complemento, de tal forma que a equação \ref{eq:prob_stability} é satisfeira.
+
+Outra forma de controle ocorre quando o usuário atribui um valor para $p_r$, neste
+caso, os valores de $p_c$ e $p_m$ são ajustado para que a soma deles resulte em
+$1-p_r$. Quando isso ocorre, a proporção relativa entre eles é mantida, isto é:
+
+\noindent\begin{minipage}{.5\linewidth}
+  \begin{equation*}
+    p_c = \frac{p_c}{p_c+p_m}\times (1-p_r)  
+  \end{equation*}
+\end{minipage}
+\begin{minipage}{.5\linewidth}
+  \begin{equation*}
+    p_m = \frac{p_m}{p_c+p_m}\times (1-p_r)  
+  \end{equation*}
+\end{minipage}
+
+\subsection{Ambiente para Testes}
+
+Devido ao fato da GP tomar decisões aleatóriamente, o resultado pode variar
+entre exuções. Para alcançar um grau de confiança nos resultados obtidos, é
+necessário repetir os testes diversas vezes. Para isso, o sistema implementado
+possui suporte para testes.
+
+Para testar os alguns parâmetro o usuário deve fornecer um arquivo \texttt{*.csv},
+onde cada linha deve conter uma lista de números inteiros que são utilizados
+como \textit{seeds} para o geradores de números aleatórios. O gerador utilizado
+na implementação é o \texttt{32-bit Mersenne Twister}. Os testes são repetidos
+para cada linha contida no arquivo contendo as \textit{seeds}.
+
+\subsection{Desempenho}
+
+Conforme mensionado nas seções anteriores, as escolhas da representação dos
+indivíduos foi feita tendo em vista a performance do sistema. Um fator a ser
+explorado é a performance do sistema com a introdução de paralelismo.
+
 \section{Experimentos}
+Nesta seção é apresentado resultados de alguns experimentos. Os resultados
+apresentados são estatísticas geradas a partir da execução como os parâmetros
+fixos alterando apenas as \textit{seeds} do gerador pseudo-aleatório. São
+fornecidos para o teste 31 sementes, cada uma contendo 20 números inteiros
+gerados aleatóriamente.  Ao aplicar o mesmo conjunto de sementes, os resultados
+devem ser reproduzíveis.
+
+Os valores dos parâmetros usandos nos experimentos são apresentados na
+\hyperref[tbl:tests]{Tabela \ref*{tbl:tests}}. As variáveis $X$, $W$, $Y$ e $Z$
+são determinadas baseado no resultados dos experimentos anteriores. O primeiro
+conjunto de experimentos tem a finalidade de identificar o tamanho da população
+que atinge o menor valor de \textit{fitness} e o resultado desse conjunto define
+o valor de $X$ para os demais experimentos. O segundo conjunto varia os
+parâmetros $p_c$ e $p_m$, esses testes têm por objetivo verificar a influência
+do \textit{crossover} e da mutação na população, o melhor conjunto de parâmetros
+definem os valores de $Y$ e $Z$ para os próximos experimentos. O penúltimo
+conjunto de experimentos definem valor da variável $W$, que representa o tamanho
+do torneio na seleção. Por fim, o resultado do último experimento é comparado
+mantendo os parâmetros, mas ativando o eletismo.
+
+\noindent
+\begin{table}[b]
+  \caption{Parâmetros dos aplicados nos testes.}
+  \label{tbl:tests}
+  \begin{tabularx}{1\textwidth}{| X || X | X | X | X | X | X | X | X | X |}
+
+    \hline
+    & P   & Gen. & Sel. & Prof. & $p_c$ & $p_m$ & $p_r$ & E & Fitness \\
+    \hline
+    T1  & 50  & RHH & 7 & 2-T  & 0.9  & 0.05 & 0.05 & 1 & MAE \\
+    T2  & 100 & RHH & 7 & 2-T  & 0.9  & 0.05 & 0.05 & 1 & MAE \\
+    T3  & 300 & RHH & 7 & 2-T  & 0.9  & 0.05 & 0.05 & 1 & MAE \\
+    T4  & 500 & RHH & 7 & 2-T  & 0.9  & 0.05 & 0.05 & 1 & MAE \\
+    \hline
+    T5  &$X$  & RHH & 7 & 2-T  & 0.9  & 0.05 & 0.05 & 0 & MAE \\
+    T6  &$X$  & RHH & 7 & 2-T  & 0.6  & 0.3  & 0.1  & 1 & MAE \\
+    \hline
+    T7  &$X$  & RHH & 7 & 3-T  &$Y$   & $Z$  & 0    & 1 & MAE \\
+    T8  &$X$  & RHH & 7 & 7-T  &$Y$   & $Z$  & 0    & 1 & MAE \\    
+    \hline
+    T9  &$X$  & RHH & 7 & $W$-T  &$Y$   & $Z$  & 0    & 0 & MAE \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+
+\subsection{Dataset Experiamental}
+Este dataset possui uma versão sem ruído e uma versão ruidosa. O algoritmo será
+aplicado em ambas as versões.
+
+\subsection{Dataset Real}
+
 \section{Conclusão}
+
+
+\citet*{poli2008}
+\bibliographystyle{plainnat}
+\bibliography{bibliography}
 \end{document}

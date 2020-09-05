@@ -13,15 +13,34 @@ cmake --build .                 # execute generators tools.
 cd src                          # go to exetable generated path.
 
 # start tests.
-dataset="../../data/concrete.csv"
+dataset="../../data/SR_div_noise.csv"
 seeds="../../seeds.csv"
+G=40
 
 for pop_sz in 50 100 300 500
 do
-    output_1="test_pop_sz_$pop_sz_prob.csv"
-    parameters_1="$dataset -p $pop_sz -G 40 -t $seeds -g ramped_hh -f 0.1 -k 3 -d 7 -n 8 -o $output_1 -M 0.3 -c .6 -E"
-    ./sreg $parameters_1
+    output_1="SR_div_test_${pop_sz}.csv"
+    parameters_1="$dataset -p ${pop_sz} -G $G -t $seeds -g ramped_hh -f 0.000000001 -k 3 -d 7 -n 1 -o ${output_1} -M 0.05 -c .9"
+#    ./sreg $parameters_1
 done
 
-#echo $parameters_1
-#./sreg $parameters_1
+pop_sz=300
+output_2="SR_div_test_pc60_pm30.csv"
+parameters_2="$dataset -p ${pop_sz} -G $G -t $seeds -g ramped_hh -f 0.000000001 -k 3 -d 7 -n 1 -o ${output_2} -M 0.3 -c .6"
+#./sreg $parameters_2
+
+for k in 5 7 10
+do
+    output_3="SR_div_test_${k}.csv"
+    parameters_3="$dataset -p ${pop_sz} -G $G -t $seeds -g ramped_hh -f 0.000000001 -k ${k} -d 7 -n 1 -o ${output_3} -M 0.3 -c .6"
+#./sreg $parameters_3
+done
+
+output_4="SR_div_test_Eletism.csv"
+parameters_4="$dataset -p ${pop_sz} -G $G -t $seeds -g ramped_hh -f 0.000000001 -k 5 -d 7 -n 1 -o ${output_4} -M 0.3 -c .6"
+#./sreg $parameters_4
+
+
+output_5="SR_div_test_Noise.csv"
+parameters_4="$dataset -p ${pop_sz} -G $G -t $seeds -g ramped_hh -f 0.000000001 -k 5 -d 7 -n 1 -o ${output_5} -M 0.3 -c .6 -E"
+./sreg $parameters_4
