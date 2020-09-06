@@ -1,9 +1,31 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{4}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Baeck(1994)]{Baeck1994}
+Thomas Baeck.
+\newblock {Selective pressure in evolutionary algorithms: A characterization of
+  selection mechanisms}.
+\newblock \emph{IEEE Conference on Evolutionary Computation - Proceedings},
+  1\penalty0 (1):\penalty0 57--62, 1994.
+\newblock \doi{10.1109/icec.1994.350042}.
+
+\bibitem[Faria et~al.(2013)Faria, Silva, and Sobral]{faria2013}
+Nuno Faria, Rui Silva, and Jo{\~{a}}o~L. Sobral.
+\newblock {Impact of data structure layout on performance}.
+\newblock \emph{Proceedings of the 2013 21st Euromicro International Conference
+  on Parallel, Distributed, and Network-Based Processing, PDP 2013}, pages
+  116--120, 2013.
+\newblock \doi{10.1109/PDP.2013.24}.
+
+\bibitem[Jin et~al.(2019)Jin, Fu, Kang, Guo, and Guo]{jin2019}
+Ying Jin, Weilin Fu, Jian Kang, Jiadong Guo, and Jian Guo.
+\newblock {Bayesian Symbolic Regression}.
+\newblock 2019.
+\newblock URL \url{http://arxiv.org/abs/1910.08892}.
 
 \bibitem[Poli et~al.(2008)Poli, Langdon, and McPhee]{poli2008}
 Riccardo Poli, W.B. Langdon, and N.F. McPhee.

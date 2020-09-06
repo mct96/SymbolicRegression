@@ -28,20 +28,21 @@ fitting}. Para isso, um conjunto de amostras é fornecido, e o resultado é uma
 função que possui o menor erro entre os pontos amostrados e o valor dela nesses
 pontos.
 
-A regressão simbólica pode ser resolvida de diversas maneiras. Uma delas é
-utilizando programação genética (GP, do inglês \textit{Genetic Programming}).  A
-GP é semelhante ao Algoritmo Genético (GA, do inglês Genetic Algorithm) no que
-tange os operadores genéticos, pois ambos definem operadores de inicialização,
-seleção, cruzamento, mutação e \textit{fitness}.
+Há diversos métodos de aplicar a regressão simbólica~\citep{jin2019}. Uma delas
+é utilizando programação genética (GP, do inglês \textit{Genetic
+  Programming})~\citep{poli2008}.  A GP é semelhante ao Algoritmo Genético (GA,
+do inglês Genetic Algorithm) no que tange os operadores genéticos, pois ambos
+definem operadores de inicialização, seleção, cruzamento, mutação e
+\textit{fitness}.
 
 Na literatura, há diversas possiveis implementações dos operadores de GP. Por
 exemplo, na fase de geração de indivíduos, que podem ser gerados utilizando o
 método \textit{full} ou \textit{grow}. No primeiro método, o indivíduo é
-complemente gerado, isto é, todas os seus locus são preenchidos, enquanto que
-no último, não há essa necessidade. Na prática, é comum haver a combinação dos
-dois métodos, denominado \textit{ramped half-and-half}, onde parte da população
-é gerada um dos método e o restante utilizando o outro. A seguir é apresentado
-as alternativas comuns para o desenvolvimento de cada operador.
+complemente gerado, isto é, todos os seus nós são preenchidos, enquanto que no
+último, não há essa necessidade. Na prática, é comum haver a combinação dos dois
+métodos, denominado \textit{ramped half-and-half}~\citep{poli2008}, onde parte
+da população é gerada um dos método e o restante utilizando o outro. A seguir é
+apresentado as alternativas comuns para o desenvolvimento de cada operador.
 
 Os operadores de seleção são os mesmos dos utilizados em GA:
 \textit{roulette~whell} e \textit{k-tournament}. O primeiro seleciona o
@@ -52,7 +53,8 @@ f_k/\sum_{i=0}^{N}f_i$. O outro método é o \textit{k-tournament}, que amostra
 $k$ indivíduos aleatóriamente e seleciona o indivíduo com maior \textit{fitness}
 nesse grupo. A diferença entre esses algoritmos está na pressão seletiva imposta
 aos indivíduos. \textcolor{red}{Falar sobre menor pressão seletiva no começo e
-  aumentar no final}.
+  aumentar no final}, porém \citet{poli2008} informa que o método
+\textit{tournament} é o mais comum.
 
 O operador de cruzamento (ou \textit{crossover}) mais comum é denominado troca
 de sub-árvore. Esse operador funciona da seguinte maneira: dois indivíduos
@@ -92,10 +94,12 @@ representados linearmente ou em árvore. Ambas as representações possuem
 vantagens, porém é mais comum a implementação em árvore. Juntamente com a
 representação é importante definir os conjuntos de valores que eles podem
 assumir. A escolha do conjunto de funções e operadores devem atender a três
-restrições: Suficiência\footnote{O conjunto de operadores deve ser capaz de
-representar uma solução apropriada.}, Fechamento\footnote{Os operadores devem
-suportar todos os resultados dos demais.} e Parcimônia\footnote{O conjunto de
-operadores não deve conter elementos desnecessários.}.
+restrições: Suficiência, Parcimônia e Fechamento~\footnote{Suficiência significa
+que é possível expressar uma solução para o problema utilizando o conjunto de
+operadores fornecido. Fechamento significa que os operadores devem suportar
+todos os resultados dos demais. Parcimônia significa que o conjunto de
+operadores não deve conter elementos desnecessários para representar os
+indivíduos.}.
 
 Por exemplo, para uma árvore com um conjunto de funções F:
 $\{\sin(\cdot),\cos(\cdot)\}$ , com um conjunto de operadores $S: \{\times, + ,
@@ -132,9 +136,10 @@ $a$ e $b$ são constantes numéricas e $x$ e $y$ são variáveis independentes, 
 
 Neste trabalho, o GP é utilizado para resolver o problema da RS. Os detalhes e
 parâmetros da implementação são apresentados nas próximas seções. Para mensurar
-a eficiência, o algoritmo é aplicado a 3 dataset, dois do quais possuem
-apresentam versões com e sem ruídos aleatórios. O último dataset é um real e
-contém oito váriaveis aleatórias.
+a eficiência, o algoritmo é aplicado a 2 dataset, o primeiro é um dataset para
+teste, que possui uma versão pura e outra com raídos aleatórios. O outro dataset
+é um real e contém 8 colunas de \textit{features} e uma representando a
+resposta.
 
 O restante deste relatório é dividido em 3 seções: 
 \begin{ilist}
@@ -150,8 +155,8 @@ O restante deste relatório é dividido em 3 seções:
 Nesta seção é descrito os datelhes de implementação e as decisões de design
 aplicadas neste projeto. A descrição e detalhes são apresentados na ordem:
 representação dos indivíduos, métodos de geração de indivíduos, métodos de
-seleção, operador de crossover, operador de mutação, eletismo e mecânismos de
-controle (ou de parada).
+seleção, operador de crossover, operador de mutação, operador de reprodução,
+eletismo e mecânismos de controle (ou de parada).
 
 \subsection{Reprentação dos indivíduos} \label{subsec:representacao}
 A representação dos indivíduos impacta diretamente na performance do sistema e
@@ -162,22 +167,22 @@ genótipo do indivíduo é definido e como ele é codificado.
 Os indivíduos em GP são representados por árvores sintáticas, que possuem nós e
 terminais. Os nós são operadores aritméticos ou funções e os terminais são
 constantes ou variáveis. O conjunto de nós e terminais juntos formam o
-\textit{primitive set} do GP. Neste sistema o conjunto de funções são as funções
-trigonométricas ($\sin$, $\cos$ e $\tan$) e o logaritmo com bases diferentes
-($\log$ e $\log10$). As constantes são geradas aleatóriamente utilizando uma
-distribuição multimodal. A escolha desse método se deve ao fato que muitas
-função matemáticas possuem contantes no intervalo $(0, 1]$ e com sinal variado.
-  As variáveis são geradas aleatóriamente, onde um número inteiro no intervalo
-  $(0, N]$, onde $N$ deve ser menor ou igual ao número de colunas no dado de
-    entrada, ou seja, se há 10 colunas de \textit{features} e uma que representa
-    a variável de resposta, então $N$ deve ser igual ao número de
-    \textit{features} ou menor.
+\textit{primitive set} do GP~\citep{poli2008}. Neste sistema o conjunto de
+funções são as funções trigonométricas ($\sin$, $\cos$ e $\tan$) e o logaritmo
+com bases diferentes ($\log$ e $\log10$). As constantes são geradas
+aleatóriamente utilizando uma distribuição multimodal. A escolha desse método se
+deve ao fato que muitas função matemáticas possuem contantes no intervalo $(0,
+1]$ e com sinal variado.  As variáveis são geradas aleatóriamente, onde um
+  número inteiro no intervalo $(0, N]$, onde $N$ deve ser menor ou igual ao
+    número de colunas no dado de entrada, ou seja, se há 10 colunas de
+    \textit{features} e uma que representa a variável de resposta, então $N$
+    deve ser igual ao número de \textit{features} ou menor.
 
 Outro aspecto importante na representação dos invíduos são, geralmente,
 representados utilizam a estrutura de árvore. A literatura define diversas
 estruturas de árvores, como árvores binárias, B-\textit{tree}, entre outras. Um
 problema na representação utilizando esses tipos de árvores é a indireção, que
-pode afetar a performance do sistema, portanto, para evitar os efeitos da
+pode afetar a performance do sistema~\citep{faria2013}, portanto, para evitar os efeitos da
 indireção de ponteiros, os indivíduos são representados utilizando
 \textit{Heaps}, que são árvores especializadas. Nesse tipo de estrutura, os
 ponteiro são implicitamente substituidos por indices. O nó a esquerda está na
@@ -185,13 +190,14 @@ posição $2n+1$ e $2n + 2$. Outra vantagem no use de \textit{Heaps} está no fa
 dos dados serem armazenados linearmente, o que reduz os efeitos do \textit{cache
   miss}, causado por dados espalhados na memória.
 
-O sistema é flexível na máxima profundidade da indivíduo (representado por uma
-árvore) e permite ao usuário especificar qualquer profundidade aos indivíduos.
-Um fator que pode ser vantajoso ou não é que o espaço ocupado por um indivíduo
-é determinístico, ou seja, cada nível possui $2^l$ nós, onde $l$ é o nível.
-Cada indivíduo possui $\sum_{l=0}^{L}2^l=2^{L}-1$, onde $L$ é a profundidade máxima
-da árvore. Portanto, para uma população com $N$ indivíduos e profundidade máxima
-$L$, há $N\times(2^{L}-1)\times\texttt{sizeof(nó)}$.
+O sistema é flexível na escolha da máxima profundidade que um indivíduo
+(representado por uma árvore) possui e permite ao usuário especificar qualquer
+profundidade aos indivíduos.  Um fator que pode ser vantajoso é que o espaço
+ocupado por um indivíduo é determinístico, ou seja, cada nível possui $2^l$ nós,
+onde $l$ é o nível.  Cada indivíduo possui $\sum_{l=0}^{L}2^l=2^{L}-1$, onde $L$
+é a profundidade máxima da árvore. Portanto, para uma população com $N$
+indivíduos e profundidade máxima $L$, há
+$N\times(2^{L}-1)\times\texttt{sizeof(nó)}$.
 
 Em conclusão, os indivíduos são representados como árvore no ponto de vista
 semântico e como vetor contíguo na memória.  Espera-se que com essa estrutura
@@ -206,7 +212,7 @@ A literatura de define vários operadores de geração de indivíduos, como o m�
 seus nós. O método \textit{Grow}, em contraste com o método anterior, preenche
 um usuário não necessariamente preenchendo todos os nós. Por fim, o último método
 gera individuos utilizando os dois métodos anteriores, com 50\% de probabilidade
-para ambos.
+para ambos~\citep{poli2008}.
 
 Nessa implementação, há suporte para os três tipos de geração. O método
 \textit{Full} é gerado iterativamente, preenchendo os $L-1$ niveis da árvore do
@@ -225,7 +231,10 @@ Dois operadores de seleção que são frequentemente utilizados são o
 algum indivíduo da população com probabilidade proporcional a sua
 \textit{fitness}, isto é, $p(i)=f_i/\sum_{k=0}^{N}f_k$. Já o último método
 amostra \textit{k} indivíduos aleatoriamente e seleciona o indivíduo que possui
-a maior \textit{fitness} dessa amostragem.
+a maior \textit{fitness} dessa amostragem. O método \textit{Tournament} possui
+a vantagem de permitir o ajuste da pressão seletiva aplicada, onde valores
+menores de $k$ geram baixa pressão seletiva ao passo que grandes valores de $k$
+aumentam a pressão seletiva~\citep{Baeck1994}.
 
 Na aplicação desenvolvida é possível utilizar ambos os métodos de seleção. Para
 o \textit{k-Tournament} também é possível especificar o valor de \textit{k}.
@@ -429,7 +438,7 @@ mantendo-se a população com 500 indivíduos.
     stddev & 55.94 & 76.42 & 0.03 & 1080461.83 & 0.01 & 48259.57 & 2159.41 & \\ \cline{1-8}
     CV & 1.29 & 0.98 & 0.19 & 3.84 & 0.03 & 3.82 & 3.74 & \\ \cline{1-8}
     max. & 306.00 & 218.00 & 0.20 & 5960136.66 & 0.21 & 266278.53 & 11925.03 & \\ \cline{1-8}
-    min. & 26.00 & 0.00 & 0.01 & 16.40 & 0.20 & 1.04 & 0.34 & \\ \hline \hline
+    min. & 26.00 & 0.00 & 0.01 & 16.40 & 0.20 & 1.04 & 0.34 & \\ \hline
   \end{tabular}
 \end{table}
 
@@ -460,7 +469,7 @@ probabilidade de mutação e , por consequência, diminuir a probabilidade de
     stddev  & 72.92 & 73.82 & 0.03 & 28313559.15 & 0.01 & 1265314.09 & 57887.15 & \\ \cline{1-8}
     CV      & 0.80 & 0.36 & 0.17 & 4.24 & 0.03 & 4.23 & 4.18 & \\ \cline{1-8}
     max.    & 484.00 & 252.00 & 0.20 & 157549013.24 & 0.21 & 7039707.91 & 321514.74 & \\ \cline{1-8}
-    min.    & 75.00 & 0.00 & 0.02 & 628.67 & 0.19 & 36.60 & 4.35 & \\ \hline \hline
+    min.    & 75.00 & 0.00 & 0.02 & 628.67 & 0.19 & 36.60 & 4.35 & \\ \hline x
   \end{tabular}
 \end{table}
 
@@ -503,7 +512,7 @@ avg. & 218.68 & 148.97 & 0.12 & 8627.45 & 0.25 & 418.71 & 28.16 & \multirow{5}{1
 stddev & 73.40 & 32.59 & 0.06 & 20553.19 & 0.11 & 952.17 & 57.26 & \\ \cline{1-8}
 CV. & 0.34 & 0.22 & 0.45 & 2.38 & 0.46 & 2.27 & 2.03 & \\ \cline{1-8}
 max. & 358.00 & 199.00 & 0.18 & 99365.38 & 0.57 & 4597.18 & 270.40 & \\ \cline{1-8}
-min. & 129.00 & 0.00 & 0.00 & 50.11 & 0.12 & 4.11 & 1.04 & \\ \hline \hline
+min. & 129.00 & 0.00 & 0.00 & 50.11 & 0.12 & 4.11 & 1.04 & \\ \hline 
   \end{tabular}
 \end{table}
 
@@ -533,7 +542,7 @@ avg. & 13.45 & 28.10 & 0.12 & 0.13 & 0.13 & 0.00 & 0.13 & \multirow{5}{1.5cm}{1}
 stddev & 36.93 & 39.89 & 0.06 & 0.05 & 0.05 & 0.00 & 0.05 & \\ \cline{1-8}
 CV. & 2.75 & 1.42 & 0.47 & 0.42 & 0.42 & 2.72 & 0.43 & \\ \cline{1-8}
 max. & 207.00 & 172.00 & 0.18 & 0.18 & 0.18 & 0.02 & 0.18 & \\ \cline{1-8}
-min. & 1.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & \\ \hline \hline
+min. & 1.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & \\ \hline 
   \end{tabular}
 \end{table}
 
@@ -544,9 +553,32 @@ da população ($k=5$) e sem eletismo, atingem o menor valor de \textit{fitness}
 entre todos os experimentos conduzidos. Para verificar a robustez do algoritmo
 os parâmetros obtidos são também aplicados para o dataset que contém ruídos.
 
+Os resultados apresentados na \hyperref[tbl:noise_dataset]{Tabela~\ref*{tbl:noise_dataset}}
+são semelhantes ao resultados obtidos sem a presença de ruído, conforme pode ser
+observado na \hyperref[tbl:var_eletism]{Tabela~\ref*{tbl:var_eletism}}.
+
+\begin{table}
+  \center
+  \caption{Resultados da aplicação no dataset com ruídos}
+  \label{tbl:noise_dataset}
+  \begin{tabular}{| c | c | c | c | c | c | c | c |}
+    \hline
+    &  \# U & \# M & min. & max. & median. & stddev & avg. \\ \hline 
+avg. & 299.19 & 158.16 & 0.10 & 360372.62 & 0.21 & 16253.90 & 758.62 \\ \hline 
+stddev & 107.66 & 19.55 & 0.08 & 1767685.76 & 0.10 & 78952.58 & 3532.77 \\ \hline 
+CV & 0.36 & 0.12 & 0.81 & 4.91 & 0.49 & 4.86 & 4.66 \\ \hline 
+max. & 464.00 & 209.00 & 0.20 & 9867700.84 & 0.44 & 440855.16 & 19742.83 \\ \hline 
+min. & 145.00 & 132.00 & 0.00 & 74.91 & 0.03 & 4.87 & 0.8 \\ \hline
+  \end{tabular}
+\end{table}
 
 
 \subsection{Dataset Real}
+Neste experimento, o sistema é testado com um dataset real. Este dataset contêm
+9 colunas. Portanto, a regressão utiliza até 8 diferentes variáveis. Devido a
+complexidade do dataset, a profundidade da árvore é estabelecida como 7.
+
+
 
 \section{Conclusão}
 

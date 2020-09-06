@@ -121,7 +121,7 @@ public:
                  double threshold = 1.0,
                  double prob_crossover = 0.8,
                  double prob_mutation = 0.15,
-                 double prob_op_mutation = 0.15,
+                 double prob_op_mutation = 0.30,
                  double prob_reproduction = 0.05,
                  selection_method_t selection_method = selection_method_t::tournament,
                  std::size_t k = 5,

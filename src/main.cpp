@@ -173,21 +173,24 @@ int main(int argc, char **argv)
     // If you are using Emacs, I created a script named "random_generator.el"
     // to generate a list of random numbers.
 
-    std::string report{};
+    int i = 1;
     for (auto seed: seeds) {
+        std::string report{};
         params.seeds(seed);
         symbolic_regression_t sr{params, training};
         sr.train();
         report += sr.report();
-    }
-
-    if (!outfile.empty()) {
-        std::ofstream ofs{outfile};
-        ofs << report;
-        std::cout << "report saved in: " << outfile << "!" << std::endl;
-    } else {
-        std::cout << report << std::endl;
-    }
     
+
+        if (!outfile.empty()) {
+            std::ofstream ofs{outfile + "_"+ std::to_string(i)};
+            ofs << report;
+            std::cout << "report saved in: " << outfile << "!" << std::endl;
+        } else {
+            std::cout << report << std::endl;
+        }
+        
+        i++;
+    }
     return 0;
 }

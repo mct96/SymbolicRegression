@@ -44,4 +44,9 @@ parameters_4="$dataset -p ${pop_sz} -G $G -t $seeds -g ramped_hh -f 0.000000001 
 
 output_5="SR_div_test_Noise.csv"
 parameters_4="$dataset -p ${pop_sz} -G $G -t $seeds -g ramped_hh -f 0.000000001 -k 5 -d 7 -n 1 -o ${output_5} -M 0.3 -c .6"
-./sreg $parameters_4
+#./sreg $parameters_4
+
+dataset="../../data/concrete.csv"
+output_6="concrete_b.csv"
+parameters_5="$dataset -p 1200 -G 60 -t $seeds -g ramped_hh -f 0.000000001 -k 12 -d 8 -n 8 -o ${output_6} -M 0.3 -c .6"
+./sreg $parameters_5

@@ -5,47 +5,48 @@ Reallocating 'name_of_file' (item size: 1) to 9 items.
 The style file: plainnat.bst
 Reallocating 'name_of_file' (item size: 1) to 13 items.
 Database file #1: bibliography.bib
+Warning--empty journal in jin2019
 Warning--there's a number but no series in poli2008
 Warning--empty publisher in poli2008
-You've used 1 entry,
+You've used 4 entries,
             2773 wiz_defined-function locations,
-            600 strings with 5020 characters,
-and the built_in function-call counts, 490 in all, are:
-= -- 40
-> -- 30
-< -- 1
-+ -- 10
-- -- 9
-* -- 45
-:= -- 84
-add.period$ -- 6
-call.type$ -- 1
-change.case$ -- 5
-chr.to.int$ -- 1
-cite$ -- 4
-duplicate$ -- 21
-empty$ -- 34
-format.name$ -- 10
-if$ -- 95
+            622 strings with 5666 characters,
+and the built_in function-call counts, 2014 in all, are:
+= -- 182
+> -- 118
+< -- 3
++ -- 40
+- -- 36
+* -- 169
+:= -- 317
+add.period$ -- 18
+call.type$ -- 4
+change.case$ -- 23
+chr.to.int$ -- 4
+cite$ -- 11
+duplicate$ -- 91
+empty$ -- 149
+format.name$ -- 40
+if$ -- 416
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 2
-newline$ -- 15
-num.names$ -- 4
-pop$ -- 12
+missing$ -- 5
+newline$ -- 33
+num.names$ -- 16
+pop$ -- 46
 preamble$ -- 1
-purify$ -- 5
+purify$ -- 20
 quote$ -- 0
-skip$ -- 14
+skip$ -- 71
 stack$ -- 0
-substring$ -- 2
-swap$ -- 2
-text.length$ -- 1
+substring$ -- 59
+swap$ -- 13
+text.length$ -- 2
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 6
-warning$ -- 2
-while$ -- 3
+type$ -- 39
+warning$ -- 3
+while$ -- 17
 width$ -- 0
-write$ -- 23
-(There were 2 warnings)
+write$ -- 66
+(There were 3 warnings)

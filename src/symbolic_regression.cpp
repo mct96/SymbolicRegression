@@ -932,9 +932,9 @@ std::string symbolic_regression_t::report() const
 {
     std::string report_text{};
     //report_text = static_cast<std::string>(_parameters) +  "\n";
-    //    for (auto state: _states)
-    //  report_text += static_cast<std::string>(state) + "\n";
-    report_text += static_cast<std::string>(_states.back()) + "\n";
+        for (auto state: _states)
+    report_text += static_cast<std::string>(state) + "\n";
+        //report_text += static_cast<std::string>(_states.back()) + "\n";
     return report_text;
 }
 

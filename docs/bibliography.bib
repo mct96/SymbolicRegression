@@ -1,3 +1,14 @@
+@article{Jin2019,
+abstract = {Interpretability is crucial for machine learning in many scenarios such as quantitative finance, banking, healthcare, etc. Symbolic regression (SR) is a classic interpretable machine learning method by bridging X and Y using mathematical expressions composed of some basic functions. However, the search space of all possible expressions grows exponentially with the length of the expression, making it infeasible for enumeration. Genetic programming (GP) has been traditionally and commonly used in SR to search for the optimal solution, but it suffers from several limitations, e.g. the difficulty in incorporating prior knowledge; overly-complicated output expression and reduced interpretability etc. To address these issues, we propose a new method to fit SR under a Bayesian framework. Firstly, Bayesian model can naturally incorporate prior knowledge (e.g., preference of basis functions, operators and raw features) to improve the efficiency of fitting SR. Secondly, to improve interpretability of expressions in SR, we aim to capture concise but informative signals. To this end, we assume the expected signal has an additive structure, i.e., a linear combination of several concise expressions, whose complexity is controlled by a well-designed prior distribution. In our setup, each expression is characterized by a symbolic tree, and the proposed SR model could be solved by sampling symbolic trees from the posterior distribution using an efficient Markov chain Monte Carlo (MCMC) algorithm. Finally, compared with GP, the proposed BSR(Bayesian Symbolic Regression) method saves computer memory with no need to keep an updated 'genome pool'. Numerical experiments show that, compared with GP, the solutions of BSR are closer to the ground truth and the expressions are more concise. Meanwhile we find the solution of BSR is robust to hyper-parameter specifications such as the number of trees.},
+archivePrefix = {arXiv},
+arxivId = {1910.08892},
+author = {Jin, Ying and Fu, Weilin and Kang, Jian and Guo, Jiadong and Guo, Jian},
+eprint = {1910.08892},
+file = {:home/matheusc/Documents/Codes/symbolic regression/docs/paper/1910.08892.pdf:pdf},
+title = {{Bayesian Symbolic Regression}},
+url = {http://arxiv.org/abs/1910.08892},
+year = {2019}
+}
 @book{Poli2008,
 abstract = {A Field Guide to Genetic Programing is aimed at those new to genetic programming},
 author = {Poli, Riccardo and Langdon, W.B. and McPhee, N.F.},
@@ -10,4 +21,29 @@ pages = {8},
 title = {{A Field Guide to Genetic Programing}},
 url = {http://www.essex.ac.uk/wyvern/2008-04/Wyvern April 08 7126.pdf},
 year = {2008}
+}
+@article{Faria2013,
+abstract = {One key issue to design parallel applications that scale on multicore systems is how to overcome the memory bottleneck. This paper presents a study of the impact of data structure layouts in locality of memory references, providing insights on strategies to ameliorate the memory bottleneck. The paper compares the performance of Java and C++ STL collections and presents the impact of locality of reference optimisations in a molecular dynamics simulation case study. The case study shows that the selected data structure layout has impact on single core performance, becoming a critical factor in the application scalability on multicore systems. Moreover, data collections provided in the Java language compromise performance due to pointer chasing and lack of spatial locality of memory references. {\textcopyright} 2013 IEEE.},
+author = {Faria, Nuno and Silva, Rui and Sobral, Jo{\~{a}}o L.},
+doi = {10.1109/PDP.2013.24},
+file = {:home/matheusc/Documents/Codes/symbolic regression/docs/paper/faria2013.pdf:pdf},
+isbn = {9780769549392},
+journal = {Proceedings of the 2013 21st Euromicro International Conference on Parallel, Distributed, and Network-Based Processing, PDP 2013},
+keywords = {Java,collections,locality,multicore},
+pages = {116--120},
+title = {{Impact of data structure layout on performance}},
+year = {2013}
+}
+@article{Baeck1994,
+abstract = {Due to its independence of the actual search space and its impact on the exploration-exploitation tradeoff, selection is an important operator in any kind of Evolutionary Algorithm. In this paper, all important selection operators are discussed and quantitatively compared with respect to their selective pressure. The comparison clarifies that only a few really different and useful selection operators exist: Proportional selection (in combination with a scaling method), linear ranking, tournament selection, and ($\mu$,$\lambda$)-selection (respectively ($\mu$+$\lambda$)-selection). Their selective pressure increases in the order as they are listed here. The theoretical results are confirmed by an experimental investigation using a Genetic Algorithm with different selection methods on a simple unimodal objective function.},
+author = {Baeck, Thomas},
+doi = {10.1109/icec.1994.350042},
+file = {:home/matheusc/Documents/Codes/symbolic regression/docs/paper/selective-pressure-in-evolutionary-algorithms-a-characterization.pdf:pdf},
+isbn = {0780318994},
+journal = {IEEE Conference on Evolutionary Computation - Proceedings},
+number = {1},
+pages = {57--62},
+title = {{Selective pressure in evolutionary algorithms: A characterization of selection mechanisms}},
+volume = {1},
+year = {1994}
 }

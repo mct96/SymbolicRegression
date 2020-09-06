@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.6.29) (preloaded format=pdflatex 2020.8.17)  5 SEP 2020 17:32
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.6.29) (preloaded format=pdflatex 2020.8.17)  6 SEP 2020 00:05
 entering extended mode
 **./report.tex
 (report.tex
@@ -791,44 +791,41 @@ LaTeX Font Warning: Font shape `OT1/cmss/bx/it' undefined
 
 
 {/home/matheusc/.miktex/texmfs/data/pdftex/config/pdftex.map}] [2]
-Overfull \hbox (4.68593pt too wide) in paragraph at lines 223--229
+Overfull \hbox (4.68593pt too wide) in paragraph at lines 229--238
 \OT1/cmr/m/n/10 Dois op-er-adores de selec~ao que s~ao fre-quente-mente uti-li
 za-dos s~ao o \OT1/cmr/m/it/10 Roulette Wheel \OT1/cmr/m/n/10 e o \OT1/cmr/m/it
 /10 k-Tournament\OT1/cmr/m/n/10 .
  []
 
 [3] [4]
-Overfull \hbox (2.22221pt too wide) in paragraph at lines 330--340
+Overfull \hbox (2.22221pt too wide) in paragraph at lines 339--349
 $[]$ $[]$ 
  []
 
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
 [5]
-Overfull \hbox (17.11092pt too wide) in paragraph at lines 446--465
+Overfull \hbox (17.11092pt too wide) in paragraph at lines 455--474
  [] 
  []
 
-(report.bbl) [6] [7]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 545.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 545.
+[6] [7] (report.bbl) [8]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 589.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 589.
  (report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 545.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 545.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 589.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 589.
 Package rerunfilecheck Info: File `report.out' has not changed.
 (rerunfilecheck)             Checksum: 05D6C90A5EC7282325BFCC2BB692D62A;1118.
 
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 545.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 589.
  ) 
 Here is how much of TeX's memory you used:
- 18989 strings out of 483120
- 354147 string characters out of 2956793
- 658307 words of memory out of 3000000
- 33932 multiletter control sequences out of 15000+200000
+ 19002 strings out of 483120
+ 354344 string characters out of 2956793
+ 662509 words of memory out of 3000000
+ 33942 multiletter control sequences out of 15000+200000
  543176 words of font info for 58 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
  60i,14n,60p,412b,1360s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -849,9 +846,9 @@ fonts/cm/cmsy10.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/public/a
 msfonts/cm/cmsy7.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/public/
 amsfonts/cm/cmti10.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/publi
 c/amsfonts/cm/cmtt10.pfb>
-Output written on report.pdf (7 pages, 231347 bytes).
+Output written on report.pdf (8 pages, 245299 bytes).
 PDF statistics:
- 217 PDF objects out of 1000 (max. 8388607)
- 41 named destinations out of 1000 (max. 500000)
+ 241 PDF objects out of 1000 (max. 8388607)
+ 44 named destinations out of 1000 (max. 500000)
  149 words of extra memory for PDF output out of 10000 (max. 10000000)
 
