@@ -52,9 +52,8 @@ indivíduos, a probabilidade dele ser selecionado é igual a $p(k) =
 f_k/\sum_{i=0}^{N}f_i$. O outro método é o \textit{k-tournament}, que amostra
 $k$ indivíduos aleatóriamente e seleciona o indivíduo com maior \textit{fitness}
 nesse grupo. A diferença entre esses algoritmos está na pressão seletiva imposta
-aos indivíduos. \textcolor{red}{Falar sobre menor pressão seletiva no começo e
-  aumentar no final}, porém \citet{poli2008} informa que o método
-\textit{tournament} é o mais comum.
+aos indivíduos. Porém \citet{poli2008} informa que o método
+\textit{k-Tournament} é o mais comum.
 
 O operador de cruzamento (ou \textit{crossover}) mais comum é denominado troca
 de sub-árvore. Esse operador funciona da seguinte maneira: dois indivíduos
@@ -174,30 +173,31 @@ aleatóriamente utilizando uma distribuição multimodal. A escolha desse métod
 deve ao fato que muitas função matemáticas possuem contantes no intervalo $(0,
 1]$ e com sinal variado.  As variáveis são geradas aleatóriamente, onde um
   número inteiro no intervalo $(0, N]$, onde $N$ deve ser menor ou igual ao
-    número de colunas no dado de entrada, ou seja, se há 10 colunas de
+    número de colunas do dateset menos um, ou seja, se há 10 colunas de
     \textit{features} e uma que representa a variável de resposta, então $N$
     deve ser igual ao número de \textit{features} ou menor.
 
-Outro aspecto importante na representação dos invíduos são, geralmente,
-representados utilizam a estrutura de árvore. A literatura define diversas
-estruturas de árvores, como árvores binárias, B-\textit{tree}, entre outras. Um
-problema na representação utilizando esses tipos de árvores é a indireção, que
-pode afetar a performance do sistema~\citep{faria2013}, portanto, para evitar os efeitos da
-indireção de ponteiros, os indivíduos são representados utilizando
-\textit{Heaps}, que são árvores especializadas. Nesse tipo de estrutura, os
-ponteiro são implicitamente substituidos por indices. O nó a esquerda está na
-posição $2n+1$ e $2n + 2$. Outra vantagem no use de \textit{Heaps} está no fato
-dos dados serem armazenados linearmente, o que reduz os efeitos do \textit{cache
-  miss}, causado por dados espalhados na memória.
+Outro aspecto importante na representação dos indivíduos é que eles são
+geralmente representados por uma estrutura de árvore. A literatura define
+diversas estruturas de árvores, como árvores binárias, B-\textit{tree}, entre
+outras. Um problema na representação utilizando esses tipos de árvores é a
+indireção, que pode afetar a performance do sistema~\citep{faria2013}, portanto,
+para evitar os efeitos da indireção de ponteiros, os indivíduos são
+representados utilizando \textit{Heaps}, que são árvores especializadas. Nesse
+tipo de estrutura, os ponteiro são implicitamente substituidos por indices. O nó
+a esquerda está na posição $2n+1$ e $2n + 2$. Outra vantagem no uso de
+\textit{Heaps} está no fato dos dados serem armazenados linearmente, o que reduz
+os efeitos do \textit{cache miss}, causado por dados espalhados na memória.
 
 O sistema é flexível na escolha da máxima profundidade que um indivíduo
 (representado por uma árvore) possui e permite ao usuário especificar qualquer
 profundidade aos indivíduos.  Um fator que pode ser vantajoso é que o espaço
-ocupado por um indivíduo é determinístico, ou seja, cada nível possui $2^l$ nós,
-onde $l$ é o nível.  Cada indivíduo possui $\sum_{l=0}^{L}2^l=2^{L}-1$, onde $L$
-é a profundidade máxima da árvore. Portanto, para uma população com $N$
-indivíduos e profundidade máxima $L$, há
-$N\times(2^{L}-1)\times\texttt{sizeof(nó)}$.
+ocupado por um indivíduo é determinístico, ou seja, se a profundidade for de
+$l$, então a quantidade de nós nessa profundidade é $2^l$.  A quantidade total
+de nós que um indivíduo possui é igual a $\sum_{l=0}^{L}2^l=2^{L}-1$, onde $L$ é
+a profundidade máxima da árvore. Portanto, para uma população com $N$ indivíduos
+e profundidade máxima $L$, há $N\times(2^{L}-1)\times\texttt{sizeof(nó)}$ bytes
+ocupados.
 
 Em conclusão, os indivíduos são representados como árvore no ponto de vista
 semântico e como vetor contíguo na memória.  Espera-se que com essa estrutura
@@ -253,7 +253,7 @@ são selecionadas utilizando os operadores de seleção e para cada árvore um p
 é selecionado aleatóriamente. Para uma árvore, o pai, a sub-árvore com raíz no
 ponto selecionado é removido e no lugar é inserido a sub-árvore com raíz no
 ponto selecionado na outra árvore, a mãe. A escolha do ponto que determina a
-raíz da sub-árvore é feito aleatóriamente, porém , na implementação do
+raíz da sub-árvore é feaita aleatóriamente, porém , na implementação do
 algoritmo, a escolha desses pontos é feita de tal modo que a soma da
 profundidade da árvore pai da raíz até o ponto selecionado com a profundidade da
 sub-árvore oriunda dá árvore mãe não seja maior de que o comprimento máximo que
@@ -269,17 +269,17 @@ descrito na seção \nameref{subsec:smart_par}.
 \subsection{Operadores de Mutação} \label{subsec:mutation}
 
 A literatura define os operadores de dois tipos de operadores de mutação:
-mutação de sub-árvore e \textit{one-point mutation} (OPM). No primeiro método um
-ponto é escolhido aleatóriamente na árvore e, a partir desse ponto, uma
-sub-árvore é gerada aleatóriamente. No algoritmo implementado, o método de
-geração da sub-árvore é o mesmo empregado no método \textit{grow} de geração
-(veja Seção \ref{subsec:generation}). O outro método de mutação é o OPM. Esse
-método é aplicado sobre todos os nós e terminais da árvore do indivíduo, onde há
-a probabilidade de $p_op$ de haver mutação nesse nó. A mutação em um nó
-específico ocorre alterando o elemento contido nele por outro da mesma classe,
-por exemplo, em um nó contendo a função $\sin$, a OPM pode alterá-lo para
-$\tan$, ou seja, manteve a classe (uma função), porém alterou o elemento contido
-no nó.
+mutação de sub-árvore e \textit{one-point mutation} (OPM)~\citep{poli2008}. No
+primeiro método um ponto é escolhido aleatóriamente na árvore e, a partir desse
+ponto, uma sub-árvore é gerada aleatóriamente. No algoritmo implementado, o
+método de geração da sub-árvore é o mesmo empregado no método \textit{grow} de
+geração (veja Seção \ref{subsec:generation}). O outro método de mutação é o
+OPM. Esse método é aplicado sobre todos os nós e terminais da árvore do
+indivíduo, onde há a probabilidade de $p_op$ de haver mutação nesse nó. A
+mutação em um nó específico ocorre alterando o elemento contido nele por outro
+da mesma classe, por exemplo, em um nó contendo a função $\sin$, a OPM pode
+alterá-lo para $\tan$, ou seja, manteve a classe (uma função), porém alterou o
+elemento contido no nó.
 
 Na implementação, ambos os métodos possuem igual probabilidade de serem
 empregados (50\%-50\%, respectivamente), porém no caso do OPM a probabilidade de
@@ -311,9 +311,9 @@ parâmetro $E$, que indica se deve ou não ocorrer eletismo.
 
 \subsection{\textit{Fitness}}
 
-A \textit{Fitness} determina o quão adaptado um indivíduo está e é utilizado
+A \textit{Fitness} determina o quão adaptado um indivíduo está e é utilizada
 para comparação entre os indivíduos. A função para calcular a \textit{fitness}
-está relacionada ao problema e no caso da RS algumas formas de mensurar a
+está relacionada ao problema, e, no caso da RS, algumas formas de mensurar a
 \textit{fitness} de um indivíduos são o erro médio absoluto (MSA), o error médio
 quadrado (MSE) e a raiz do erro médio quadrado (RMSE). Independente da métrica
 utilizada para calcular a \textit{fitness}, o objetivo é minimizar o erro.
@@ -323,18 +323,19 @@ e fica a critério do usuário a escolha de qual métrica de erro utilizar.
 
 \subsection{Ajuste Inteligente de Parâmetros}\label{subsec:smart_par}
 
-As probabilidades de \textit{crossover} ($p_c$), de mutação ($p_m$) e de reprodução
-($p_r$) estão relacionadas através da seguinte equação:
+As probabilidades de \textit{crossover} ($p_c$), de mutação ($p_m$) e de
+reprodução ($p_r$) estão relacionadas através da seguinte equação:
 \begin{equation} \label{eq:prob_stability}
   p_c + p_m + p_r = 1
 \end{equation}
 Geralmente, é comum atribuir valores altos para $p_c$ e mais baixos $p_m$, porém
-quando eles não somam a 1, o operador de recombinação $p_r$ é atribuido ao
-complemento, de tal forma que a equação \ref{eq:prob_stability} é satisfeira.
+quando eles não somam a 1, o operador de reprodução $p_r$ é atribuido ao
+complemento, de tal forma que a equação \ref{eq:prob_stability} é satisfeita.
 
-Outra forma de controle ocorre quando o usuário atribui um valor para $p_r$, neste
-caso, os valores de $p_c$ e $p_m$ são ajustado para que a soma deles resulte em
-$1-p_r$. Quando isso ocorre, a proporção relativa entre eles é mantida, isto é:
+Outra forma de controle ocorre quando o usuário atribui um valor para $p_r$,
+neste caso, os valores de $p_c$ e $p_m$ são ajustado para que a soma deles
+resulte em $1-p_r$. Quando isso ocorre, a proporção relativa entre eles é
+mantida, isto é:
 
 \noindent\begin{minipage}{.5\linewidth}
   \begin{equation*}
@@ -350,15 +351,16 @@ $1-p_r$. Quando isso ocorre, a proporção relativa entre eles é mantida, isto 
 \subsection{Ambiente para Testes}
 
 Devido ao fato da GP tomar decisões aleatóriamente, o resultado pode variar
-entre exuções. Para alcançar um grau de confiança nos resultados obtidos, é
+entre execuções. Para alcançar um grau de confiança nos resultados obtidos, é
 necessário repetir os testes diversas vezes. Para isso, o sistema implementado
 possui suporte para testes.
 
-Para testar os alguns parâmetro o usuário deve fornecer um arquivo \texttt{*.csv},
-onde cada linha deve conter uma lista de números inteiros que são utilizados
-como \textit{seeds} para o geradores de números aleatórios. O gerador utilizado
-na implementação é o \texttt{32-bit Mersenne Twister}. Os testes são repetidos
-para cada linha contida no arquivo contendo as \textit{seeds}.
+Para testar os alguns parâmetro o usuário deve fornecer um arquivo
+\texttt{*.csv}, onde cada linha deve conter uma lista de números inteiros que
+são utilizados como \textit{seeds} para o geradores de números aleatórios. O
+gerador utilizado na implementação é o \texttt{32-bit Mersenne Twister}. Os
+testes são repetidos para cada linha contida no arquivo contendo as
+\textit{seeds}.
 
 \subsection{Desempenho}
 
@@ -379,12 +381,13 @@ Este dataset possui uma versão sem ruído e uma versão ruidosa. O algoritmo se
 aplicado em ambas as versões.
 
 O primeiro teste tem o objetivo de identificar qual o tamanho da população que
-atinge o menor valor de \textit{fitness} em média. Para isso, o tamanho da população
-é variado e os demais parâmetros são mantidos constantes. As estatisticas da repetição
-do algoritmo para cada tamanho de população é apresentado na 
-\hyperref[tbl:default_param]{Tabela~\ref*{tbl:default_param}}, onde cada coluna
-representa uma informação da população e cada linha representa estatísticas dos
-resultadas da repetição do algoritmo para diferentes \textit{seeds}. 
+atinge o menor valor de \textit{fitness} em média. Para isso, o tamanho da
+população é variado e os demais parâmetros são mantidos constantes. As
+estatísticas da repetição do algoritmo para cada tamanho de população é
+apresentado na \hyperref[tbl:default_param]{Tabela~\ref*{tbl:default_param}},
+onde cada coluna representa uma informação da população e cada linha representa
+estatísticas dos resultadas da repetição do algoritmo para diferentes
+\textit{seeds}.
 
 \noindent
 \begin{table}
@@ -397,7 +400,13 @@ resultadas da repetição do algoritmo para diferentes \textit{seeds}.
     \hline
     1 & 40 & \textit{Ramped HH} & 7 & 3-Tournament & 0.9 & 0.05 & MAE & $10^{-9}$ & 0 \\
     \hline
-  \end{tabular}  
+  \end{tabular}
+  \begin{minipage}{.9\textwidth}{\footnotesize \# Vars indica a quantidade de
+      váriaveis. MaxG é o limite de gerações. MG é método de geração da
+      população. MD é a profundidade máxima dos indivíduos. MS é o método de
+      seleção.  $p_c$ e $p_m$ são a probabilidade de crossover e mutação,
+      repectivamente. ME é a métrica de erro, T é o threshold mínimo e E indica
+      a presença de eletismo.}\end{minipage}
 \end{table}
 
 Os valores testados da população são 50, 100, 300 e 500 indivíduos. Os resultados
@@ -440,6 +449,15 @@ mantendo-se a população com 500 indivíduos.
     max. & 306.00 & 218.00 & 0.20 & 5960136.66 & 0.21 & 266278.53 & 11925.03 & \\ \cline{1-8}
     min. & 26.00 & 0.00 & 0.01 & 16.40 & 0.20 & 1.04 & 0.34 & \\ \hline
   \end{tabular}
+  \begin{minipage}{0.9\textwidth}
+    {\footnotesize
+      \# U: quantidade de indivíduos únicos. \# M: quantidade de indivíduos melhores
+      que a mediana da população anterior. min.: Fitness mínima atingida. max.:
+      Fitness máxima atingida. median.: mediana da Fitness da população final.
+      stddev: Desvio Padrão da Fitness da população final. avg.: Média aritmética.
+      Pop.: Tamanho da população.
+    }
+  \end{minipage}
 \end{table}
 
 O próximo experimento é do efeito das probabilidade de mutação e
@@ -454,7 +472,7 @@ probabilidade de mutação e , por consequência, diminuir a probabilidade de
   \label{tbl:var_cross_mut}
   \begin{tabular}{| c | c | c | c | c | c | c | c | c |}
     \hline
-    &  \# U & \# M & min. & max. & median. & stddev & avg. & pop. \\ \hline
+    &  \# U & \# M & min. & max. & median. & stddev & avg. & $p_c$/$p_m$. \\ \hline
     avg.    & 274.35 & 130.71 & 0.13 & 1793669.61 & 0.20 & 81221.52 & 3873.49 & \multirow{5}{1.5cm}{$p_c=0.6$\\$p_m=0.3$} \\ \cline{1-8}
     stddev. & 131.73 & 25.82 & 0.08 & 6382322.66 & 0.03 & 284986.57 & 12753.39 & \\ \cline{1-8}
     CV      & 0.48 & 0.20 & 0.63 & 3.56 & 0.14 & 3.51 & 3.29 & \\ \cline{1-8}
@@ -469,8 +487,14 @@ probabilidade de mutação e , por consequência, diminuir a probabilidade de
     stddev  & 72.92 & 73.82 & 0.03 & 28313559.15 & 0.01 & 1265314.09 & 57887.15 & \\ \cline{1-8}
     CV      & 0.80 & 0.36 & 0.17 & 4.24 & 0.03 & 4.23 & 4.18 & \\ \cline{1-8}
     max.    & 484.00 & 252.00 & 0.20 & 157549013.24 & 0.21 & 7039707.91 & 321514.74 & \\ \cline{1-8}
-    min.    & 75.00 & 0.00 & 0.02 & 628.67 & 0.19 & 36.60 & 4.35 & \\ \hline x
+    min.    & 75.00 & 0.00 & 0.02 & 628.67 & 0.19 & 36.60 & 4.35 & \\ \hline
   \end{tabular}
+    \begin{minipage}{0.9\textwidth}
+    {\footnotesize
+      Mesmos que da \hyperref[tbl:result_pop]{Tabela~\ref*{tbl:result_pop}}.
+      $p_c$: Probabilidade de crossover. $p_m$: Probabilidade de mutação.
+    }
+  \end{minipage}
 \end{table}
 
 Com a variação da probabilidade é possível concluir a partir da
@@ -497,7 +521,7 @@ de $k=5$ são os que resultam no menor valor de \textit{fitness} em média. Para
   \label{tbl:var_k}
   \begin{tabular}{| c | c | c | c | c | c | c | c | c |}
     \hline
-    &  \# U & \# M & min. & max. & median. & stddev & avg. & pop. \\ \hline \hline
+    &  \# U & \# M & min. & max. & median. & stddev & avg. & $k$ \\ \hline \hline
 avg. & 299.19 & 158.16 & 0.10 & 360372.62 & 0.21 & 16253.90 & 758.62 & \multirow{5}{1.5cm}{$k=5$} \\ \cline{1-8}
 stddev & 107.66 & 19.55 & 0.08 & 1767685.76 & 0.10 & 78952.58 & 3532.77 & \\ \cline{1-8}
 CV & 0.36 & 0.12 & 0.81 & 4.91 & 0.49 & 4.86 & 4.66 & \\ \cline{1-8}
@@ -514,6 +538,13 @@ CV. & 0.34 & 0.22 & 0.45 & 2.38 & 0.46 & 2.27 & 2.03 & \\ \cline{1-8}
 max. & 358.00 & 199.00 & 0.18 & 99365.38 & 0.57 & 4597.18 & 270.40 & \\ \cline{1-8}
 min. & 129.00 & 0.00 & 0.00 & 50.11 & 0.12 & 4.11 & 1.04 & \\ \hline 
   \end{tabular}
+  \begin{minipage}{0.9\textwidth}
+    {\footnotesize
+      Mesmos que da \hyperref[tbl:result_pop]{Tabela~\ref*{tbl:result_pop}}.
+      $k$ é o parâmetro do método de seleção \textit{Tournament}.
+    }
+  \end{minipage}
+  
 \end{table}
 
 Por fim, o último parâmetro experimentado é como a presença do eletismo. Os
@@ -544,18 +575,26 @@ CV. & 2.75 & 1.42 & 0.47 & 0.42 & 0.42 & 2.72 & 0.43 & \\ \cline{1-8}
 max. & 207.00 & 172.00 & 0.18 & 0.18 & 0.18 & 0.02 & 0.18 & \\ \cline{1-8}
 min. & 1.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & \\ \hline 
   \end{tabular}
+    \begin{minipage}{0.9\textwidth}
+    {\footnotesize
+      Mesmos que da \hyperref[tbl:result_pop]{Tabela~\ref*{tbl:result_pop}}.
+      E indica a presença ou ausência de eletismo.
+    }
+  \end{minipage}
 \end{table}
 
-Através dos experimentos realizados realizados, obteve-se que a maior população
-(500 indivíduos), com maior probabilidade de mutação ($p_c=0.6$ e $p_m=0.3$),
-com o parâmetro k do método de seleção \textit{k-Tournament} com 1\% do tamanho
-da população ($k=5$) e sem eletismo, atingem o menor valor de \textit{fitness}
+Através dos experimentos realizados, obteve-se que a maior população (500
+indivíduos), com maior probabilidade de mutação ($p_c=0.6$ e $p_m=0.3$), com o
+parâmetro k do método de seleção \textit{k-Tournament} com 1\% do tamanho da
+população ($k=5$) e sem eletismo, atingem o menor valor de \textit{fitness}
 entre todos os experimentos conduzidos. Para verificar a robustez do algoritmo
 os parâmetros obtidos são também aplicados para o dataset que contém ruídos.
 
-Os resultados apresentados na \hyperref[tbl:noise_dataset]{Tabela~\ref*{tbl:noise_dataset}}
-são semelhantes ao resultados obtidos sem a presença de ruído, conforme pode ser
-observado na \hyperref[tbl:var_eletism]{Tabela~\ref*{tbl:var_eletism}}.
+Os resultados apresentados na
+\hyperref[tbl:noise_dataset]{Tabela~\ref*{tbl:noise_dataset}} são semelhantes ao
+resultados obtidos sem a presença de ruído, conforme pode ser observado na
+\hyperref[tbl:var_eletism]{Tabela~\ref*{tbl:var_eletism}}. O que indica que o
+modelo criado é capaz de gerar uma função mesmo na presença de ruído.
 
 \begin{table}
   \center
@@ -570,14 +609,17 @@ CV & 0.36 & 0.12 & 0.81 & 4.91 & 0.49 & 4.86 & 4.66 \\ \hline
 max. & 464.00 & 209.00 & 0.20 & 9867700.84 & 0.44 & 440855.16 & 19742.83 \\ \hline 
 min. & 145.00 & 132.00 & 0.00 & 74.91 & 0.03 & 4.87 & 0.8 \\ \hline
   \end{tabular}
+  \begin{minipage}{0.9\textwidth}
+    {\footnotesize
+      Mesmos que da \hyperref[tbl:result_pop]{Tabela~\ref*{tbl:result_pop}}.
+    }
+  \end{minipage}
 \end{table}
-
 
 \subsection{Dataset Real}
 Neste experimento, o sistema é testado com um dataset real. Este dataset contêm
 9 colunas. Portanto, a regressão utiliza até 8 diferentes variáveis. Devido a
 complexidade do dataset, a profundidade da árvore é estabelecida como 7.
-
 
 
 \section{Conclusão}
