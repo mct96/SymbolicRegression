@@ -11,8 +11,12 @@
 \usepackage[inline]{enumitem}
 \usepackage{amsmath}
 \usepackage{mathtools}
+
 \usepackage{tikz}
 \usetikzlibrary{trees}
+
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
 
 \newlist{ilist}{enumerate*}{1}
 \setlist[ilist]{label=(\arabic*)}
@@ -618,14 +622,118 @@ min. & 145.00 & 132.00 & 0.00 & 74.91 & 0.03 & 4.87 & 0.8 \\ \hline
 
 \subsection{Dataset Real}
 Neste experimento, o sistema é testado com um dataset real. Este dataset contêm
-9 colunas. Portanto, a regressão utiliza até 8 diferentes variáveis. Devido a
-complexidade do dataset, a profundidade da árvore é estabelecida como 7.
+9 colunas. Portanto, a regressão utiliza até 8 diferentes variáveis. A metodologia
+é a mesma empregada para no dataset artificial:
+\begin{ilist}
+\item identificar o tamanho da população
+\item identificar a profundidade da árvore
+\item identificar o tamanho do torneio (k)
+  \item identificar os melhores valores de $p_c$ e $p_m$
+\end{ilist}.
+
+Para encontrar os melhores valores de cada parâmetro os demais devem ser fixados.
+Os valores iniciais de cada parâmetro são: \textit{Ramped Half-and-Half} como
+método de geração, \textit{5-Tournament} como método de seleção, o limite de
+gerações é 60, a profundidade da árvore é 7, a probabilidade de crossover e de
+mutação são $p_c=0.6$ e $p_m=0.3$, respectivamente.
+
+A princípio, para identificar o tamanho da população os seguintes tamanhos serão
+avaliados: 600, 800 e 1200. A \hyperref[fig:var_pop]{Figura~\ref*{fig:var_pop}}
+apresenta o valor da menor \textit{fitness} de cada geração para os três tamanhos
+de população. O valor final da \textit{fitness} na última geração foi de 5.76
+para a população com 800 indivíduos, portanto, este valor é mantido para os
+demais experimentos.
 
 
+O segundo parâmetro a verificar é a profundidade máxima da árvore. Os valores
+testados são: 6, 7, 8 e 9. Os valores que a menor \textit{fitness} assume ao
+longo das gerações para cada profundidade pode ser visto na
+\hyperref[fig:var_d]{Figura~\ref*{fig:var_d}}. Os resultados indicam que a menor
+\textit{fitness} é alcançada quando o tamanho da árvore é igual a 8, onde o
+valor na última geração é igual a $5.5796$. Quando a profundidade os valores que
+\textit{fitness} os indivíduos com profundidade 6, 7 ou 9 assumem são $8.6567$,
+$8.7384$ e $6.7258$, respectivamente, indicando que a profundidade igual a 8 é
+um ponto de mínimo. Para os próximos teste a profundidade é fixada em 8.
+
+
+O terceiro parâmetro testado é o tamanho do torneio, ou seja, o valor de $k$.
+Os valores testados foram: 8, 10, 12 e 15. Os valores da menor \textit{fitness}
+para cada geração para os valores testados podem ser vistos na
+\hyperref[fig:var_k]{Figura~\ref*{fig:var_k}}.  Os resultados indicam que o
+menor valor é atingindo quando k=8, onde o valor da \textit{fitness} atinge
+$5.5796$ ao longo das 60 gerações. Os próximos testes são realizados mantendo-se
+o valor de k fixo e igual a 8.
+
+O quarto parâmetro verificado é a probabilidade de \textit{crossover}. Os
+valores testados são: $p_c=0.6$, $p_c=0.7$ e $p_c=0.8$. A
+\hyperref[fig:var_pc]{Figura~\ref*{fig:var_pc}} mostram os valores da menor
+\textit{fitness} em cada geração para cada valor de probabilidade verificado.  O
+menor valor atingido em 60 gerações foi $6.1097$ para a população gerada com
+$p_c=0.6$. Pelo fato da probabilidade \textit{crossover} estar baixa leva a
+probabilidade de recombinação e mutação a estar mais elevada. Esses dois
+operadores podem aumentar o \textit{exploration} e \textit{explotation}, pois a
+recombinação seleciona os invidíduos mais bem adaptados da população anterior
+(\textit{explotation}), já a mutação faz com que novas soluções do espaço de
+soluções sejam experimentadas (\textit{exploration}). Essa combinação de
+probabilidades de \textit{crossover}, mutação e recombinação são os responsáveis
+por atingirem a menor \textit{fitness}. Para o próximo experimento, o valor de
+$p_c$ é mantido fixo em $p_c=0.6$.
+
+Para determinar o efeito da mutação e da recombinação, o último teste é variar o
+valor de $p_m$. Os valores experimentados são: $p_m=0.1$, $p_m=0.15$,
+$p_m=0.20$, $p_m=0.25$ e $p_m=0.30$. Os valores da menor \textit{fitness} de
+cada geração para a população gerada com os valores de $p_m$ variados podem ser
+vistos na \hyperref[fig:var_pm]{Figura~\ref*{fig:var_pm}}. Os resultados que o
+menor valor atingido ocorre quando $p_m=0.30$, onde o valor da \textit{fitness}
+é igual a $5.57966$. Isso prova que a mutação tem impacto mais significativo do
+que a recombinação, ou seja, neste caso o \textit{exploration} é mais importante
+do que o \textit{explotation}.
+
+\begin{figure}[h!]
+  \begin{minipage}{0.5\textwidth}
+    \includegraphics[width=\textwidth]{var_pop}
+    \caption{Variação do tamanho da população}
+    \label{fig:var_pop}
+  \end{minipage}
+  \begin{minipage}{0.5\textwidth}
+    \includegraphics[width=\textwidth]{var_d}
+    \caption{Variação da profundidade da árvore}
+    \label{fig:var_d}
+  \end{minipage}
+  \begin{minipage}{0.5\textwidth}
+    \includegraphics[width=\textwidth]{var_k}
+    \caption{Variação do tamanho do torneio}
+    \label{fig:var_k}
+  \end{minipage}
+  \begin{minipage}{0.5\textwidth}
+    \includegraphics[width=\textwidth]{var_pc}
+    \caption{Variação da probabilidade de \textit{crossover}}
+    \label{fig:var_pc}
+  \end{minipage}
+\end{figure}
+\begin{figure}[h!]
+  \begin{minipage}{0.5\textwidth}
+    \includegraphics[width=\textwidth]{var_pm}
+    \caption{Variação da probabilidade de mutação}
+    \label{fig:var_pm}
+  \end{minipage}
+\end{figure}
+\newpage
 \section{Conclusão}
+Os resultados obtidos indicam a importância entre o balanceamento dos diversos
+parâmetros do GP. A probabilidade de mutação, $p_m$ tem grande impacto no valor
+mínimo da \textit{fitness}, devido a exploração do espaço de soluções. Outro
+fator importante é o tamanho da árvore, pois quando mais complexo os dados,
+maior deve ser a profundidade da árvore para obter maior expressividade dos
+indivíduos.
 
+Muitos fatores ainda devem ser explorados, como aumentar o conjunto de
+terminais, aumentar a quantidade de gerações e utilizar outras métricas de erro.
+A menor \textit{fitness} atingida, $5.579668$, é alta indicando que o conjunto
+de terminais ou até mesmo a forma de geração de constantes não é adequado e
+é necessário implementar ajustes na implementação deles.
 
-\citet*{poli2008}
+\newpage
 \bibliographystyle{plainnat}
 \bibliography{bibliography}
 \end{document}

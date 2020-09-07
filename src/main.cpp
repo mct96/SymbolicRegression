@@ -26,6 +26,26 @@ void usage_message() {
     std::cout << text << std::endl;
 }
 
+std::vector<training_set_t> kfold(const training_set_t& dataset, std::size_t k)
+{
+    auto sz = dataset.size() / k;
+    std::vector<training_set_t> folds{};
+
+    for (std::size_t i = 0; i < k - 1; ++i) {
+        training_set_t temp{};
+        auto b = dataset.begin();
+        std::copy_n(b + i * sz, sz, std::back_inserter(temp));
+        folds.push_back(temp);
+    }
+
+    training_set_t last{};
+    auto b = dataset.begin(), e = dataset.end();
+    std::copy(b + sz * (k - 1), e, std::back_inserter(last));
+    folds.push_back(last);
+        
+    return folds;
+}
+
 bool is_csv(std::string filename)
 {
     auto ext = filename.substr(filename.size()-3);
@@ -52,8 +72,10 @@ int main(int argc, char **argv)
     }
     
     auto data = sr::load_data(filename); // loading dataset.
-    training_set_t training = random_t{{1}}.sample(data, (int)data.size()/2);
+    training_set_t training = random_t{{1}}.sample(data, (int)data.size()/5);
+    //auto folds = kfold(data, 5);
 
+    
     std::string outfile{};
     if (cmdl({"-o", "--output"}) >> outfile) {
         std::cout << "output-results: " << outfile << std::endl;
@@ -178,7 +200,9 @@ int main(int argc, char **argv)
         std::string report{};
         params.seeds(seed);
         symbolic_regression_t sr{params, training};
+            
         sr.train();
+
         report += sr.report();
     
 
@@ -192,5 +216,6 @@ int main(int argc, char **argv)
         
         i++;
     }
+
     return 0;
 }

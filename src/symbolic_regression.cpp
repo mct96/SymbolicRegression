@@ -970,6 +970,11 @@ void symbolic_regression_t::train(bool verbose)
     if (verbose) clear_line();
 }
 
+double symbolic_regression_t::predict(const data_t& vars) const
+{
+    return eval(_population[0].first, 0, vars);
+}
+
 void symbolic_regression_t::clear_line() const
 {
     std::cout << "\r" << std::flush;

@@ -307,6 +307,8 @@ public:
 
     void train(bool verbose = true);
     
+    double predict(const data_t& vars) const;
+    
 private:
     void clear_line() const;
     
