@@ -15,7 +15,7 @@ random_t::random_t(std::vector<int> seeds)
 
 int random_t::var(int from, int to) const
 {
-    std::uniform_int_distribution<> dist{from, to};
+    std::uniform_int_distribution<> dist{from, to-1};
     return dist(_gen);
 }
 
@@ -27,13 +27,13 @@ int random_t::binary() const
 
 int random_t::func(int from, int to) const
 {
-    std::uniform_int_distribution<> dist{from, to};
+    std::uniform_int_distribution<> dist{from, to - 1};
     return dist(_gen);
 }
 
 int random_t::oper(int from, int to) const
 {
-    std::uniform_int_distribution<> dist{from, to};
+    std::uniform_int_distribution<> dist{from, to - 1};
     return dist(_gen);
 }
 

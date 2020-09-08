@@ -9,7 +9,7 @@ class random_t
 {
 public:
     random_t(std::vector<int> seeds);
-
+        
     int var(int from, int to) const;
     int binary() const;
     int func(int from, int to) const;

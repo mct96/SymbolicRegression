@@ -1,0 +1,68 @@
+#include "node.hpp"
+
+#include <iterator>
+#include <algorithm>
+#include <cmath>
+
+using namespace std::string_literals;
+
+individual_t::individual_t(std::size_t depth)
+    :
+    _gen(pow(2, depth) - 1)
+{
+    clear();
+}
+
+void individual_t::clear()
+{
+    clear_subtree(0);
+}
+
+void individual_t::clear_subtree(size_t node)
+{
+    _gen[node]._code = class_t::null;
+
+    if (in_range(lchild(node))) clear_subtree(lchild(node));
+    if (in_range(rchild(node))) clear_subtree(rchild(node));
+}
+
+void individual_t::clear_lsubtree(size_t node)
+{
+    return clear_subtree(lchild(node));
+}
+
+void individual_t::clear_rsubtree(size_t node)
+{
+    return clear_subtree(rchild(node));
+}
+
+std::size_t individual_t::depth() const
+{
+    auto p = std::find_if(_gen.cbegin(), _gen.cend(), [](gene_t g) {
+        return g._code == class_t::null; });
+
+    return std::distance(_gen.begin(), p);
+}
+
+bool individual_t::in_range(std::size_t node) const
+{
+    return node > _gen.size();
+}
+
+std::size_t individual_t::lchild(std::size_t parent) const
+{
+    return 2 * parent + 1;
+}
+
+std::size_t individual_t::rchild(std::size_t parent) const
+{
+    return 2 * parent + 2;
+}
+
+std::size_t individual_t::parent(std::size_t child) const
+{
+    if (child == 0)
+        throw std::invalid_argument{"individual_t::parent"s};
+
+    return std::ceil((child - 1) / 2);
+}
