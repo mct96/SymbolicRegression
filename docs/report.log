@@ -1,28 +1,24 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.6.29) (preloaded format=pdflatex 2020.8.17)  7 SEP 2020 00:05
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.6.29) (preloaded format=pdflatex 2020.8.17)  7 SEP 2020 11:17
 entering extended mode
 **./report.tex
 (report.tex
 LaTeX2e <2020-02-02> patch level 5
 L3 programming layer <2020-08-07>
-(/home/matheusc/.miktex/texmfs/install/tex/latex/paper/paper.cls
-Document Class: paper 2008/05/30 1.0l LaTeX document class (wm).
-\hours=\count168
-\minutes=\count169
+(/home/matheusc/.miktex/texmfs/install/tex/latex/base/article.cls
+Document Class: article 2019/12/20 v1.4l Standard LaTeX document class
 (/home/matheusc/.miktex/texmfs/install/tex/latex/base/size10.clo
 File: size10.clo 2019/12/20 v1.4l Standard LaTeX file (size option)
 )
-\beforetitlespace=\skip47
-\c@part=\count170
-\c@section=\count171
-\c@subsection=\count172
-\c@subsubsection=\count173
-\c@paragraph=\count174
-\c@subparagraph=\count175
-\exampleindent=\skip48
-\c@figure=\count176
-\c@table=\count177
-\abovecaptionskip=\skip49
-\belowcaptionskip=\skip50
+\c@part=\count168
+\c@section=\count169
+\c@subsection=\count170
+\c@subsubsection=\count171
+\c@paragraph=\count172
+\c@subparagraph=\count173
+\c@figure=\count174
+\c@table=\count175
+\abovecaptionskip=\skip47
+\belowcaptionskip=\skip48
 \bibindent=\dimen134
 )
 (/home/matheusc/.miktex/texmfs/install/tex/latex/geometry/geometry.sty
@@ -38,9 +34,9 @@ Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
 (/home/matheusc/.miktex/texmfs/install/tex/generic/iftex/iftex.sty
 Package: iftex 2020/03/06 v1.0d TeX engine tests
 ))
-\Gm@cnth=\count178
-\Gm@cntv=\count179
-\c@Gm@tempcnt=\count180
+\Gm@cnth=\count176
+\Gm@cntv=\count177
+\c@Gm@tempcnt=\count178
 \Gm@bindingoffset=\dimen135
 \Gm@wd@mp=\dimen136
 \Gm@odd@mp=\dimen137
@@ -52,53 +48,89 @@ Package: iftex 2020/03/06 v1.0d TeX engine tests
 \Gm@dimlist=\toks16
 
 (/home/matheusc/.miktex/texmfs/install/tex/latex/geometry/geometry.cfg))
+(/home/matheusc/.miktex/texmfs/install/tex/latex/setspace/setspace.sty
+Package: setspace 2011/12/19 v6.7a set line spacing
+)
+(/home/matheusc/.miktex/texmfs/install/tex/latex/listings/listings.sty
+\lst@mode=\count179
+\lst@gtempboxa=\box45
+\lst@token=\toks17
+\lst@length=\count180
+\lst@currlwidth=\dimen143
+\lst@column=\count181
+\lst@pos=\count182
+\lst@lostspace=\dimen144
+\lst@width=\dimen145
+\lst@newlines=\count183
+\lst@lineno=\count184
+\lst@maxwidth=\dimen146
+
+(/home/matheusc/.miktex/texmfs/install/tex/latex/listings/lstmisc.sty
+File: lstmisc.sty 2020/03/24 1.8d (Carsten Heinz)
+\c@lstnumber=\count185
+\lst@skipnumbers=\count186
+\lst@framebox=\box46
+)
+(/home/matheusc/.miktex/texmfs/install/tex/latex/listings/listings.cfg
+File: listings.cfg 2020/03/24 1.8d listings configuration
+))
+Package: listings 2020/03/24 1.8d (Carsten Heinz)
+
+(/home/matheusc/.miktex/texmfs/install/tex/latex/preprint/authblk.sty
+Package: authblk 2001/02/27 1.3 (PWD)
+\affilsep=\skip49
+\@affilsep=\skip50
+\c@Maxaffil=\count187
+\c@authors=\count188
+\c@affil=\count189
+)
 (/home/matheusc/.miktex/texmfs/install/tex/latex/tools/array.sty
 Package: array 2019/08/31 v2.4l Tabular extension package (FMi)
-\col@sep=\dimen143
-\ar@mcellbox=\box45
-\extrarowheight=\dimen144
-\NC@list=\toks17
+\col@sep=\dimen147
+\ar@mcellbox=\box47
+\extrarowheight=\dimen148
+\NC@list=\toks18
 \extratabsurround=\skip51
 \backup@length=\skip52
-\ar@cellbox=\box46
+\ar@cellbox=\box48
 )
 (/home/matheusc/.miktex/texmfs/install/tex/latex/tools/tabularx.sty
 Package: tabularx 2020/01/15 v2.11c `tabularx' package (DPC)
-\TX@col@width=\dimen145
-\TX@old@table=\dimen146
-\TX@old@col=\dimen147
-\TX@target=\dimen148
-\TX@delta=\dimen149
-\TX@cols=\count181
-\TX@ftn=\toks18
+\TX@col@width=\dimen149
+\TX@old@table=\dimen150
+\TX@old@col=\dimen151
+\TX@target=\dimen152
+\TX@delta=\dimen153
+\TX@cols=\count190
+\TX@ftn=\toks19
 )
 (/home/matheusc/.miktex/texmfs/install/tex/latex/multirow/multirow.sty
 Package: multirow 2019/05/31 v2.5 Span multiple rows of a table
 \multirow@colwidth=\skip53
-\multirow@cntb=\count182
+\multirow@cntb=\count191
 \multirow@dima=\skip54
-\bigstrutjot=\dimen150
+\bigstrutjot=\dimen154
 )
 (/home/matheusc/.miktex/texmfs/install/tex/latex/natbib/natbib.sty
 Package: natbib 2010/09/13 8.31b (PWD, AO)
 \bibhang=\skip55
 \bibsep=\skip56
 LaTeX Info: Redefining \cite on input line 694.
-\c@NAT@ctr=\count183
+\c@NAT@ctr=\count192
 )
 (/home/matheusc/.miktex/texmfs/install/tex/generic/babel/babel.sty
 Package: babel 2020/07/13 3.47 The Babel package
 
 (/home/matheusc/.miktex/texmfs/install/tex/generic/babel/babel.def
 File: babel.def 2020/07/13 3.47 Babel common definitions
-\babel@savecnt=\count184
-\U@D=\dimen151
+\babel@savecnt=\count193
+\U@D=\dimen155
 \l@babelnohyphens=\language2
 
 (/home/matheusc/.miktex/texmfs/install/tex/generic/babel/txtbabel.def)
 \bbl@readstream=\read2
 )
-\bbl@dirlevel=\count185
+\bbl@dirlevel=\count194
 
 *************************************
 * Local config file bblopts.cfg used
@@ -158,9 +190,9 @@ Package: auxhook 2019-12-17 v1.6 Hooks for auxiliary files (HO)
 (/home/matheusc/.miktex/texmfs/install/tex/latex/kvoptions/kvoptions.sty
 Package: kvoptions 2019/11/29 v3.13 Key value format for package options (HO)
 )
-\@linkdim=\dimen152
-\Hy@linkcounter=\count186
-\Hy@pagecounter=\count187
+\@linkdim=\dimen156
+\Hy@linkcounter=\count195
+\Hy@pagecounter=\count196
 
 (/home/matheusc/.miktex/texmfs/install/tex/latex/hyperref/pd1enc.def
 File: pd1enc.def 2020-05-15 v7.00e Hyperref: PDFDocEncoding definition (HO)
@@ -173,7 +205,7 @@ Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 (/home/matheusc/.miktex/texmfs/install/tex/generic/etexcmds/etexcmds.sty
 Package: etexcmds 2019/12/15 v1.7 Avoid name clashes with e-TeX commands (HO)
 )
-\Hy@SavedSpaceFactor=\count188
+\Hy@SavedSpaceFactor=\count197
 Package hyperref Info: Hyper figures OFF on input line 4464.
 Package hyperref Info: Link nesting OFF on input line 4469.
 Package hyperref Info: Hyper index ON on input line 4472.
@@ -181,14 +213,14 @@ Package hyperref Info: Plain pages OFF on input line 4479.
 Package hyperref Info: Backreferencing OFF on input line 4484.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4717.
-\c@Hy@tempcnt=\count189
+\c@Hy@tempcnt=\count198
 
 (/home/matheusc/.miktex/texmfs/install/tex/latex/url/url.sty
 \Urlmuskip=\muskip16
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
 LaTeX Info: Redefining \url on input line 5076.
-\XeTeXLinkMargin=\dimen153
+\XeTeXLinkMargin=\dimen157
 
 (/home/matheusc/.miktex/texmfs/install/tex/generic/bitset/bitset.sty
 Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
@@ -197,9 +229,9 @@ Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
 Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
 )
 ))
-\Fld@menulength=\count190
-\Field@Width=\dimen154
-\Fld@charsize=\dimen155
+\Fld@menulength=\count199
+\Field@Width=\dimen158
+\Fld@charsize=\dimen159
 Package hyperref Info: Hyper figures OFF on input line 6347.
 Package hyperref Info: Link nesting OFF on input line 6352.
 Package hyperref Info: Hyper index ON on input line 6355.
@@ -213,9 +245,9 @@ LaTeX Info: Redefining \pageref on input line 6421.
 (/home/matheusc/.miktex/texmfs/install/tex/generic/atbegshi/atbegshi.sty
 Package: atbegshi 2019/12/05 v1.19 At begin shipout hook (HO)
 )
-\Hy@abspage=\count191
-\c@Item=\count192
-\c@Hfootnote=\count193
+\Hy@abspage=\count266
+\c@Item=\count267
+\c@Hfootnote=\count268
 )
 Package hyperref Info: Driver (autodetected): hpdftex.
 
@@ -226,8 +258,8 @@ File: hpdftex.def 2020-05-15 v7.00e Hyperref driver for pdfTeX
 Package: atveryend 2019-12-11 v1.11 Hooks at the very end of document (HO)
 Package atveryend Info: \enddocument detected (standard20110627).
 )
-\Fld@listcount=\count194
-\c@bookmark@seq@number=\count195
+\Fld@listcount=\count269
+\c@bookmark@seq@number=\count270
 
 (/home/matheusc/.miktex/texmfs/install/tex/latex/rerunfilecheck/rerunfilecheck.
 sty
@@ -265,11 +297,11 @@ Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
 (/home/matheusc/.miktex/texmfs/install/tex/latex/enumitem/enumitem.sty
 Package: enumitem 2019/06/20 v3.9 Customized lists
 \labelindent=\skip58
-\enit@outerparindent=\dimen156
-\enit@toks=\toks19
-\enit@inbox=\box47
-\enit@count@id=\count196
-\enitdp@description=\count197
+\enit@outerparindent=\dimen160
+\enit@toks=\toks20
+\enit@inbox=\box49
+\enit@count@id=\count271
+\enitdp@description=\count272
 )
 (/home/matheusc/.miktex/texmfs/install/tex/latex/amsmath/amsmath.sty
 Package: amsmath 2020/01/20 v2.17e AMS math features
@@ -281,51 +313,51 @@ Package: amstext 2000/06/29 v2.01 AMS text
 
 (/home/matheusc/.miktex/texmfs/install/tex/latex/amsmath/amsgen.sty
 File: amsgen.sty 1999/11/30 v2.0 generic functions
-\@emptytoks=\toks20
-\ex@=\dimen157
+\@emptytoks=\toks21
+\ex@=\dimen161
 ))
 (/home/matheusc/.miktex/texmfs/install/tex/latex/amsmath/amsbsy.sty
 Package: amsbsy 1999/11/29 v1.2d Bold Symbols
-\pmbraise@=\dimen158
+\pmbraise@=\dimen162
 )
 (/home/matheusc/.miktex/texmfs/install/tex/latex/amsmath/amsopn.sty
 Package: amsopn 2016/03/08 v2.02 operator names
 )
-\inf@bad=\count198
+\inf@bad=\count273
 LaTeX Info: Redefining \frac on input line 227.
-\uproot@=\count199
-\leftroot@=\count266
+\uproot@=\count274
+\leftroot@=\count275
 LaTeX Info: Redefining \overline on input line 389.
-\classnum@=\count267
-\DOTSCASE@=\count268
+\classnum@=\count276
+\DOTSCASE@=\count277
 LaTeX Info: Redefining \ldots on input line 486.
 LaTeX Info: Redefining \dots on input line 489.
 LaTeX Info: Redefining \cdots on input line 610.
-\Mathstrutbox@=\box48
-\strutbox@=\box49
-\big@size=\dimen159
+\Mathstrutbox@=\box50
+\strutbox@=\box51
+\big@size=\dimen163
 LaTeX Font Info:    Redeclaring font encoding OML on input line 733.
 LaTeX Font Info:    Redeclaring font encoding OMS on input line 734.
-\macc@depth=\count269
-\c@MaxMatrixCols=\count270
+\macc@depth=\count278
+\c@MaxMatrixCols=\count279
 \dotsspace@=\muskip17
-\c@parentequation=\count271
-\dspbrk@lvl=\count272
-\tag@help=\toks21
-\row@=\count273
-\column@=\count274
-\maxfields@=\count275
-\andhelp@=\toks22
-\eqnshift@=\dimen160
-\alignsep@=\dimen161
-\tagshift@=\dimen162
-\tagwidth@=\dimen163
-\totwidth@=\dimen164
-\lineht@=\dimen165
-\@envbody=\toks23
+\c@parentequation=\count280
+\dspbrk@lvl=\count281
+\tag@help=\toks22
+\row@=\count282
+\column@=\count283
+\maxfields@=\count284
+\andhelp@=\toks23
+\eqnshift@=\dimen164
+\alignsep@=\dimen165
+\tagshift@=\dimen166
+\tagwidth@=\dimen167
+\totwidth@=\dimen168
+\lineht@=\dimen169
+\@envbody=\toks24
 \multlinegap=\skip60
 \multlinetaggap=\skip61
-\mathdisplay@stack=\toks24
+\mathdisplay@stack=\toks25
 LaTeX Info: Redefining \[ on input line 2859.
 LaTeX Info: Redefining \] on input line 2860.
 )
@@ -334,15 +366,15 @@ Package: mathtools 2020/03/24 v1.24 mathematical typesetting tools
 
 (/home/matheusc/.miktex/texmfs/install/tex/latex/tools/calc.sty
 Package: calc 2017/05/25 v4.3 Infix arithmetic (KKT,FJ)
-\calc@Acount=\count276
-\calc@Bcount=\count277
-\calc@Adimen=\dimen166
-\calc@Bdimen=\dimen167
+\calc@Acount=\count285
+\calc@Bcount=\count286
+\calc@Adimen=\dimen170
+\calc@Bdimen=\dimen171
 \calc@Askip=\skip62
 \calc@Bskip=\skip63
 LaTeX Info: Redefining \setlength on input line 80.
 LaTeX Info: Redefining \addtolength on input line 81.
-\calc@Ccount=\count278
+\calc@Ccount=\count287
 \calc@Cskip=\skip64
 )
 (/home/matheusc/.miktex/texmfs/install/tex/latex/mathtools/mhsetup.sty
@@ -352,32 +384,32 @@ LaTeX Info: Thecontrolsequence`\('isalreadyrobust on input line 130.
 LaTeX Info: Thecontrolsequence`\)'isalreadyrobust on input line 130.
 LaTeX Info: Thecontrolsequence`\['isalreadyrobust on input line 130.
 LaTeX Info: Thecontrolsequence`\]'isalreadyrobust on input line 130.
-\g_MT_multlinerow_int=\count279
-\l_MT_multwidth_dim=\dimen168
+\g_MT_multlinerow_int=\count288
+\l_MT_multwidth_dim=\dimen172
 \origjot=\skip65
-\l_MT_shortvdotswithinadjustabove_dim=\dimen169
-\l_MT_shortvdotswithinadjustbelow_dim=\dimen170
-\l_MT_above_intertext_sep=\dimen171
-\l_MT_below_intertext_sep=\dimen172
-\l_MT_above_shortintertext_sep=\dimen173
-\l_MT_below_shortintertext_sep=\dimen174
-\xmathstrut@box=\box50
-\xmathstrut@dim=\dimen175
+\l_MT_shortvdotswithinadjustabove_dim=\dimen173
+\l_MT_shortvdotswithinadjustbelow_dim=\dimen174
+\l_MT_above_intertext_sep=\dimen175
+\l_MT_below_intertext_sep=\dimen176
+\l_MT_above_shortintertext_sep=\dimen177
+\l_MT_below_shortintertext_sep=\dimen178
+\xmathstrut@box=\box52
+\xmathstrut@dim=\dimen179
 )
 (/home/matheusc/.miktex/texmfs/install/tex/latex/pgf/frontendlayer/tikz.sty
 (/home/matheusc/.miktex/texmfs/install/tex/latex/pgf/basiclayer/pgf.sty
 (/home/matheusc/.miktex/texmfs/install/tex/latex/pgf/utilities/pgfrcs.sty
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/utilities/pgfutil-common
 .tex
-\pgfutil@everybye=\toks25
-\pgfutil@tempdima=\dimen176
-\pgfutil@tempdimb=\dimen177
+\pgfutil@everybye=\toks26
+\pgfutil@tempdima=\dimen180
+\pgfutil@tempdimb=\dimen181
 
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/utilities/pgfutil-common
 -lists.tex))
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/utilities/pgfutil-latex.
 def
-\pgfutil@abb=\box51
+\pgfutil@abb=\box53
  (/home/matheusc/.miktex/texmfs/install/tex/latex/ms/everyshi.sty
 Package: everyshi 2001/05/15 v3.00 EveryShipout Package (MS)
 ))
@@ -402,8 +434,8 @@ File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
 )
 Package graphics Info: Driver file: pdftex.def on input line 105.
 )
-\Gin@req@height=\dimen178
-\Gin@req@width=\dimen179
+\Gin@req@height=\dimen182
+\Gin@req@width=\dimen183
 )
 (/home/matheusc/.miktex/texmfs/install/tex/latex/pgf/systemlayer/pgfsys.sty
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/systemlayer/pgfsys.code.
@@ -412,33 +444,33 @@ Package: pgfsys 2020/01/08 v3.1.5b (3.1.5b)
 
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/utilities/pgfkeys.code.t
 ex
-\pgfkeys@pathtoks=\toks26
-\pgfkeys@temptoks=\toks27
+\pgfkeys@pathtoks=\toks27
+\pgfkeys@temptoks=\toks28
 
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/utilities/pgfkeysfiltere
 d.code.tex
-\pgfkeys@tmptoks=\toks28
+\pgfkeys@tmptoks=\toks29
 ))
-\pgf@x=\dimen180
-\pgf@y=\dimen181
-\pgf@xa=\dimen182
-\pgf@ya=\dimen183
-\pgf@xb=\dimen184
-\pgf@yb=\dimen185
-\pgf@xc=\dimen186
-\pgf@yc=\dimen187
-\pgf@xd=\dimen188
-\pgf@yd=\dimen189
+\pgf@x=\dimen184
+\pgf@y=\dimen185
+\pgf@xa=\dimen186
+\pgf@ya=\dimen187
+\pgf@xb=\dimen188
+\pgf@yb=\dimen189
+\pgf@xc=\dimen190
+\pgf@yc=\dimen191
+\pgf@xd=\dimen192
+\pgf@yd=\dimen193
 \w@pgf@writea=\write3
 \r@pgf@reada=\read3
-\c@pgf@counta=\count280
-\c@pgf@countb=\count281
-\c@pgf@countc=\count282
-\c@pgf@countd=\count283
-\t@pgf@toka=\toks29
-\t@pgf@tokb=\toks30
-\t@pgf@tokc=\toks31
-\pgf@sys@id@count=\count284
+\c@pgf@counta=\count289
+\c@pgf@countb=\count290
+\c@pgf@countc=\count291
+\c@pgf@countd=\count292
+\t@pgf@toka=\toks30
+\t@pgf@tokb=\toks31
+\t@pgf@tokc=\toks32
+\pgf@sys@id@count=\count293
 
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/systemlayer/pgf.cfg
 File: pgf.cfg 2020/01/08 v3.1.5b (3.1.5b)
@@ -456,8 +488,8 @@ File: pgfsys-common-pdf.def 2020/01/08 v3.1.5b (3.1.5b)
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/systemlayer/pgfsyssoftpa
 th.code.tex
 File: pgfsyssoftpath.code.tex 2020/01/08 v3.1.5b (3.1.5b)
-\pgfsyssoftpath@smallbuffer@items=\count285
-\pgfsyssoftpath@bigbuffer@items=\count286
+\pgfsyssoftpath@smallbuffer@items=\count294
+\pgfsyssoftpath@bigbuffer@items=\count295
 )
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/systemlayer/pgfsysprotoc
 ol.code.tex
@@ -474,12 +506,12 @@ x
 x)
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/math/pgfmathparser.code.
 tex
-\pgfmath@dimen=\dimen190
-\pgfmath@count=\count287
-\pgfmath@box=\box52
-\pgfmath@toks=\toks32
-\pgfmath@stack@operand=\toks33
-\pgfmath@stack@operation=\toks34
+\pgfmath@dimen=\dimen194
+\pgfmath@count=\count296
+\pgfmath@box=\box54
+\pgfmath@toks=\toks33
+\pgfmath@stack@operand=\toks34
+\pgfmath@stack@operation=\toks35
 )
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/math/pgfmathfunctions.co
 de.tex
@@ -501,58 +533,58 @@ sc.code.tex)
 tegerarithmetics.code.tex)))
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/math/pgfmathfloat.code.t
 ex
-\c@pgfmathroundto@lastzeros=\count288
+\c@pgfmathroundto@lastzeros=\count297
 ))
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/math/pgfint.code.tex)
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/basiclayer/pgfcorepoints
 .code.tex
 File: pgfcorepoints.code.tex 2020/01/08 v3.1.5b (3.1.5b)
-\pgf@picminx=\dimen191
-\pgf@picmaxx=\dimen192
-\pgf@picminy=\dimen193
-\pgf@picmaxy=\dimen194
-\pgf@pathminx=\dimen195
-\pgf@pathmaxx=\dimen196
-\pgf@pathminy=\dimen197
-\pgf@pathmaxy=\dimen198
-\pgf@xx=\dimen199
-\pgf@xy=\dimen256
-\pgf@yx=\dimen257
-\pgf@yy=\dimen258
-\pgf@zx=\dimen259
-\pgf@zy=\dimen260
+\pgf@picminx=\dimen195
+\pgf@picmaxx=\dimen196
+\pgf@picminy=\dimen197
+\pgf@picmaxy=\dimen198
+\pgf@pathminx=\dimen199
+\pgf@pathmaxx=\dimen256
+\pgf@pathminy=\dimen257
+\pgf@pathmaxy=\dimen258
+\pgf@xx=\dimen259
+\pgf@xy=\dimen260
+\pgf@yx=\dimen261
+\pgf@yy=\dimen262
+\pgf@zx=\dimen263
+\pgf@zy=\dimen264
 )
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/basiclayer/pgfcorepathco
 nstruct.code.tex
 File: pgfcorepathconstruct.code.tex 2020/01/08 v3.1.5b (3.1.5b)
-\pgf@path@lastx=\dimen261
-\pgf@path@lasty=\dimen262
+\pgf@path@lastx=\dimen265
+\pgf@path@lasty=\dimen266
 )
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/basiclayer/pgfcorepathus
 age.code.tex
 File: pgfcorepathusage.code.tex 2020/01/08 v3.1.5b (3.1.5b)
-\pgf@shorten@end@additional=\dimen263
-\pgf@shorten@start@additional=\dimen264
+\pgf@shorten@end@additional=\dimen267
+\pgf@shorten@start@additional=\dimen268
 )
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/basiclayer/pgfcorescopes
 .code.tex
 File: pgfcorescopes.code.tex 2020/01/08 v3.1.5b (3.1.5b)
-\pgfpic=\box53
-\pgf@hbox=\box54
-\pgf@layerbox@main=\box55
-\pgf@picture@serial@count=\count289
+\pgfpic=\box55
+\pgf@hbox=\box56
+\pgf@layerbox@main=\box57
+\pgf@picture@serial@count=\count298
 )
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/basiclayer/pgfcoregraphi
 cstate.code.tex
 File: pgfcoregraphicstate.code.tex 2020/01/08 v3.1.5b (3.1.5b)
-\pgflinewidth=\dimen265
+\pgflinewidth=\dimen269
 )
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/basiclayer/pgfcoretransf
 ormations.code.tex
 File: pgfcoretransformations.code.tex 2020/01/08 v3.1.5b (3.1.5b)
-\pgf@pt@x=\dimen266
-\pgf@pt@y=\dimen267
-\pgf@pt@temp=\dimen268
+\pgf@pt@x=\dimen270
+\pgf@pt@y=\dimen271
+\pgf@pt@temp=\dimen272
 )
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/basiclayer/pgfcorequick.
 code.tex
@@ -569,14 +601,14 @@ File: pgfcorepathprocessing.code.tex 2020/01/08 v3.1.5b (3.1.5b)
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/basiclayer/pgfcorearrows
 .code.tex
 File: pgfcorearrows.code.tex 2020/01/08 v3.1.5b (3.1.5b)
-\pgfarrowsep=\dimen269
+\pgfarrowsep=\dimen273
 )
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/basiclayer/pgfcoreshade.
 code.tex
 File: pgfcoreshade.code.tex 2020/01/08 v3.1.5b (3.1.5b)
-\pgf@max=\dimen270
-\pgf@sys@shading@range@num=\count290
-\pgf@shadingcount=\count291
+\pgf@max=\dimen274
+\pgf@sys@shading@range@num=\count299
+\pgf@shadingcount=\count300
 )
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/basiclayer/pgfcoreimage.
 code.tex
@@ -585,7 +617,7 @@ File: pgfcoreimage.code.tex 2020/01/08 v3.1.5b (3.1.5b)
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/basiclayer/pgfcoreextern
 al.code.tex
 File: pgfcoreexternal.code.tex 2020/01/08 v3.1.5b (3.1.5b)
-\pgfexternal@startupbox=\box56
+\pgfexternal@startupbox=\box58
 ))
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/basiclayer/pgfcorelayers
 .code.tex
@@ -606,7 +638,7 @@ File: pgfcorerdf.code.tex 2020/01/08 v3.1.5b (3.1.5b)
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/modules/pgfmoduleshapes.
 code.tex
 File: pgfmoduleshapes.code.tex 2020/01/08 v3.1.5b (3.1.5b)
-\pgfnodeparttextbox=\box57
+\pgfnodeparttextbox=\box59
 )
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/modules/pgfmoduleplot.co
 de.tex
@@ -615,8 +647,8 @@ File: pgfmoduleplot.code.tex 2020/01/08 v3.1.5b (3.1.5b)
 (/home/matheusc/.miktex/texmfs/install/tex/latex/pgf/compatibility/pgfcomp-vers
 ion-0-65.sty
 Package: pgfcomp-version-0-65 2020/01/08 v3.1.5b (3.1.5b)
-\pgf@nodesepstart=\dimen271
-\pgf@nodesepend=\dimen272
+\pgf@nodesepstart=\dimen275
+\pgf@nodesepend=\dimen276
 )
 (/home/matheusc/.miktex/texmfs/install/tex/latex/pgf/compatibility/pgfcomp-vers
 ion-1-18.sty
@@ -631,10 +663,10 @@ ex)) (/home/matheusc/.miktex/texmfs/install/tex/latex/pgf/math/pgfmath.sty
 x
 Package: pgffor 2020/01/08 v3.1.5b (3.1.5b)
  (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/math/pgfmath.code.tex)
-\pgffor@iter=\dimen273
-\pgffor@skip=\dimen274
-\pgffor@stack=\toks35
-\pgffor@toks=\toks36
+\pgffor@iter=\dimen277
+\pgffor@skip=\dimen278
+\pgffor@stack=\toks36
+\pgffor@toks=\toks37
 ))
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/frontendlayer/tikz/tikz.
 code.tex
@@ -643,34 +675,34 @@ Package: tikz 2020/01/08 v3.1.5b (3.1.5b)
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/libraries/pgflibraryplot
 handlers.code.tex
 File: pgflibraryplothandlers.code.tex 2020/01/08 v3.1.5b (3.1.5b)
-\pgf@plot@mark@count=\count292
-\pgfplotmarksize=\dimen275
+\pgf@plot@mark@count=\count301
+\pgfplotmarksize=\dimen279
 )
-\tikz@lastx=\dimen276
-\tikz@lasty=\dimen277
-\tikz@lastxsaved=\dimen278
-\tikz@lastysaved=\dimen279
-\tikz@lastmovetox=\dimen280
-\tikz@lastmovetoy=\dimen281
-\tikzleveldistance=\dimen282
-\tikzsiblingdistance=\dimen283
-\tikz@figbox=\box58
-\tikz@figbox@bg=\box59
-\tikz@tempbox=\box60
-\tikz@tempbox@bg=\box61
-\tikztreelevel=\count293
-\tikznumberofchildren=\count294
-\tikznumberofcurrentchild=\count295
-\tikz@fig@count=\count296
+\tikz@lastx=\dimen280
+\tikz@lasty=\dimen281
+\tikz@lastxsaved=\dimen282
+\tikz@lastysaved=\dimen283
+\tikz@lastmovetox=\dimen284
+\tikz@lastmovetoy=\dimen285
+\tikzleveldistance=\dimen286
+\tikzsiblingdistance=\dimen287
+\tikz@figbox=\box60
+\tikz@figbox@bg=\box61
+\tikz@tempbox=\box62
+\tikz@tempbox@bg=\box63
+\tikztreelevel=\count302
+\tikznumberofchildren=\count303
+\tikznumberofcurrentchild=\count304
+\tikz@fig@count=\count305
 
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/modules/pgfmodulematrix.
 code.tex
 File: pgfmodulematrix.code.tex 2020/01/08 v3.1.5b (3.1.5b)
-\pgfmatrixcurrentrow=\count297
-\pgfmatrixcurrentcolumn=\count298
-\pgf@matrix@numberofcolumns=\count299
+\pgfmatrixcurrentrow=\count306
+\pgfmatrixcurrentcolumn=\count307
+\pgf@matrix@numberofcolumns=\count308
 )
-\tikz@expandcount=\count300
+\tikz@expandcount=\count309
 
 (/home/matheusc/.miktex/texmfs/install/tex/generic/pgf/frontendlayer/tikz/libra
 ries/tikzlibrarytopaths.code.tex
@@ -680,33 +712,33 @@ File: tikzlibrarytopaths.code.tex 2020/01/08 v3.1.5b (3.1.5b)
 ries/tikzlibrarytrees.code.tex
 File: tikzlibrarytrees.code.tex 2020/01/08 v3.1.5b (3.1.5b)
 )
-\c@ilisti=\count301
-\enitdp@ilist=\count302
+\c@ilisti=\count310
+\enitdp@ilist=\count311
 
 (/home/matheusc/.miktex/texmfs/install/tex/latex/l3backend/l3backend-pdfmode.de
 f
 File: l3backend-pdfmode.def 2020-08-07 L3 backend support: PDF mode
-\l__kernel_color_stack_int=\count303
-\l__pdf_internal_box=\box62
+\l__kernel_color_stack_int=\count312
+\l__pdf_internal_box=\box64
 ) (report.aux)
 \openout1 = `report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -742,8 +774,9 @@ LaTeX Font Info:    ... okay on input line 24.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-\AtBeginShipoutBox=\box63
-Package hyperref Info: Link coloring OFF on input line 24.
+\c@lstlisting=\count313
+\AtBeginShipoutBox=\box65
+Package hyperref Info: Link coloring OFF on input line 27.
 (/home/matheusc/.miktex/texmfs/install/tex/latex/hyperref/nameref.sty
 Package: nameref 2019/09/16 v2.46 Cross-referencing by name of section
 
@@ -754,11 +787,11 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 g.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count304
+\c@section@level=\count314
 )
-LaTeX Info: Redefining \ref on input line 24.
-LaTeX Info: Redefining \pageref on input line 24.
-LaTeX Info: Redefining \nameref on input line 24.
+LaTeX Info: Redefining \ref on input line 27.
+LaTeX Info: Redefining \pageref on input line 27.
+LaTeX Info: Redefining \nameref on input line 27.
  (report.out) (report.out)
 \@outlinefile=\write4
 \openout4 = `report.out'.
@@ -766,132 +799,217 @@ LaTeX Info: Redefining \nameref on input line 24.
 
 (/home/matheusc/.miktex/texmfs/install/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count305
-\scratchdimen=\dimen284
-\scratchbox=\box64
-\nofMPsegments=\count306
-\nofMParguments=\count307
-\everyMPshowfont=\toks37
-\MPscratchCnt=\count308
-\MPscratchDim=\dimen285
-\MPnumerator=\count309
-\makeMPintoPDFobject=\count310
-\everyMPtoPDFconversion=\toks38
+\scratchcounter=\count315
+\scratchdimen=\dimen288
+\scratchbox=\box66
+\nofMPsegments=\count316
+\nofMParguments=\count317
+\everyMPshowfont=\toks38
+\MPscratchCnt=\count318
+\MPscratchDim=\dimen289
+\MPnumerator=\count319
+\makeMPintoPDFobject=\count320
+\everyMPtoPDFconversion=\toks39
 )
 (/home/matheusc/.miktex/texmfs/install/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 85.
-) ABD: EveryShipout initializing macros
-
-LaTeX Font Warning: Font shape `OT1/cmss/bx/it' undefined
-(Font)              using `OT1/cmss/bx/n' instead on input line 28.
-
-[1
-
+) ABD: EveryShipout initializing macros [1
 
 {/home/matheusc/.miktex/texmfs/data/pdftex/config/pdftex.map}] [2]
-Overfull \hbox (4.68593pt too wide) in paragraph at lines 233--242
+Overfull \hbox (4.68593pt too wide) in paragraph at lines 237--246
 \OT1/cmr/m/n/10 Dois op-er-adores de selec~ao que s~ao fre-quente-mente uti-li
 za-dos s~ao o \OT1/cmr/m/it/10 Roulette Wheel \OT1/cmr/m/n/10 e o \OT1/cmr/m/it
 /10 k-Tournament\OT1/cmr/m/n/10 .
  []
 
 [3] [4]
-Overfull \hbox (2.22221pt too wide) in paragraph at lines 344--354
+Overfull \hbox (2.22221pt too wide) in paragraph at lines 348--358
 $[]$ $[]$ 
  []
 
-[5]
-Overfull \hbox (17.11092pt too wide) in paragraph at lines 477--502
+(/home/matheusc/.miktex/texmfs/install/tex/latex/listings/lstlang1.sty
+File: lstlang1.sty 2020/03/24 1.8d listings language file
+)
+(/home/matheusc/.miktex/texmfs/install/tex/latex/listings/lstlang1.sty
+File: lstlang1.sty 2020/03/24 1.8d listings language file
+)
+[5] [6]
+Overfull \hbox (17.11092pt too wide) in paragraph at lines 501--526
  [] 
  []
 
-[6] [7] [8]
-<./images/var_pop.png, id=192, 602.25pt x 372.39125pt>
+
+Overfull \hbox (7.80107pt too wide) in paragraph at lines 568--568
+[]|\OT1/cmr/m/n/10 360372.62| 
+ []
+
+
+Overfull \hbox (2.80106pt too wide) in paragraph at lines 568--568
+[]|\OT1/cmr/m/n/10 16253.90| 
+ []
+
+
+Overfull \hbox (7.70229pt too wide) in paragraph at lines 568--568
+[]|[]| 
+ []
+
+
+Overfull \hbox (12.80109pt too wide) in paragraph at lines 568--568
+[]|\OT1/cmr/m/n/10 1767685.76| 
+ []
+
+
+Overfull \hbox (2.80106pt too wide) in paragraph at lines 568--568
+[]|\OT1/cmr/m/n/10 78952.58| 
+ []
+
+
+Overfull \hbox (12.80109pt too wide) in paragraph at lines 568--568
+[]|\OT1/cmr/m/n/10 9867700.84| 
+ []
+
+
+Overfull \hbox (7.80107pt too wide) in paragraph at lines 568--568
+[]|\OT1/cmr/m/n/10 440855.16| 
+ []
+
+
+Overfull \hbox (2.80106pt too wide) in paragraph at lines 568--568
+[]|\OT1/cmr/m/n/10 19742.83| 
+ []
+
+
+Overfull \hbox (7.80107pt too wide) in paragraph at lines 568--568
+[]|\OT1/cmr/m/n/10 141705.79| 
+ []
+
+
+Overfull \hbox (7.70229pt too wide) in paragraph at lines 568--568
+[]|[]| 
+ []
+
+
+Overfull \hbox (7.80107pt too wide) in paragraph at lines 568--568
+[]|\OT1/cmr/m/n/10 331306.45| 
+ []
+
+
+Overfull \hbox (2.80106pt too wide) in paragraph at lines 568--568
+[]|\OT1/cmr/m/n/10 14808.40| 
+ []
+
+
+Overfull \hbox (12.80109pt too wide) in paragraph at lines 568--568
+[]|\OT1/cmr/m/n/10 1400507.65| 
+ []
+
+
+Overfull \hbox (2.80106pt too wide) in paragraph at lines 568--568
+[]|\OT1/cmr/m/n/10 62569.32| 
+ []
+
+
+Overfull \hbox (7.70229pt too wide) in paragraph at lines 568--568
+[]|[]| 
+ []
+
+
+Overfull \hbox (2.80106pt too wide) in paragraph at lines 568--568
+[]|\OT1/cmr/m/n/10 20553.19| 
+ []
+
+
+Overfull \hbox (2.80106pt too wide) in paragraph at lines 568--568
+[]|\OT1/cmr/m/n/10 99365.38| 
+ []
+
+[7] [8]
+<./images/var_pop.png, id=208, 602.25pt x 372.39125pt>
 File: ./images/var_pop.png Graphic file (type png)
 <use ./images/var_pop.png>
-Package pdftex.def Info: ./images/var_pop.png  used on input line 694.
+Package pdftex.def Info: ./images/var_pop.png  used on input line 718.
 (pdftex.def)             Requested size: 213.39568pt x 131.95264pt.
-<./images/var_d.png, id=194, 602.25pt x 372.39125pt>
+<./images/var_d.png, id=210, 602.25pt x 372.39125pt>
 File: ./images/var_d.png Graphic file (type png)
 <use ./images/var_d.png>
-Package pdftex.def Info: ./images/var_d.png  used on input line 699.
+Package pdftex.def Info: ./images/var_d.png  used on input line 723.
 (pdftex.def)             Requested size: 213.39568pt x 131.95264pt.
-<./images/var_k.png, id=195, 602.25pt x 372.39125pt>
+<./images/var_k.png, id=211, 602.25pt x 372.39125pt>
 File: ./images/var_k.png Graphic file (type png)
 <use ./images/var_k.png>
-Package pdftex.def Info: ./images/var_k.png  used on input line 704.
+Package pdftex.def Info: ./images/var_k.png  used on input line 728.
 (pdftex.def)             Requested size: 213.39568pt x 131.95264pt.
-<./images/var_pc.png, id=196, 602.25pt x 372.39125pt>
+<./images/var_pc.png, id=212, 602.25pt x 372.39125pt>
 File: ./images/var_pc.png Graphic file (type png)
 <use ./images/var_pc.png>
-Package pdftex.def Info: ./images/var_pc.png  used on input line 709.
+Package pdftex.def Info: ./images/var_pc.png  used on input line 733.
 (pdftex.def)             Requested size: 213.39568pt x 131.95264pt.
 
-Overfull \hbox (2.22221pt too wide) in paragraph at lines 693--713
+Overfull \hbox (2.22221pt too wide) in paragraph at lines 717--737
 []$[]$ $[]$
  []
 
 
-Overfull \hbox (2.22221pt too wide) in paragraph at lines 693--713
+Overfull \hbox (2.22221pt too wide) in paragraph at lines 717--737
 []$ $[]$ 
  []
 
-<./images/var_pm.png, id=197, 602.25pt x 372.39125pt>
+<./images/var_pm.png, id=213, 602.25pt x 372.39125pt>
 File: ./images/var_pm.png Graphic file (type png)
 <use ./images/var_pm.png>
-Package pdftex.def Info: ./images/var_pm.png  used on input line 716.
+Package pdftex.def Info: ./images/var_pm.png  used on input line 740.
 (pdftex.def)             Requested size: 213.39568pt x 131.95264pt.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 [9 <./images/var_pop.png> <./images/var_d.png> <./images/var_k.png> <./images/v
 ar_pc.png>] [10 <./images/var_pm.png>] (report.bbl) [11]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 739.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 739.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 762.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 762.
  (report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 739.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 739.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 762.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 762.
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: 05D6C90A5EC7282325BFCC2BB692D62A;1118.
-
-
-LaTeX Font Warning: Some font shapes were not available, defaults substituted.
-
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 739.
+(rerunfilecheck)             Checksum: B8396718C65DD3557B75A542F2D61971;1185.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 762.
  ) 
 Here is how much of TeX's memory you used:
- 19058 strings out of 483120
- 355137 string characters out of 2956793
- 654829 words of memory out of 3000000
- 33983 multiletter control sequences out of 15000+200000
- 543528 words of font info for 59 fonts, out of 3000000 for 9000
+ 20731 strings out of 483120
+ 377452 string characters out of 2956793
+ 872559 words of memory out of 3000000
+ 35623 multiletter control sequences out of 15000+200000
+ 543391 words of font info for 58 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
  60i,14n,60p,412b,1360s stack positions out of 5000i,500n,10000p,200000b,50000s
-</home/matheusc/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cmex10.
-pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cmmi1
-0.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cmm
-i6.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cm
-mi7.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm/c
-mmi8.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm/
-cmr10.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm
-/cmr6.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm
-/cmr7.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm
-/cmr8.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm
-/cmr9.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm
-/cmss10.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/public/amsfonts/
-cm/cmss9.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/public/amsfonts
-/cm/cmssbx10.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/public/amsf
-onts/cm/cmssi12.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/public/a
-msfonts/cm/cmsy10.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/public
-/amsfonts/cm/cmsy7.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/publi
-c/amsfonts/cm/cmti10.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/pub
-lic/amsfonts/cm/cmti8.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/pu
-blic/amsfonts/cm/cmtt10.pfb>
-Output written on report.pdf (11 pages, 374826 bytes).
+ </home/matheusc/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1
+000.pk> </home/matheusc/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/
+tcrm0600.pk> </home/matheusc/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dp
+i600/tcrm0800.pk></home/matheusc/.miktex/texmfs/install/fonts/type1/public/amsf
+onts/cm/cmbx10.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/public/am
+sfonts/cm/cmbx12.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/public/
+amsfonts/cm/cmbxti10.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/pub
+lic/amsfonts/cm/cmex10.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/p
+ublic/amsfonts/cm/cmmi10.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1
+/public/amsfonts/cm/cmmi6.pfb></home/matheusc/.miktex/texmfs/install/fonts/type
+1/public/amsfonts/cm/cmmi7.pfb></home/matheusc/.miktex/texmfs/install/fonts/typ
+e1/public/amsfonts/cm/cmmi8.pfb></home/matheusc/.miktex/texmfs/install/fonts/ty
+pe1/public/amsfonts/cm/cmr10.pfb></home/matheusc/.miktex/texmfs/install/fonts/t
+ype1/public/amsfonts/cm/cmr12.pfb></home/matheusc/.miktex/texmfs/install/fonts/
+type1/public/amsfonts/cm/cmr6.pfb></home/matheusc/.miktex/texmfs/install/fonts/
+type1/public/amsfonts/cm/cmr7.pfb></home/matheusc/.miktex/texmfs/install/fonts/
+type1/public/amsfonts/cm/cmr8.pfb></home/matheusc/.miktex/texmfs/install/fonts/
+type1/public/amsfonts/cm/cmsy10.pfb></home/matheusc/.miktex/texmfs/install/font
+s/type1/public/amsfonts/cm/cmsy7.pfb></home/matheusc/.miktex/texmfs/install/fon
+ts/type1/public/amsfonts/cm/cmti10.pfb></home/matheusc/.miktex/texmfs/install/f
+onts/type1/public/amsfonts/cm/cmti12.pfb></home/matheusc/.miktex/texmfs/install
+/fonts/type1/public/amsfonts/cm/cmti8.pfb></home/matheusc/.miktex/texmfs/instal
+l/fonts/type1/public/amsfonts/cm/cmtt10.pfb></home/matheusc/.miktex/texmfs/inst
+all/fonts/type1/public/amsfonts/latxfont/lcircle1.pfb>
+Output written on report.pdf (11 pages, 385615 bytes).
 PDF statistics:
- 296 PDF objects out of 1000 (max. 8388607)
- 56 named destinations out of 1000 (max. 500000)
- 174 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 328 PDF objects out of 1000 (max. 8388607)
+ 64 named destinations out of 1000 (max. 500000)
+ 182 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -1,6 +1,9 @@
-\documentclass[a4paper]{paper}
+\documentclass[a4paper]{article}
 \usepackage[left=3cm, right=3cm, top=2cm, bottom=3cm]{geometry}
 
+\usepackage{setspace}
+\usepackage{listings}
+\usepackage{authblk}
 \usepackage{array}
 \usepackage{tabularx}
 \usepackage{multirow}
@@ -23,7 +26,8 @@
 
 \begin{document}
 \title{{\itshape Symbolic Regression}}
-\author{Matheus Cândido Teixeira}
+\author{Matheus Cândido Teixeira\thanks{matheuscandido2009@gmail.com}}
+\affil{Departamento de Ciências da Computação - UFMG}
 \maketitle
 
 \section{Introdução}
@@ -372,6 +376,26 @@ Conforme mensionado nas seções anteriores, as escolhas da representação dos
 indivíduos foi feita tendo em vista a performance do sistema. Um fator a ser
 explorado é a performance do sistema com a introdução de paralelismo.
 
+\subsection{Compilação}
+A implementação do algoritmo foi feito em \texttt{C++}. A compilação pode ser
+complexa devido a quantidade de depências em bibliotecas para leitura de
+arquivos \texttt{*.csv} e \textit{parser} dos argumentos. Para contornar essa
+complexidade, o CMake foi utilizado para gerar o projeto de modo que o sistema
+utilize o compilador \texttt{C++} disponível no sistema. Os comandos necessários
+para compilar e executar o programa utilizando o Linux pode ser visto no
+\hyperref[lst:code]{Código~\ref*{lst:code}}.
+
+\begin{lstlisting}[language=bash, caption={Comandos para compilar utilizando o Linux},
+    label={lst:code}, frame=shadowbox, frameround=fttt]
+  mkdir bin 
+  cd bin    
+  cmake ..  
+  cmake --build .  
+  cd src           
+  ./sreg [parameters]
+                    
+\end{lstlisting}
+
 \section{Experimentos}
 Nesta seção é apresentado resultados dos experimentos realizados. Os resultados
 apresentados são estatísticas geradas a partir da execução dos parâmetros
@@ -405,7 +429,7 @@ estatísticas dos resultadas da repetição do algoritmo para diferentes
     1 & 40 & \textit{Ramped HH} & 7 & 3-Tournament & 0.9 & 0.05 & MAE & $10^{-9}$ & 0 \\
     \hline
   \end{tabular}
-  \begin{minipage}{.9\textwidth}{\footnotesize \# Vars indica a quantidade de
+  \begin{minipage}{.9\textwidth}{\center \setstretch{0.1} \footnotesize \# Vars indica a quantidade de
       váriaveis. MaxG é o limite de gerações. MG é método de geração da
       população. MD é a profundidade máxima dos indivíduos. MS é o método de
       seleção.  $p_c$ e $p_m$ são a probabilidade de crossover e mutação,
@@ -454,7 +478,7 @@ mantendo-se a população com 500 indivíduos.
     min. & 26.00 & 0.00 & 0.01 & 16.40 & 0.20 & 1.04 & 0.34 & \\ \hline
   \end{tabular}
   \begin{minipage}{0.9\textwidth}
-    {\footnotesize
+    {\center \footnotesize
       \# U: quantidade de indivíduos únicos. \# M: quantidade de indivíduos melhores
       que a mediana da população anterior. min.: Fitness mínima atingida. max.:
       Fitness máxima atingida. median.: mediana da Fitness da população final.
@@ -494,7 +518,7 @@ probabilidade de mutação e , por consequência, diminuir a probabilidade de
     min.    & 75.00 & 0.00 & 0.02 & 628.67 & 0.19 & 36.60 & 4.35 & \\ \hline
   \end{tabular}
     \begin{minipage}{0.9\textwidth}
-    {\footnotesize
+    {\center \footnotesize
       Mesmos que da \hyperref[tbl:result_pop]{Tabela~\ref*{tbl:result_pop}}.
       $p_c$: Probabilidade de crossover. $p_m$: Probabilidade de mutação.
     }
@@ -520,10 +544,10 @@ de $k=5$ são os que resultam no menor valor de \textit{fitness} em média. Para
 
 
 \begin{table}
-  \center
+  \centering
   \caption{Variação do parâmetro k}
   \label{tbl:var_k}
-  \begin{tabular}{| c | c | c | c | c | c | c | c | c |}
+  \begin{tabularx}{1\textwidth}{| X | X | X | X | X | X | X | X | X |}
     \hline
     &  \# U & \# M & min. & max. & median. & stddev & avg. & $k$ \\ \hline \hline
 avg. & 299.19 & 158.16 & 0.10 & 360372.62 & 0.21 & 16253.90 & 758.62 & \multirow{5}{1.5cm}{$k=5$} \\ \cline{1-8}
@@ -541,9 +565,9 @@ stddev & 73.40 & 32.59 & 0.06 & 20553.19 & 0.11 & 952.17 & 57.26 & \\ \cline{1-8
 CV. & 0.34 & 0.22 & 0.45 & 2.38 & 0.46 & 2.27 & 2.03 & \\ \cline{1-8}
 max. & 358.00 & 199.00 & 0.18 & 99365.38 & 0.57 & 4597.18 & 270.40 & \\ \cline{1-8}
 min. & 129.00 & 0.00 & 0.00 & 50.11 & 0.12 & 4.11 & 1.04 & \\ \hline 
-  \end{tabular}
+  \end{tabularx}
   \begin{minipage}{0.9\textwidth}
-    {\footnotesize
+    {\center \footnotesize
       Mesmos que da \hyperref[tbl:result_pop]{Tabela~\ref*{tbl:result_pop}}.
       $k$ é o parâmetro do método de seleção \textit{Tournament}.
     }
@@ -580,7 +604,7 @@ max. & 207.00 & 172.00 & 0.18 & 0.18 & 0.18 & 0.02 & 0.18 & \\ \cline{1-8}
 min. & 1.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & \\ \hline 
   \end{tabular}
     \begin{minipage}{0.9\textwidth}
-    {\footnotesize
+    {\center \footnotesize
       Mesmos que da \hyperref[tbl:result_pop]{Tabela~\ref*{tbl:result_pop}}.
       E indica a presença ou ausência de eletismo.
     }
@@ -613,8 +637,8 @@ CV & 0.36 & 0.12 & 0.81 & 4.91 & 0.49 & 4.86 & 4.66 \\ \hline
 max. & 464.00 & 209.00 & 0.20 & 9867700.84 & 0.44 & 440855.16 & 19742.83 \\ \hline 
 min. & 145.00 & 132.00 & 0.00 & 74.91 & 0.03 & 4.87 & 0.8 \\ \hline
   \end{tabular}
-  \begin{minipage}{0.9\textwidth}
-    {\footnotesize
+  \begin{minipage}{0.7\textwidth}
+    {\center \footnotesize
       Mesmos que da \hyperref[tbl:result_pop]{Tabela~\ref*{tbl:result_pop}}.
     }
   \end{minipage}
@@ -721,17 +745,16 @@ do que o \textit{explotation}.
 \newpage
 \section{Conclusão}
 Os resultados obtidos indicam a importância entre o balanceamento dos diversos
-parâmetros do GP. A probabilidade de mutação, $p_m$ tem grande impacto no valor
+parâmetros do GP. A probabilidade de mutação, $p_m$, tem grande impacto no valor
 mínimo da \textit{fitness}, devido a exploração do espaço de soluções. Outro
 fator importante é o tamanho da árvore, pois quando mais complexo os dados,
 maior deve ser a profundidade da árvore para obter maior expressividade dos
 indivíduos.
 
-Muitos fatores ainda devem ser explorados, como aumentar o conjunto de
-terminais, aumentar a quantidade de gerações e utilizar outras métricas de erro.
-A menor \textit{fitness} atingida, $5.579668$, é alta indicando que o conjunto
-de terminais ou até mesmo a forma de geração de constantes não é adequado e
-é necessário implementar ajustes na implementação deles.
+Outro aspacto à ser estudado é o tamanho da \textit{fitness}, $5.57966$. Se
+comparado com a média do label do dataset \texttt{concrete.csv}, que é
+$35.81796$, é possível verificar que o erro é aproximadamente 15\% da magnitude
+da média, ou seja, muito elevado. 
 
 \newpage
 \bibliographystyle{plainnat}

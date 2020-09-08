@@ -54,6 +54,6 @@ c=0.6
 for m in 0.1 0.15 0.2 0.25 0.3
 do
     output_6="concrete_m_${m}.csv"
-    parameters_5="$dataset -p ${p} -G 60 -g ramped_hh -f 0.000000001 -k $k -d $d -n 8 -o ${output_6} -M $m -c $c"
+    parameters_5="$dataset -p ${p} -G 120 -g ramped_hh -f 0.000000001 -k $k -d $d -n 8 -o ${output_6} -M $m -c $c"
     ./sreg $parameters_5
 done
