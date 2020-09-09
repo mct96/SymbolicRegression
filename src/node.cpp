@@ -12,8 +12,14 @@ bool gene_t::operator<(const gene_t& other) const
     return _value < other._value;
 }
 
+bool gene_t::operator==(const gene_t& other) const
+{
+    return _code == other._code && _value == other._value;
+}
+
 individual_t::individual_t(std::size_t depth)
     :
+    _depth{depth},
     _gen(pow(2, depth) - 1)
 {
     clear();
@@ -32,6 +38,21 @@ individual_t& individual_t::operator=(const individual_t& other)
     return *this;
 }
 
+std::size_t individual_t::size() const
+{
+    return _gen.size();
+}
+
+const gene_t& individual_t::operator[](std::size_t i) const
+{
+    return _gen.at(i);
+}
+
+gene_t& individual_t::operator[](std::size_t i)
+{
+    return _gen.at(i);
+}
+
 void individual_t::clear()
 {
     clear_subtree(0);
@@ -39,8 +60,10 @@ void individual_t::clear()
 
 void individual_t::clear_subtree(size_t node)
 {
-    _gen[node]._code = class_t::null;
-
+    if (node >= _gen.size())
+        throw std::invalid_argument{"individual_t::clear_subtree."};
+    
+    _gen[node]._code = class_t::null;   
     if (!has_child(node)) return;
     
     clear_subtree(lchild(node));
@@ -59,12 +82,42 @@ void individual_t::clear_rsubtree(size_t node)
         return clear_subtree(rchild(node));
 }
 
+void individual_t::copy_subtree(std::size_t to,
+                                const individual_t& ind,
+                                std::size_t from)
+{
+    if (to >= _gen.size() || from >= ind._gen)
+        throw std::invalid_argument{"individual_t::copy_subtree"};
+    
+    _gen[to] = ind[from];
+
+    if (has_child(to) && ind.has_child(from)) {
+        copy_subtree(lchild(to), ind, ind.lchild(from));
+        copy_subtree(rchild(to), ind, ind.rchild(from));
+    } else {
+        clear_lsubtree(to);
+        clear_rsubtree(to);
+    }
+}
+
+std::size_t individual_t::max_depth() const
+{
+    return _depth;
+}
+
+std::size_t individual_t::depth(std::size_t p)
+{
+    return std::floor(std::log2(p + 1));
+}
+
 std::size_t individual_t::depth() const
 {
-    auto p = std::find_if(_gen.rbegin(), _gen.rend(), [](gene_t g) {
+    auto p = std::find_if(_gen.crbegin(), _gen.crend(), [](gene_t g) {
         return g._code != class_t::null; });
 
-    return std::log(std::distance(_gen.rend(), p) + 1);
+    if (p == _gen.crend()) return 0;
+    
+    return std::floor(std::log2(std::distance(p, _gen.crend())));
 }
 
 bool individual_t::has_child(std::size_t node) const
@@ -92,13 +145,28 @@ std::size_t individual_t::parent(std::size_t child) const
     if (!has_parent(child))
         throw std::invalid_argument{"individual_t::parent"s};
 
-    return std::ceil((child - 1) / 2);
+    return std::floor((child - 1) / 2);
 }
 
 individual_handler_t::individual_handler_t(const random_t& rd)
     :
     _rd{rd}
 {
+}
+
+
+individual_handler_t::~individual_handler()
+{
+}
+
+void individual_handler_t::random_generator(const random_t rd)
+{
+    _rd = rd;
+}
+
+const random_t& individual_handler_t::random_generator() const
+{
+    return _rd;
 }
 
 void individual_handler_t::add_operator(std::string repr,
@@ -154,7 +222,22 @@ gene_t individual_handler_t::rd_cons() const
     gene_t g{class_t::cons, cons};
     return g;
 }
-    
+
+gene_t individual_handler_t::rd_term() const
+{
+    return _rd.choose() ? rd_var() : rd_cons();
+}
+
+std::size_t individual_handler_t::rd_point(const individual_t& ind) const
+{
+    std::vector<std::size_t> possibles{};
+    auto b = ind._gen.begin(), e = ind._gen.end();
+    std::copy_if(b, e, std::back_inserter(possibles), [](gene_t g) {
+        return g._code != class_t::null; });
+
+    return possibles.at(_rd.integer(0, possibles.size()));
+}
+
 double individual_handler_t::eval(const individual_t& ind,
                                   vars_t vars) const
 {
@@ -176,22 +259,28 @@ double individual_handler_t::eval(const individual_t& ind,
     switch (g._code) {
     case class_t::oper:
         {
-        auto lc = ind.lchild(n), rc = ind.rchild(n);
-        auto lop = eval(ind, vars, lc), rop = eval(ind, vars, rc);
-        result = eval_oper(g, lop, rop);
+            auto lc = ind.lchild(n), rc = ind.rchild(n);
+            auto lop = eval(ind, vars, lc), rop = eval(ind, vars, rc);
+            result = eval_oper(g, lop, rop);
         }
         break;
         
     case class_t::func:
-        {auto ind_var = ind.lchild(n);
-        auto x = eval(ind, vars, ind_var);
-        result = eval_func(g, x);} break;
+        {
+            auto ind_var = ind.lchild(n);
+            auto x = eval(ind, vars, ind_var);
+            result = eval_func(g, x);
+        } break;
         
     case class_t::var:
-        {std::size_t i = g._value;
-            result = vars[i];} break;
+        {
+            std::size_t i = g._value;
+            result = vars[i];
+        } break;
     case class_t::cons:
-        {result = eval_cons(g);} break;
+        {
+            result = eval_cons(g);
+        } break;
     default:
         throw std::invalid_argument{"individual_t::eval"};
     }
@@ -281,35 +370,38 @@ std::string individual_handler_t::str_var(const gene_t& g) const
 }
 
 
-#include <iostream>
+// #include <iostream>
 
-using namespace std;
+// using namespace std;
 
-int main()
-{
-    individual_t a{7}, b{7};
-    random_t rd{{1, 2, 3}};
-    individual_handler_t hd{rd};
-    hd.add_function("sin"s, [](double x) -> double { return sin(x); });
-    hd.add_function("cos"s, [](double x) -> double { return cos(x); });
-    hd.add_function("tan"s, [](double x) -> double { return tan(x); });
-    hd.add_function("sinh"s, [](double x) -> double { return sinh(x); });
-    hd.add_function("cosh"s, [](double x) -> double { return cosh(x); });
-    hd.add_function("tanh"s, [](double x) -> double { return tanh(x); });
-    hd.add_function("log"s, [](double x) -> double { return tanh(x); });
-    hd.add_function("ln"s, [](double x) -> double { return tanh(x); });
-    hd.add_function("log10"s, [](double x) -> double { return tanh(x); });
-    hd.add_operator("+", 1, [](double x, double y) -> double { return x+y; });
-    hd.add_operator("-", 2, [](double x, double y) -> double { return x-y; });
-    hd.add_operator("/", 4, [](double x, double y) -> double { return x/y; });
-    hd.add_operator("*", 3, [](double x, double y) -> double { return x*y; });
-    hd.add_operator("^", 5, [](double x, double y) -> double { return pow(x, y); });
-    hd.add_variable(1);
-    a._gen[0] = hd.rd_oper();
-    a._gen[1] = hd.rd_func();
-    a._gen[2] = hd.rd_var();
-    a._gen[3] = hd.rd_func();
-    a._gen[7] = hd.rd_cons();
-    cout << hd.str(a) << endl;
-    return 0;
-}
+// int main()
+// {
+//     individual_t a{7}, b{7};
+//     random_t rd{{1, 2, 3}};
+//     individual_handler_t hd{rd};
+//     hd.add_function("sin"s, [](double x) -> double { return sin(x); });
+//     hd.add_function("cos"s, [](double x) -> double { return cos(x); });
+//     hd.add_function("tan"s, [](double x) -> double { return tan(x); });
+//     hd.add_function("sinh"s, [](double x) -> double { return sinh(x); });
+//     hd.add_function("cosh"s, [](double x) -> double { return cosh(x); });
+//     hd.add_function("tanh"s, [](double x) -> double { return tanh(x); });
+//     hd.add_function("log2"s, [](double x) -> double { return log2(x); });
+//     hd.add_function("ln"s, [](double x) -> double { return log(x); });
+//     hd.add_function("log10"s, [](double x) -> double { return log10(x); });
+//     hd.add_operator("+", 1, [](double x, double y) -> double { return x+y; });
+//     hd.add_operator("-", 2, [](double x, double y) -> double { return x-y; });
+//     hd.add_operator("/", 4, [](double x, double y) -> double { return x/y; });
+//     hd.add_operator("*", 3, [](double x, double y) -> double { return x*y; });
+//     hd.add_operator("^", 5, [](double x, double y) -> double { return pow(x, y); });
+//     hd.add_variable(2);
+//     a._gen[0] = hd.rd_oper();
+//     std::cout << a.has_parent(0) << endl;
+//     a._gen[1] = hd.rd_func();
+//     std::cout << a.has_parent(0) << endl;
+//     std::cout << a.parent(7) << endl;    
+//     a._gen[2] = hd.rd_var();
+//     a._gen[3] = hd.rd_func();
+//     a._gen[7] = hd.rd_var();
+//     cout << hd.str(a) << "= " << hd.eval(a, {1, 1})<< endl;
+//     return 0;
+// }

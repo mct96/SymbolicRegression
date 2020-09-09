@@ -1,0 +1,7 @@
+#include <vector>
+#include <string>
+
+using target_t = double;
+using label_t = double;
+using features_t = std::vector<double>;
+using entry_t = std::pair<features_t, label_t>;
