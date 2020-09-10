@@ -223,6 +223,18 @@ gene_t individual_handler_t::rd_cons() const
     return g;
 }
 
+gene_t individual_handler_t::rd_node() const
+{
+    if (_func.size() && _oper.size())
+        return _rd.choose() ? rd_func() : rd_oper();
+    else if (_func.size())
+        return rd_func();
+    else if (_oper.size())
+        return rd_oper();
+    else
+        throw std::logic_error{"individual_handler_t::rd_node"};
+}
+
 gene_t individual_handler_t::rd_term() const
 {
     return _rd.choose() ? rd_var() : rd_cons();

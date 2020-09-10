@@ -90,6 +90,8 @@ public:
     gene_t rd_oper() const;
     gene_t rd_var() const;
     gene_t rd_cons() const;
+
+    gene_t rd_node() const;
     gene_t rd_term() const;
     std::size_t rd_point(const individual_t& ind) const;
     

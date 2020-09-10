@@ -466,24 +466,21 @@ void gp_operators_t::population_fitness(individuals_t& population,
 individual_t gp_operators_t::full_gen(std::size_t max_depth)
 {
     individual_t ind{max_depth};
-    if (max_depth <= 1) {
-        ind[0] = _hdl.rd_term();
-        return ind;
-    }    
 
-    for (std::size_t i = 0; i < (std::size_t)pow(2, max_depth - 2) - 1; ++i)
-        ind[i] = _hdl.rd_oper();
-    
-    for (std::size_t i = pow(2, max_depth - 2) - 1;
-                     i < pow(2, max_depth - 1) - 1; ++i) {
-        if (_rd.choose()) {
-            ind[i] = _hdl.rd_func();
-            ind[ind.lchild(i)] = _hdl.rd_term();
-        } else {
-            ind[i] = _hdl.rd_oper();
-            ind[ind.lchild(i)] = _hdl.rd_term();
-            ind[ind.rchild(i)] = _hdl.rd_term();
-        }
+    std::vector<std::size_t> bf{0};
+    while (bf.size() && bf.back() < pow(2, max_depth - 1) - 1) {
+        auto pos = bf.back();
+        gene_t node = _hdl.rd_node();
+        ind[pos] = node;
+        bf.insert(bf.begin(), ind.lchild(pos));
+        if (node._code == code_t::oper)
+            bf.insert(bf.begin(), ind.rchild(pos));
+        bf.pop_back();
+    }
+
+    while (bf.size()) {
+        ind[bf.back()] = _hdl.rd_term();
+        bf.pop_back();
     }
 
     return ind;
@@ -627,23 +624,18 @@ void gp_operators_t::grow_gen_recursive(individual_t& ind,
     if (max_depth - 1 == individual_t::depth(pt)) { // last depth, gen terminals.
         ind[pt] = _hdl.rd_term();
     } else {
-        if (_rd.choose()) { // gen functions or operators.
-            ind[pt] = _hdl.rd_func();
-            if (_rd.choose()) // expand or stop ?
-                ind[ind.lchild(pt)] = _hdl.rd_term();
-            else
-                grow_gen_recursive(ind, max_depth, ind.lchild(pt));
-        } else {
-            ind[pt] = _hdl.rd_oper();
-            if (_rd.choose()) // expand or stop ?
-                ind[ind.lchild(pt)] = _hdl.rd_term();
-            else
-                grow_gen_recursive(ind, max_depth, ind.lchild(pt));
-            if (_rd.choose())
-                ind[ind.rchild(pt)] = _hdl.rd_term();
-            else
+        ind[pt] = _hdl.rd_node();
+
+        if (_rd.choose())  // expand left branch ?
+            grow_gen_recursive(ind, max_depth, ind.lchild(pt));
+        else
+            ind[ind.lchild(pt)] = _hdl.rd_term();
+        
+        if (ind[pt]._code == code_t::oper)
+            if (_rd.choose()) // expand right branch ?
                 grow_gen_recursive(ind, max_depth, ind.rchild(pt));
-        }
+            else
+                ind[ind.rchild(pt)] = _hdl.rd_term();
     }
 }
 
@@ -692,6 +684,7 @@ void symbolic_regression_t::train(const std::vector<entry_t>& t_set)
 {
     for (auto seed: _params._seeds) {
         _rd.use_seed(seed);
+        _population.clear();
         initialize_state();
         initialize_population(t_set);
         update_state();
@@ -704,6 +697,9 @@ void symbolic_regression_t::train(const std::vector<entry_t>& t_set)
         cout << "finished" << endl;
         cout << _population[0].second << endl;
     }
+    cout << _states.size() << endl;
+    cout << _states[0].size() << endl;
+    cout << _states[1].size() << endl;
 }
 
 double symbolic_regression_t::predict(const vars_t& vars) const
@@ -883,12 +879,16 @@ int main()
     individual_handler_t hdl{rd};
     hdl.add_function("sin", [](double x) { return sin(x); });
     hdl.add_function("cos", [](double x) { return cos(x); });
-    hdl.add_function("tan", [](double x) { return tan(x); });
+    //hdl.add_function("tan", [](double x) { return tan(x); });
     hdl.add_function("sinh", [](double x) { return sinh(x); });
     hdl.add_function("cosh", [](double x) { return cosh(x); });
-    hdl.add_function("tanh", [](double x) { return tanh(x); });
+    //hdl.add_function("tanh", [](double x) { return tanh(x); });
     hdl.add_function("log", [](double x) { return log(abs(x)+1); });
     hdl.add_function("log10", [](double x) { return log10(abs(x)+1); });
+    auto safe_inv = [](double x) { return x != 0 ? 1/x : 1/std::copysign(0.001, x); };
+    hdl.add_function("inv", safe_inv);
+    auto safe_sqrt = [](double x) { return std::sqrt(x); };
+    hdl.add_function("sqrt", safe_sqrt);
     hdl.add_operator("+", 1, [](double l, double r) { return l + r; });
     hdl.add_operator("-", 2, [](double l, double r) { return l - r; });
     hdl.add_operator("*", 3, [](double l, double r) { return l * r; });
@@ -897,21 +897,16 @@ int main()
     hdl.add_variable(1);
 
     std::vector<entry_t> dataset{};
-    dataset.emplace_back(vars_t{0.0}, safe_div(1, 0.0));
-    dataset.emplace_back(vars_t{0.1}, safe_div(1, 0.1));
-    dataset.emplace_back(vars_t{0.2}, safe_div(1, 0.2));
-    dataset.emplace_back(vars_t{0.3}, safe_div(1, 0.3));
-    dataset.emplace_back(vars_t{0.4}, safe_div(1, 0.4));
-    dataset.emplace_back(vars_t{0.5}, safe_div(1, 0.5));
-    dataset.emplace_back(vars_t{0.6}, safe_div(1, 0.6));
+    for (double x = 0.1; x < 1; x += 0.01) {
+        dataset.emplace_back(vars_t{x}, 1/x+0.001/sin(x));
+        
+    }
 
-
-    
-    params_t params{{seeds}};
+    params_t params{{seeds, {1, 2, 9, 8}}};
     params.max_generation(60);
     symbolic_regression_t sreg{params, rd, hdl};
     sreg.train(dataset);
     cout << hdl.str(sreg._population[0].first) << endl;
-
+    cout << hdl.eval(sreg._population[0].first, {0}) << endl;
     return 0;
 }
