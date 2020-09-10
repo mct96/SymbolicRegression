@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 #include <vector>
 #include <map>
@@ -6,11 +8,12 @@
 #include "random.hpp"
 #include "common_types.hpp"
 
-enum class class_t: unsigned char { oper, func, var, cons, null }; // operator, function, var, const.
+// oper: operator; func: function; var: variable; cons: constant.
+enum class code_t: unsigned char { oper, func, var, cons, null }; 
 
 struct gene_t
 {
-    class_t _code;
+    code_t _code;
     unsigned char _value;
     bool operator<(const gene_t& other) const;
     bool operator==(const gene_t& other) const;
@@ -36,7 +39,7 @@ class individual_t
 public:
     individual_t(std::size_t depth);
     individual_t(const individual_t& other);
-    ~individual_t() = default;
+    ~individual_t();
     individual_t& operator=(const individual_t& other);
 
     std::size_t size() const;
@@ -58,7 +61,8 @@ public:
     std::size_t max_depth() const;
     std::size_t depth() const;        
     std::vector<gene_t> _gen;
-private:
+
+    //private:
     std::size_t _depth;
     bool has_child(std::size_t node) const;
     bool has_parent(std::size_t node) const;
@@ -73,10 +77,9 @@ class individual_handler_t
     using pOper = double(*)(double, double);
 
 public:
-    individual_handler_t(const random_t& rd);
-    ~individual_handler_t() = default;
+    individual_handler_t(const random_t& random);
+    ~individual_handler_t();
 
-    void random_generator(const random_t& rd);
     const random_t& random_generator() const;
     
     void add_operator(std::string repr, std::size_t precedence, pOper oper);

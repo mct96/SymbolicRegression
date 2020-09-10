@@ -1,44 +1,28 @@
 #include "statistics.hpp"
 
-#include <cmath>
-#include <numeric>
-#include <algorithm>
+// template <typename Iter>
+// statistics_t::statistics_t(Iter begin, Iter end)
+// {
+//     update_values(begin, end);
+// }
 
-statistics_t::statistics_t(std::vector<double> values)
-    :
-    _values{values}
+
+statistics_t statistics_t::merge(statistics_t prev, std::size_t n) const
 {
-    update_values();
-}
-
-void statistics_t::update_values()
-{
-    std::size_t N = _values.size();
-    std::sort(_values.begin(), _values.end());
+    if (n < 1) throw std::invalid_argument{"statistics_t::merge"};
     
-    auto b = _values.begin(), e = _values.end();
+    auto fn = [=](double mean, double a) { return (mean * n + a)/(n + 1); };
 
-    _total = std::accumulate(b, e, 0.0);
-    _mean = _total / N;
+    statistics_t merged{};
+    merged._mean = fn(prev._mean, _mean);
+    merged._median = fn(prev._median, _median);
+    merged._max = fn(prev._max, _max);
+    merged._min = fn(prev._min, _min);
+    merged._var = fn(prev._var, _var);
+    merged._stddev = fn(prev._stddev, _stddev);
+    merged._total = fn(prev._total, _total);
 
-    auto minmax = std::minmax_element(b, e);
-    _min = *minmax.first;
-    _max = *minmax.second;
-
-    double sum_sq = 0.0;
-    std::for_each(b, e, [&](double v) mutable {
-        sum_sq += std::pow((v-_mean), 2); });
-    
-    _var = sum_sq / N;
-    _stddev = std::sqrt(_var);
-
-    if (_values.size() % 2) {
-        _median = _values[std::floor(N/2)];
-    } else {
-        auto mid = static_cast<std::size_t>(N/2);
-        _median = (_values[mid-1] + _values[mid])/2.0;
-    }
- 
+    return merged;
 }
 
 double statistics_t::mean() const
@@ -87,3 +71,20 @@ statistics_t::operator std::string() const
     out += std::string{"  min: "} + std::to_string(_min);
     return out;
 }
+
+// #include <iostream>
+// #include <forward_list>
+// using namespace std;
+
+// int main()
+// {
+//     std::forward_list<double> dt1{{1, 2.3, .3, -2, 5, 9}};
+//     std::forward_list<double> dt2{{2, 3, -2, 3.4, -3, 4}};
+//     statistics_t stats1{dt1.begin(), dt1.end()};
+//     statistics_t stats2{dt2.begin(), dt2.end()};
+//     cout << static_cast<std::string>(stats1) << endl;
+//     cout << static_cast<std::string>(stats2) << endl;
+//     cout << static_cast<std::string>(stats2.merge(stats1, 1)) << endl;
+    
+//     return 0;
+// }

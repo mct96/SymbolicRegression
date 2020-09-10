@@ -4,11 +4,16 @@
 #include <cmath>
 #include <iostream>
 
+using namespace std;
+
 #include "random.hpp"
 #include "node.hpp"
 #include "common_types.hpp"
+#include "statistics.hpp"
 //namespace sr
 //{
+
+using individuals_t = std::vector<std::pair<individual_t, double>>;
 
 enum class gen_t {full_t, grow_t, ramped_t};
 enum class sel_t {roul_t, tour_t};
@@ -25,13 +30,17 @@ class state_t
 {
     friend class symbolic_regression_t;
 public:
+    state_t() = default;
+    state_t(const state_t&) = default;
     state_t(std::vector<double> pop_fitness);
     
     std::size_t generation() const;
     std::size_t population_sz() const;
     std::size_t unique_individuals() const;
     std::size_t better_than_previous() const;
-        
+
+    state_t merge(state_t prev, std::size_t n) const;
+    
     double min() const;
     double max() const;
     double mean() const;
@@ -58,19 +67,19 @@ class params_t
     friend class symbolic_regression_t;
 public:
     params_t(std::vector<std::vector<int>> seeds,
-                 std::size_t population_sz = 500,
-                 std::size_t max_depth = 7,
-                 std::size_t max_generation = 100,
-                 double threshold = 0.001,
-                 double prob_crossover = 0.8,
-                 double prob_mutation = 0.15,
-                 double prob_op_mutation = 0.15,
-                 double prob_reproduction = 0.05,
-                 sel_t selection_method = sel_t::tour_t,
-                 std::size_t k = 5,
-                 gen_t generation_method = gen_t::ramped_t,
-                 err_t error_metric = err_t::mae_t,
-                 bool eletism = false);
+             std::size_t population_sz = 500,
+             std::size_t max_depth = 7,
+             std::size_t max_generation = 100,
+             double threshold = 0.001,
+             double prob_crossover = 0.8,
+             double prob_mutation = 0.15,
+             double prob_op_mutation = 0.15,
+             double prob_reproduction = 0.05,
+             sel_t selection_method = sel_t::tour_t,
+             std::size_t k = 5,
+             gen_t generation_method = gen_t::ramped_t,
+             err_t error_metric = err_t::mae_t,
+             bool eletism = false);
     
     ~params_t();
 
@@ -131,7 +140,7 @@ public:
     void reset();
     
 private:    
-    const std::vector<const std::vector<int>> _seeds;
+    std::vector<std::vector<int>> _seeds;
     
     std::size_t _population_sz;
     std::size_t _max_depth;
@@ -156,7 +165,7 @@ private:
     std::string selec_met_str() const;
     std::string gen_met_str() const;
     std::string err_met_str() const;
-    std::string seeds_str() const;
+    //std::string seeds_str() const;
 };
 
 // gp_operators_t implementation of operators for gp.
@@ -169,7 +178,7 @@ public:
     // eval fitness. (used to sort).
     double fitness(const individual_t& individual,
                    const std::vector<entry_t>& input_data,
-                   err_t metric);
+                   err_t err_m);
 
     void population_fitness(individuals_t& population,
                             const std::vector<entry_t>& input_data,
@@ -180,40 +189,34 @@ public:
     individual_t grow_gen(std::size_t max_depth);
 
     individual_t gen_individual(gen_t generation_method,
-                                std::size_t max_depth,
-                                std::size_t n_vars);
+                                std::size_t max_depth);
 
     // 2 types of selection (roullet wheel, tournement).
     individual_t selection(const individuals_t& population,
-                           sel_t sm,
+                           sel_t sel,
                            std::size_t k);
 
     individual_t selection_rw(const individuals_t& population);
     individual_t selection_t(const individuals_t& population, std::size_t k);
 
-    
     individual_t crossover(const individual_t& p1,
-                           const individual_t& p2,
-                           std::size_t max_depth);
-
+                           const individual_t& p2);
     
     individual_t mutation_op(const individual_t& individual,
-                             std::size_t n_vars,
                              double prob);
     
-    individual_t mutation_sb(const individual_t& individual,
-                             std::size_t n_vars);
+    individual_t mutation_sb(const individual_t& individual);
 
     individual_t reproduction(const individuals_t& population,
-                              sel_t sm);
+                              sel_t sel,
+                              std::size_t k);
 
     std::size_t count_unique(const individuals_t& population);
 
 private:   
     void grow_gen_recursive(individual_t& individual,
-                            std::size_t n_vars,
                             std::size_t max_depth,
-                            std::size_t cur_point);
+                            std::size_t pt);
     
     random_t& _rd;
     individual_handler_t& _hdl;
@@ -223,8 +226,8 @@ class symbolic_regression_t
 {
 public:
     symbolic_regression_t(params_t params,
-                          random_t& random,
-                          individual_handler_t& handler);
+                          random_t& rd,
+                          individual_handler_t& hdl);
     
     ~symbolic_regression_t();
 
@@ -236,17 +239,19 @@ public:
             
     std::string report() const;
 
-    void train(std::vector<entry_t> training_set);
+    void train(const std::vector<entry_t>& training_set);
     
-    double test(std::vector<entry_t> test_set) const;
-    
-private:
+    double test(const std::vector<entry_t>& test_set) const;
+
+    double predict(const vars_t& vars) const;
+    //private:
     void clear_line() const;
     
     void print_progress() const;
-    
+
+    void initialize_state();
     void update_state();
-    
+        
     void initialize_population(const std::vector<entry_t>& t_set);
 
     void next_generation(const std::vector<entry_t>& t_set);
@@ -265,11 +270,12 @@ private:
 
     bool check_stop_condition() const;
     
-    std::vector<state_t> _states;
+    std::vector<std::vector<state_t>> _states;
     individuals_t _population;
     params_t  _params;
+    individual_handler_t& _hdl;
+    random_t& _rd;
     gp_operators_t _gpo;
-    individual_handler_t _hdl;
 };
 
 //}

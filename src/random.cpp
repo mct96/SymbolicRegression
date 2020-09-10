@@ -2,15 +2,21 @@
 
 #include <utility>
 
-std::mt19937 _generator; // <-- It's a singleton $%$#$%@%!!!
+ // <-- It's a singleton $%$#$%@%!!!
+std::mt19937 random_t::_gen{};
 
-random_t::random_t(std::vector<int> seeds)
+random_t::random_t(std::vector<int> seed)
     :
-    _seeds_v{seeds},
-    _seeds(_seeds_v.begin(), _seeds_v.end()),
-    _gen{_generator}
+    _seed_seq{new std::seed_seq(seed.begin(), seed.end())}
 {
-    _gen.seed(_seeds);
+    _gen.seed(*_seed_seq);
+}
+
+
+void random_t::use_seed(std::vector<int> seed)
+{
+    _seed_seq.reset(new std::seed_seq(seed.begin(), seed.end()));
+    _gen.seed(*_seed_seq);
 }
 
 int random_t::var(int from, int to) const
@@ -60,16 +66,26 @@ int random_t::integer(int from, int to) const
     return dist(_gen);
 }
 
-random_t::operator std::string() const
-{
-    if (_seeds_v.size() == 0) return std::string{"seeds: Є."};
+// random_t::operator std::string() const
+// {
+//     if (_seeds_v.size() == 0) return std::string{"seeds: Є."};
     
-    std::string out{"seeds: "};
-    for (int i = 0; i < _seeds_v.size()-1; ++i)
-        out += std::to_string(_seeds_v[i]) + ", ";
-    out += std::to_string(_seeds_v.back()) + ".";
+//     std::string out{"seeds: "};
+//     for (int i = 0; i < _seeds_v.size()-1; ++i)
+//         out += std::to_string(_seeds_v[i]) + ", ";
+//     out += std::to_string(_seeds_v.back()) + ".";
 
-    return out;
-}
+//     return out;
+// }
 
 
+// #include <iostream>
+// using namespace std;
+
+// int main()
+// {
+//     random_t rd{{0, 1, 2}};
+//     random_t rd2 = rd;
+//     cout << rd2.integer(0, 100) << endl;
+//     return 0;
+// }
