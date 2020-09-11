@@ -4,13 +4,7 @@
 #include <vector>
 #include <utility>
 
-namespace sr
-{
+#include "common_types.hpp"
 
-using data_t = std::vector<double>;
-using Xy = std::pair<data_t, double>;
-
-std::vector<Xy> load_data(std::string filename);
+std::vector<entry_t> load_data(std::string filename);
 std::vector<std::vector<int>> load_seeds(std::string filename);
-
-}

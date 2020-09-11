@@ -4,5 +4,6 @@ add_library(stats STATIC statistics.cpp)
 add_library(rnd STATIC random.cpp)
 
 # Link agains sreg
-add_executable(sreg main.cpp symbolic_regression.cpp)
+add_executable(sreg main.cpp symbolic_regression.cpp interactivity.cpp node.cpp
+                    protected_functions.cpp)
 target_include_directories(sreg PRIVATE /)

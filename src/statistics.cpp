@@ -1,28 +1,39 @@
 #include "statistics.hpp"
 
-// template <typename Iter>
-// statistics_t::statistics_t(Iter begin, Iter end)
-// {
-//     update_values(begin, end);
-// }
-
-
-statistics_t statistics_t::merge(statistics_t prev, std::size_t n) const
+statistics_t::statistics_t(std::initializer_list<double> samples)
+    :
+    statistics_t{std::vector<double>{samples.begin(), samples.end()}}
 {
-    if (n < 1) throw std::invalid_argument{"statistics_t::merge"};
+}
+
+statistics_t::statistics_t(std::vector<double> samples)
+{
+    update_values(std::move(samples));
+}
+
+void statistics_t::update_values(std::vector<double> samples)
+{
+    std::sort(samples.begin(), samples.end());
+
+    std::size_t n = samples.size();    
+    _total = std::accumulate(samples.begin(), samples.end(), 0.0);
+    _mean = _total / n;
+    _min = samples.front();
+    _max = samples.back();
+
+    auto fn = [=](double acc, double x) {
+        auto diff = (x-_mean); return acc + diff * diff; };
+    double sum_sq = std::accumulate(samples.begin(), samples.end(), 0.0, fn);
     
-    auto fn = [=](double mean, double a) { return (mean * n + a)/(n + 1); };
+    _var = sum_sq / n;
+    _stddev = std::sqrt(_var);
 
-    statistics_t merged{};
-    merged._mean = fn(prev._mean, _mean);
-    merged._median = fn(prev._median, _median);
-    merged._max = fn(prev._max, _max);
-    merged._min = fn(prev._min, _min);
-    merged._var = fn(prev._var, _var);
-    merged._stddev = fn(prev._stddev, _stddev);
-    merged._total = fn(prev._total, _total);
-
-    return merged;
+    if (samples.size() % 2) {
+        _median = samples[std::floor(n/2)];
+    } else {
+        auto mid = static_cast<std::size_t>(n/2);
+        _median = (samples[mid-1] + samples[mid])/2.0;
+    } 
 }
 
 double statistics_t::mean() const
@@ -72,19 +83,126 @@ statistics_t::operator std::string() const
     return out;
 }
 
+summarize_statistics_t::summarize_statistics_t(
+                             const std::vector<statistics_t>& samples)
+{
+    update_values(samples);
+}
+
+summarize_statistics_t::summarize_statistics_t(
+                            std::initializer_list<statistics_t> samples)
+    :
+    summarize_statistics_t{std::vector<statistics_t>{ samples.begin(),
+        samples.end()}}
+{
+    
+}
+
+void summarize_statistics_t::update_values(
+                             const std::vector<statistics_t>& samples)
+{
+    using namespace std;
+    auto f_min = [](const statistics_t& s) { return s._min; };
+    auto f_max = [](const statistics_t& s) { return s._max; };
+    auto f_mean = [](const statistics_t& s) { return s._mean; };
+    auto f_median = [](const statistics_t& s) { return s._median; };
+    auto f_stddev = [](const statistics_t& s) { return s._stddev; };
+    auto f_var = [](const statistics_t& s) { return s._var; };
+
+    _min.first = mean(samples, f_min);
+    _min.second = stddev(samples, _min.first, f_min);
+
+    _max.first = mean(samples, f_max);
+    _max.second = stddev(samples, _max.first, f_max);
+    
+    _mean.first = mean(samples, f_mean);
+    _mean.second = stddev(samples, _mean.first, f_mean);
+    
+    _median.first = mean(samples, f_median);
+    _median.second = stddev(samples, _median.first, f_median);
+    
+    _stddev.first = mean(samples, f_stddev);
+    _stddev.second = stddev(samples, _stddev.first, f_stddev);
+    
+    _var.first = mean(samples, f_var);
+    _var.second = stddev(samples, _var.first, f_var);
+}
+
+std::pair<double, double> summarize_statistics_t::min() const
+{
+    return _min;
+}
+
+std::pair<double, double> summarize_statistics_t::max() const
+{
+    return _max;
+}
+
+std::pair<double, double> summarize_statistics_t::mean() const
+{
+    return _mean;
+}
+
+std::pair<double, double> summarize_statistics_t::median() const
+{
+    return _median;
+}
+
+std::pair<double, double> summarize_statistics_t::var() const
+{
+    return _var;
+}
+
+std::pair<double, double> summarize_statistics_t::stddev() const
+{
+    return _stddev;
+}
+
+double summarize_statistics_t::mean(const std::vector<statistics_t>& samples,
+                                    double(*fn)(const statistics_t&)) const
+{
+    std::size_t n = samples.size();
+    double total = 0.0;
+    auto sum = [=](double x, const statistics_t& s) { return x + fn(s); };
+    total += std::accumulate(samples.begin(), samples.end(), 0.0, sum);
+    return total / n;
+}
+
+double summarize_statistics_t::stddev(const std::vector<statistics_t>& samples,
+                                      double mean,
+                                      double(*fn)(const statistics_t&)) const
+{
+    auto square_diff = [=](double acc, const statistics_t& s) -> double {
+        double diff = fn(s)-mean; return acc + diff * diff;
+    };
+
+    auto b = samples.begin(), e = samples.end();
+    double squared_diff = std::accumulate(b, e, 0.0, square_diff);
+    return std::sqrt(squared_diff / samples.size());
+}
+                                                                       
+
 // #include <iostream>
-// #include <forward_list>
+
 // using namespace std;
 
 // int main()
 // {
-//     std::forward_list<double> dt1{{1, 2.3, .3, -2, 5, 9}};
-//     std::forward_list<double> dt2{{2, 3, -2, 3.4, -3, 4}};
-//     statistics_t stats1{dt1.begin(), dt1.end()};
-//     statistics_t stats2{dt2.begin(), dt2.end()};
-//     cout << static_cast<std::string>(stats1) << endl;
-//     cout << static_cast<std::string>(stats2) << endl;
-//     cout << static_cast<std::string>(stats2.merge(stats1, 1)) << endl;
+//     std::vector<double> dt1{1, 2.3, .3, -2, 5, 9};
+//     std::vector<double> dt2{2, 2, -2, 3.4, -3, 4};
+//     std::vector<double> dt3{2, 4, 2, 0, -3, 4};
+//     std::vector<double> dt4{2, 3, -.2, -5, 3, .4};
+//     std::vector<double> dt5{1, 0, -.2, 10, -13, 4};
+//     std::vector<double> dt6{2, 3, -2, 3.4, -3, 4};
     
+//     statistics_t stats1{dt1};
+//     statistics_t stats2{dt2};
+//     statistics_t stats3{dt3};
+//     statistics_t stats4{dt4};
+//     statistics_t stats5{dt5};
+//     statistics_t stats6{dt6};
+//     std::vector<statistics_t> vs{stats1, stats2, stats3, stats4, stats5, stats6};
+//     summarize_statistics_t sst{vs};
+//     cout << sst.min().first << " " << sst.min().second << endl;
 //     return 0;
 // }

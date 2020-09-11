@@ -25,7 +25,7 @@ public:
     //operator std::string() const;
 
     template <typename T>
-    std::vector<T> sample(const std::vector<T>& population,
+    static std::vector<T> sample(const std::vector<T>& population,
                           std::size_t n_samples);
 private:
     std::shared_ptr<std::seed_seq> _seed_seq;

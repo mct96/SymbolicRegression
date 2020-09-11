@@ -39,8 +39,6 @@ public:
     std::size_t unique_individuals() const;
     std::size_t better_than_previous() const;
 
-    state_t merge(state_t prev, std::size_t n) const;
-    
     double min() const;
     double max() const;
     double mean() const;

@@ -1,0 +1,12 @@
+#include <numeric>
+#include <algorithm>
+
+constexpr double lo = -1000.0;
+constexpr double hi = 1000.0;
+
+double stan(double x)
+{
+    double c = cos(x);
+    double result =  c != 0 ? tan(x) : sin(x)/copysign(c, 0.001);
+    return clamp(result, lo, hi);
+}

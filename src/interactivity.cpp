@@ -1,0 +1,310 @@
+#include <iostream>
+#include <fstream>
+#include <stdexcept>
+
+#include "argh.h"
+#include "load_data.hpp"
+#include "symbolic_regression.hpp"
+
+std::string to_lower(std::string str)
+{
+    std::transform(str.begin(), str.end(), str.begin(),
+                       [&](auto c) { return std::tolower(c); });
+    return str;
+}
+
+bool is_csv(std::string filename)
+{
+    using namespace string_literals;
+    auto ext = filename.substr(filename.size()-3);
+    return ext == "csv"s;
+}
+
+void usage_message()
+{
+    std::ifstream ofs{"../docs/usage.txt"};
+    std::string text{};
+
+    while (ofs && !ofs.eof()) {
+        char buffer[120] = "";
+        ofs.read(buffer, 120);
+        text += buffer;
+    }
+    
+    std::cout << text << std::endl;
+}
+
+bool help_message(argh::parser& cmdl)
+{
+    if (cmdl[{"-h", "--help"}]) {
+        usage_message();
+        return true;
+    } else {
+        return false;
+    }
+}
+
+std::string load_input(argh::parser& cmdl, bool verbose)
+{
+    using namespace std;
+    using namespace std::literals;
+
+    string filename;
+    if (cmdl(1) >> filename) {
+        if (is_csv(filename)) {
+            if (verbose)
+                cout << "training set: " << filename << endl;
+            return filename;
+        } else {
+            cerr << "not a *.csv file: " << filename << endl;
+        }
+    }  else if (verbose) {
+        cerr << "error: no training file." << endl;
+    }
+
+    throw std::invalid_argument{"load_input"};
+}
+
+std::string output_file(argh::parser& cmdl, bool verbose)
+{
+    std::string output_file;
+    if (cmdl({"-o", "--output"}) >> output_file) {
+        if (verbose)
+            std::cout << "report will be saved in: " << output_file
+                      << std::endl;
+    } else if (verbose) {
+        std::cout << "reports won't be saved." << std::endl;
+    }
+
+    return output_file;
+}
+
+std::size_t load_n_vars(argh::parser& cmdl, bool verbose)
+{
+    std::size_t n_vars;
+    if ((cmdl({"-n", "--variables"}) >> n_vars)) {
+        if (verbose)
+            std::cout << "number of variables: " << n_vars << std::endl;
+    } else if (verbose){
+        n_vars = 1; // WARNING default value;
+        
+        std::cout << "number of variables not specified, default will be used: "
+                  << n_vars << endl;
+    }
+
+    return n_vars;
+}
+
+std::size_t load_pop_sz(argh::parser& cmdl, bool verbose)
+{
+    std::size_t pop_sz;
+    if (cmdl({"--population-size"}) >> pop_sz) {
+        if (verbose)
+            std::cout << "population size: " << pop_sz << std::endl;
+    } else if (verbose) {
+        pop_sz = 500; // WARNING default value;
+        std::cout << "population size not specified, default will be used: "
+                  << pop_sz << std::endl;
+    }
+
+    return pop_sz;
+}
+
+std::size_t load_max_pop(argh::parser& cmdl, bool verbose)
+{
+    std::size_t max_generation;
+    if (cmdl({"--max-generation"}) >> max_generation) {
+        if (verbose)
+            std::cout << "maximum generation: " << max_generation << std::endl;
+    } else if (verbose) {
+        max_generation = 100; // WARNING default value;
+        std::cout << "maximum generation not specified, default will be used: "
+                  << max_generation << std::endl;
+    }
+
+    return max_generation;
+}
+
+gen_t load_gen_method(argh::parser& cmdl, bool verbose)
+{
+    using namespace std;
+
+    string gen_str{};
+    gen_t gen_m;
+    if (cmdl({"--generation-method"}, "ramped-hh") >> gen_str) {
+        gen_str = to_lower(gen_str);
+        if (gen_str == "full") gen_m = gen_t::full_t;
+        else if (gen_str == "grow") gen_m = gen_t::grow_t;
+        else if (gen_str == "ramped-hh") gen_m  = gen_t::ramped_t;
+        else throw std::invalid_argument{"load_gen_method"};
+        if (verbose)
+            std::cout << "generation method: " << gen_str << std::endl;
+    } else if (verbose) {
+        gen_str = "ramped-hh"; // WARNING default value;
+        gen_m = gen_t::ramped_t; // WARNING default value;
+        
+        std::cout << "generation method not specified, default will be used: "
+                  << gen_str << std::endl;
+    }
+
+    return gen_m;
+}
+
+std::size_t load_max_depth(argh::parser& cmdl, bool verbose)
+{
+    std::size_t max_depth;
+    if (cmdl({"--max-depth"}) >> max_depth) {
+        if (verbose)
+            std::cout << "max-depth: " << max_depth << std::endl;
+    } else if (verbose) {
+        max_depth = 5; // WARNING default value;
+        
+        std::cout << "max depth not specified, default will be used: "
+                  << max_depth << std::endl;
+    }
+
+    return max_depth;
+}
+
+sel_t load_sel_method(argh::parser& cmdl, bool verbose)
+{
+    std::string sel_str{};
+    sel_t sel_m;
+    if (cmdl({"--selection-method"}) >> sel_str) {
+        sel_str = to_lower(sel_str);
+        if (sel_str == "roulette") sel_m = sel_t::roul_t;
+        else if (sel_str == "tournament") sel_m = sel_t::tour_t;
+        else throw std::invalid_argument{"load_sel_method"};
+        if (verbose)
+            std::cout << "selection method: " << sel_str << std::endl;
+    } else if (verbose) {
+        sel_str = "k-tournament"; // WARNING default value;
+        sel_m = sel_t::tour_t; // WARNING default value;
+        
+        std::cout << "selection method not defined, default will be used: "
+                  << sel_str << std::endl;
+    }
+
+    return sel_m;
+}
+
+std::size_t load_k_tournament(argh::parser& cmdl, bool verbose)
+{
+    std::size_t k;
+    if (cmdl({"-k", "--k-tournament"}) >> k) {
+        if (verbose)
+            std::cout << "k tournament size: " << k << std::endl;
+    } else if (verbose) {
+        k = 8; // WARNING default value;
+        
+        std::cout << "k tournament size not specified, default will be used: "
+                  << k << std::endl;
+    }
+
+    return k;
+}
+
+double load_prob_mutation(argh::parser& cmdl, bool verbose)
+{
+    double prob_mutation;
+    if (cmdl({"-pm", "--prob-mutation"}) >> prob_mutation) {
+        if (verbose)
+            std::cout << "mutation probability: " << prob_mutation << std::endl;
+    } else if (verbose) {
+        prob_mutation = 0.15; // WARNING default value;
+        
+        std::cout << "mutation probability not specified, default will be used:"
+                  << " " << prob_mutation << std::endl;
+    }
+
+    return prob_mutation;
+}
+
+double load_prob_crossover(argh::parser& cmdl, bool verbose)
+{
+    double prob_crossover;
+    if (cmdl({"-pc", "--prob-crossover"}) >> prob_crossover) {
+        if (verbose)
+            std::cout << "crossover probability: " << prob_crossover
+                      << std::endl;
+    } else if (verbose) {
+        prob_crossover = 0.8; // WARNING default value;
+        
+        std::cout << "crossover probability not specified, default will be used"
+                  << ": " << prob_crossover << std::endl;
+    }
+
+    return prob_crossover;
+}
+
+err_t load_error_metric(argh::parser& cmdl, bool verbose)
+{
+    std::string err_str;
+    err_t err_m;
+    if (cmdl({"--error-metric"}) >> err_str) {
+        err_str = to_lower(err_str);
+        if (err_str == "mae") err_m = err_t::mae_t;
+        else if (err_str == "mse") err_m = err_t::mse_t;
+        else if (err_str == "rmse") err_m = err_t::rmse_t;
+        else throw std::invalid_argument{"load_error_metric"};
+        if (verbose)
+            std::cout << "error metric: " << err_str << std::endl;
+    } else if (verbose) {
+        err_str = "mae"; // WARNING default value;
+        err_m = err_t::mae_t; // WARNING default value;
+        
+        std::cout << "error metric not specified, default will be used: "
+                  << err_str << endl;
+    }
+
+    return err_m;
+}
+
+double load_fitness_threshold(argh::parser& cmdl, bool verbose)
+{
+    double fitness_threshold;
+    if (cmdl({"--fitness-threshold"}) >> fitness_threshold) {
+        if (verbose)
+            std::cout << "fitness threshold: " << fitness_threshold
+                      << std::endl;
+    } else if (verbose) {
+        fitness_threshold = 0.001; // WARNING default value;
+        
+        std::cout << "fitness threshold not specified, default will be used: "
+                  << fitness_threshold << std::endl;
+    }
+
+    return fitness_threshold;
+}
+
+bool load_eletism(argh::parser& cmdl, bool verbose)
+{
+    bool eletism;
+    eletism = cmdl[{"-E", "--eletism"}];
+   
+    if (verbose)
+        std::cout << "eletism: " << (eletism ? "on" : "off") << std::endl;
+
+    return eletism;
+}
+
+std::vector<std::vector<int>> load_seed_data(argh::parser& cmdl, bool verbose)
+{
+    std::string seeds_file;
+    std::vector<std::vector<int>> seeds{};
+    
+    if (cmdl({"--seeds"}) >> seeds_file) {
+        seeds = load_seeds(seeds_file);
+        if (std::size_t sz = seeds.size())  {
+            std::cout << "seeds loaded: " << sz << std::endl;
+        } else {
+            std::cerr << "no seeds found in " << seeds_file << "!" << std::endl;
+            throw std::invalid_argument{"load_seed"};
+        }
+    } else {
+        std::cerr << "no seeds file specified." << std::endl;
+        throw std::logic_error{"load_seed_data"};
+    }
+    
+    return seeds;
+}

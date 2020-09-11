@@ -13,7 +13,7 @@
 
 state_t::state_t(std::vector<double> pop_fitness)
     :
-    _stats{pop_fitness.begin(), pop_fitness.end()}
+    _stats{pop_fitness}
 {
     reset();
 }
@@ -36,27 +36,6 @@ std::size_t state_t::unique_individuals() const
 std::size_t state_t::better_than_previous() const
 {
     return _better_than_previous;
-}
-
-state_t state_t::merge(state_t prev, std::size_t n) const
-{
-    if (n < 1) throw std::invalid_argument{"state_t::merge"};
-    
-    auto fn = [=](double mean, double a) { return (mean * n + a)/(n + 1); };
-    state_t merged{};
-    merged._generation = fn(prev._generation, _generation);
-
-    merged._population_sz = fn(prev._population_sz, _population_sz);
-
-    merged._unique_individuals = fn(prev._unique_individuals,
-                                    _unique_individuals);
-
-    merged._better_than_previous = fn(prev._better_than_previous,
-                                      _better_than_previous);
-    
-    merged._stats = _stats.merge(prev._stats, n);
-
-    return merged;    
 }
 
 double state_t::min() const
@@ -443,7 +422,10 @@ double gp_operators_t::fitness(const individual_t& individual,
         double y_pred = _hdl.eval(individual, x);
         double dy = y - y_pred;
 
-        //        if (std::isnan(y_pred)) throw std::logic_error{"NAN"};
+        if (std::isnan(y_pred)) {
+            cout << _hdl.str(individual) << endl;
+            throw std::logic_error{"NAN"};
+        }
         error.push_back(err_m == err_t::mae_t ? fabs(dy) : dy * dy);
     }
 
@@ -671,11 +653,37 @@ params_t symbolic_regression_t::params() const
 
 std::string symbolic_regression_t::report() const
 {
+    using namespace std;
+    using namespace std::string_literals;
+    
     std::string report_text{};
     report_text = static_cast<std::string>(_params) +  "\n";
 
-    //for (auto state: _states)
-    //    report_text += static_cast<std::string>(state) + "\n";
+    std::vector<summarize_statistics_t> summarized{};
+    for (int i = 0; i < _params._max_generation; ++i) {
+        std::vector<statistics_t> state_generation{};
+        for (int j = 0; j < _states.size(); ++j) {
+            if (_states[j].size() > i){
+                state_generation.push_back(_states[j][i]._stats);
+            }
+        }
+        summarized.emplace_back(state_generation);
+    }
+
+    for (auto gen: summarized) {
+        report_text += to_string(gen.min().first) + ", "s;
+        report_text += to_string(gen.min().second) + ", "s;
+        report_text += to_string(gen.max().first) + ", "s;
+        report_text += to_string(gen.max().second) + ", "s;
+        report_text += to_string(gen.stddev().first) + ", "s;
+        report_text += to_string(gen.stddev().second) + ", "s;
+        report_text += to_string(gen.var().first) + ", "s;
+        report_text += to_string(gen.var().second) + ", "s;
+        report_text += to_string(gen.mean().first) + ", "s;
+        report_text += to_string(gen.mean().second) + ", "s;
+        report_text += to_string(gen.median().first) + ", "s;
+        report_text += to_string(gen.median().second) + "\n"s;
+    }
         
     return report_text;
 }
@@ -688,18 +696,15 @@ void symbolic_regression_t::train(const std::vector<entry_t>& t_set)
         initialize_state();
         initialize_population(t_set);
         update_state();
-    
+        cout << _population[0].second << endl;
         while (!check_stop_condition()) {
-            cout << "new gen." << endl;
             next_generation(t_set);
             update_state();
+            cout << _population[0].second << endl;
         }
-        cout << "finished" << endl;
+        cout << _hdl.str(_population[0].first) << "= ";
         cout << _population[0].second << endl;
     }
-    cout << _states.size() << endl;
-    cout << _states[0].size() << endl;
-    cout << _states[1].size() << endl;
 }
 
 double symbolic_regression_t::predict(const vars_t& vars) const
@@ -867,46 +872,57 @@ bool symbolic_regression_t::check_stop_condition() const
     return _params._max_generation <= _states.back().size();
 }
 
-#include <iostream>
-#include <cmath>
+// #include <iostream>
+// #include <cmath>
 
-using namespace std;
+// using namespace std;
 
-int main()
-{
-    std::vector<int> seeds{1, 2, 3};
-    random_t rd{seeds};
-    individual_handler_t hdl{rd};
-    hdl.add_function("sin", [](double x) { return sin(x); });
-    hdl.add_function("cos", [](double x) { return cos(x); });
-    //hdl.add_function("tan", [](double x) { return tan(x); });
-    hdl.add_function("sinh", [](double x) { return sinh(x); });
-    hdl.add_function("cosh", [](double x) { return cosh(x); });
-    //hdl.add_function("tanh", [](double x) { return tanh(x); });
-    hdl.add_function("log", [](double x) { return log(abs(x)+1); });
-    hdl.add_function("log10", [](double x) { return log10(abs(x)+1); });
-    auto safe_inv = [](double x) { return x != 0 ? 1/x : 1/std::copysign(0.001, x); };
-    hdl.add_function("inv", safe_inv);
-    auto safe_sqrt = [](double x) { return std::sqrt(x); };
-    hdl.add_function("sqrt", safe_sqrt);
-    hdl.add_operator("+", 1, [](double l, double r) { return l + r; });
-    hdl.add_operator("-", 2, [](double l, double r) { return l - r; });
-    hdl.add_operator("*", 3, [](double l, double r) { return l * r; });
-    auto safe_div = [](double l, double r) { return r == 0 ? l/0.001 : l / r; };
-    hdl.add_operator("/", 4, safe_div);
-    hdl.add_variable(1);
+// int main()
+// {
+//     std::vector<int> seeds{1, 2, 3};
+//     random_t rd{seeds};
+//     individual_handler_t hdl{rd};
+//     auto safe_div = [](double l, double r) { return r != 0 ? l/r : l/std::copysign(0.001, r); };
+//     auto safe_sqrt = [](double x) { return std::sqrt(std::abs(x)); };
+//     auto safe_inv = [](double x) { return x != 0 ? 1/x : 1/std::copysign(0.001, x); };
+//     auto safe_log = [](double x) { return std::log(std::max(x, 0.001)); };
+//     auto safe_log10 = [](double x) { return std::log10(std::max(x, 0.001)); };
+    
+//     hdl.add_function("sin", [](double x) { return sin(x); });
+//     hdl.add_function("cos", [](double x) { return cos(x); });
+//     hdl.add_function("log", safe_log);
+//     hdl.add_function("log10", safe_log10);
+//     hdl.add_function("inv", safe_inv);
+//     hdl.add_function("sqrt", safe_sqrt);
 
-    std::vector<entry_t> dataset{};
-    for (double x = 0.1; x < 1; x += 0.01) {
-        dataset.emplace_back(vars_t{x}, 1/x+0.001/sin(x));
+//     hdl.add_operator("+", 1, [](double l, double r) { return l + r; });
+//     hdl.add_operator("-", 2, [](double l, double r) { return l - r; });
+//     hdl.add_operator("*", 3, [](double l, double r) { return l * r; });
+//     hdl.add_operator("/", 4, safe_div);
+    
+//     hdl.add_variable(1);
+
+//     std::vector<entry_t> dataset{};
+//     for (double x = 0.1; x < 10; x += 0.1) {
+//         dataset.emplace_back(vars_t{x}, log10(x) + sqrt(x*x+3*x+2));
         
-    }
+//     }
 
-    params_t params{{seeds, {1, 2, 9, 8}}};
-    params.max_generation(60);
-    symbolic_regression_t sreg{params, rd, hdl};
-    sreg.train(dataset);
-    cout << hdl.str(sreg._population[0].first) << endl;
-    cout << hdl.eval(sreg._population[0].first, {0}) << endl;
-    return 0;
-}
+//     params_t params{{{909, -392, 342, 433},
+//                      {1, 2, 9, 8},
+//                      {-3, 34, 44, -283, 44},
+//                      {32, -2, 390, -223},
+//                      {32, -2, 390, 4985, 44839},
+//                      {32, -2, 2363, -223},
+//                      {345234, -253425, 390, -223},
+//                      {35642, -546542, 7754390, 0, -223},
+//                      {32, 5442, 390, -223},
+//                      {3, 7234, 342, -7233, 754, 2334}}};
+//     params.max_generation(120);
+//     params.tournament(12);
+//     //params.eletism(true);
+//     symbolic_regression_t sreg{params, rd, hdl};
+//     sreg.train(dataset);
+//     cout << sreg.report() << endl;
+//     return 0;
+// }

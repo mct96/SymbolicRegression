@@ -6,22 +6,23 @@
 #include <numeric>
 #include <algorithm>
 #include <iterator>
+#include <initializer_list>
 
 class statistics_t
 {
+    friend class summarize_statistics_t;
 public:
     statistics_t() = default;
     statistics_t(const statistics_t&) = default;
+    statistics_t(statistics_t&&) = default;
+    statistics_t(std::vector<double> samples);
+    statistics_t(std::initializer_list<double> samples);
+    ~statistics_t() = default;
     statistics_t& operator=(const statistics_t&) = default;
+    statistics_t& operator=(statistics_t&&) = default;
     
-    template <typename Iter>
-    statistics_t(Iter begin, Iter end);
+    void update_values(std::vector<double> samples);
 
-    template <typename Iter>
-    void update_values(Iter begin, Iter end);
-
-    statistics_t merge(statistics_t stats, std::size_t n) const;
-    
     double mean() const;
     double median() const;
     double max() const;
@@ -31,7 +32,7 @@ public:
     double total() const;
 
     operator std::string() const;
-    
+
 private:
     double _mean;
     double _median;
@@ -41,45 +42,41 @@ private:
     double _stddev;
     double _total;
 };
-          
 
-template <typename Iter>
-statistics_t::statistics_t(Iter begin, Iter end)
-    :
-    statistics_t{}
+class summarize_statistics_t
 {
-    update_values(begin, end);
-}
-
-template <typename Iter>
-void statistics_t::update_values(Iter begin, Iter end)
-{
-    using Tp = typename std::iterator_traits<Iter>::value_type;
-    std::vector<Tp> buffer{};
-    std::copy(begin, end, std::back_inserter(buffer));
-    std::size_t n = buffer.size();
+    using Tp = std::pair<double, double>;
+public:
+    summarize_statistics_t() = default;
+    summarize_statistics_t(const summarize_statistics_t&) = default;
+    summarize_statistics_t(summarize_statistics_t&&) = default;
+    summarize_statistics_t(const std::vector<statistics_t>& samples);
+    summarize_statistics_t(std::initializer_list<statistics_t> samples);
+    ~summarize_statistics_t() = default;
+    summarize_statistics_t& operator=(const summarize_statistics_t&) = default;
+    summarize_statistics_t& operator=(summarize_statistics_t&&) = default;
     
-    std::sort(buffer.begin(), buffer.end());
+    void update_values(const std::vector<statistics_t>& samples);
 
-    _total = std::accumulate(buffer.begin(), buffer.end(), 0.0);
-    _mean = _total / n;
+    Tp min() const;
+    Tp max() const;
+    Tp mean() const;
+    Tp median() const;
+    Tp var() const;
+    Tp stddev() const;
 
-    auto minmax = std::minmax_element(buffer.begin(), buffer.end());
-    _min = *minmax.first;
-    _max = *minmax.second;
+private:
+    double mean(const std::vector<statistics_t>& samples,
+                double(*)(const statistics_t&)) const;
 
-    double sum_sq = 0.0;
-    std::for_each(buffer.begin(), buffer.end(), [&](double v) mutable {
-        auto x = v - _mean; sum_sq += x * x; });
-    
-    _var = sum_sq / n;
-    _stddev = std::sqrt(_var);
+    double stddev(const std::vector<statistics_t>& samples,
+                  double mean,
+                  double(*)(const statistics_t&)) const;
 
-    if (buffer.size() % 2) {
-        _median = buffer[std::floor(n/2)];
-    } else {
-        auto mid = static_cast<std::size_t>(n/2);
-        _median = (buffer[mid-1] + buffer[mid])/2.0;
-    } 
-}
-
+    Tp _min; // mean and standard deviation
+    Tp _max;
+    Tp _mean;
+    Tp _median;
+    Tp _var;
+    Tp _stddev;
+};
