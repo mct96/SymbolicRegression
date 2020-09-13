@@ -19,6 +19,8 @@
 \usetikzlibrary{trees}
 
 \usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
 \graphicspath{ {./images/} }
 
 \newlist{ilist}{enumerate*}{1}
@@ -39,18 +41,19 @@ pontos.
 Há diversos métodos de aplicar a regressão simbólica~\citep{jin2019}. Uma delas
 é utilizando programação genética (GP, do inglês \textit{Genetic
   Programming})~\citep{poli2008}.  A GP é semelhante ao Algoritmo Genético (GA,
-do inglês Genetic Algorithm) no que tange os operadores genéticos, pois ambos
-definem operadores de inicialização, seleção, cruzamento, mutação e
+do inglês \textit{Genetic Algorithm}) no que tange os operadores genéticos, pois
+ambos definem operadores de inicialização, seleção, cruzamento, mutação e
 \textit{fitness}.
 
-Na literatura, há diversas possiveis implementações dos operadores de GP. Por
+Na literatura, há diversas possíveis implementações dos operadores de GP. Por
 exemplo, na fase de geração de indivíduos, que podem ser gerados utilizando o
 método \textit{full} ou \textit{grow}. No primeiro método, o indivíduo é
 complemente gerado, isto é, todos os seus nós são preenchidos, enquanto que no
 último, não há essa necessidade. Na prática, é comum haver a combinação dos dois
 métodos, denominado \textit{ramped half-and-half}~\citep{poli2008}, onde parte
-da população é gerada um dos método e o restante utilizando o outro. A seguir é
-apresentado as alternativas comuns para o desenvolvimento de cada operador.
+da população é gerada usando um dos método e o restante utilizando o outro. A
+seguir é apresentado as alternativas comuns para o desenvolvimento de cada
+operador.
 
 Os operadores de seleção são os mesmos dos utilizados em GA:
 \textit{roulette~whell} e \textit{k-tournament}. O primeiro seleciona o
@@ -176,14 +179,20 @@ terminais. Os nós são operadores aritméticos ou funções e os terminais são
 constantes ou variáveis. O conjunto de nós e terminais juntos formam o
 \textit{primitive set} do GP~\citep{poli2008}. Neste sistema o conjunto de
 funções são as funções trigonométricas ($\sin$, $\cos$ e $\tan$) e o logaritmo
-com bases diferentes ($\log$ e $\log10$). As constantes são geradas
-aleatóriamente utilizando uma distribuição multimodal. A escolha desse método se
-deve ao fato que muitas função matemáticas possuem contantes no intervalo $(0,
-1]$ e com sinal variado.  As variáveis são geradas aleatóriamente, onde um
-  número inteiro no intervalo $(0, N]$, onde $N$ deve ser menor ou igual ao
-    número de colunas do dateset menos um, ou seja, se há 10 colunas de
-    \textit{features} e uma que representa a variável de resposta, então $N$
-    deve ser igual ao número de \textit{features} ou menor.
+com bases diferentes ($\log$ e $\log10$). Para a geração de constantes,
+inicialmente foi testado o seguinte método: gerar valores aleatórios utilizando
+uma distribuição multimodal. A escolha desse método se deve ao fato que muitas
+funções matemáticas possuem contantes no intervalo $[-1, +1]$, porém os
+resultados iniciais demonstraram que essa abordagem era problemática pois muitos
+valores de dimensões não proporcionais ao do dataset eram geradas. Para contorna
+esse problema, foi adotado uma abordagem mais simples: gerar constantes
+aleatóriamente no intervalo de 0 a 255 e o fenótipo é igual a $-10+20/256\cdot
+\texttt{constante}$, ou seja, um valor real no intervalo $[-10, 10)$.  As
+  variáveis são geradas aleatóriamente, onde um número inteiro no intervalo $(0,
+  N]$, onde $N$ deve ser menor ou igual ao número de colunas do dateset menos
+um, ou seja, se há 10 colunas de \textit{features} e uma que representa a
+variável de resposta, então $N$ deve ser igual ao número de \textit{features} ou
+menor.
 
 Outro aspecto importante na representação dos indivíduos é que eles são
 geralmente representados por uma estrutura de árvore. A literatura define
@@ -192,12 +201,13 @@ outras. Um problema na representação utilizando esses tipos de árvores é a
 indireção, que pode afetar a performance do sistema~\citep{faria2013}, portanto,
 para evitar os efeitos da indireção de ponteiros, os indivíduos são
 representados utilizando \textit{Heaps}, que são árvores especializadas. Nesse
-tipo de estrutura, os ponteiro são implicitamente substituidos por indices. O nó
-a esquerda está na posição $2n+1$ e $2n + 2$. Outra vantagem no uso de
-\textit{Heaps} está no fato dos dados serem armazenados linearmente, o que reduz
-os efeitos do \textit{cache miss}, causado por dados espalhados na memória.
+tipo de estrutura, os ponteiro são implicitamente substituídos por índices. O nó
+à esquerda está na posição $2n+1$ do vetor e o nó à direita está na posição $2n
++ 2$. Outra vantagem no uso de \textit{Heaps} está no fato dos dados serem
+armazenados linearmente, o que reduz os efeitos do \textit{cache miss}, causado
+por dados espalhados na memória.
 
-O sistema é flexível na escolha da máxima profundidade que um indivíduo
+O sistema é flexível na escolha da profundidade máxima que um indivíduo
 (representado por uma árvore) possui e permite ao usuário especificar qualquer
 profundidade aos indivíduos.  Um fator que pode ser vantajoso é que o espaço
 ocupado por um indivíduo é determinístico, ou seja, se a profundidade for de
@@ -216,11 +226,11 @@ conseguência de \textit{cache miss}.
 
 A literatura de define vários operadores de geração de indivíduos, como o método
 \textit{Full}, \textit{Grow} e a combinação de ambos, denominado \textit{Ramped
-  Half and Half}. O método \textit{Full}, gerada um indivíduo preenchendo todos os
-seus nós. O método \textit{Grow}, em contraste com o método anterior, preenche
-um usuário não necessariamente preenchendo todos os nós. Por fim, o último método
-gera individuos utilizando os dois métodos anteriores, com 50\% de probabilidade
-para ambos~\citep{poli2008}.
+  Half-and-Half}. O método \textit{Full}, gerada um indivíduo preenchendo todos
+os seus nós. O método \textit{Grow}, em contraste com o método anterior,
+preenche um usuário não necessariamente preenchendo todos os nós. Por fim, o
+último método gera individuos utilizando os dois métodos anteriores, com 50\% de
+probabilidade para ambos~\citep{poli2008}.
 
 Nessa implementação, há suporte para os três tipos de geração. O método
 \textit{Full} é gerado iterativamente, preenchendo os $L-1$ niveis da árvore do
@@ -315,14 +325,14 @@ com a nova população e selecionar os que possuem maior \textit{fitness} em amb
 as populações. Essa última abordagem é denominada eletismo.
 
 O sistema desenvolvido permite que a aplicação do eletismo seja controlado pelo
-parâmetro $E$, que indica se deve ou não ocorrer eletismo.
+parâmetro, que indica se deve ou não ocorrer eletismo.
 
 \subsection{\textit{Fitness}}
 
 A \textit{Fitness} determina o quão adaptado um indivíduo está e é utilizada
 para comparação entre os indivíduos. A função para calcular a \textit{fitness}
 está relacionada ao problema, e, no caso da RS, algumas formas de mensurar a
-\textit{fitness} de um indivíduos são o erro médio absoluto (MSA), o error médio
+\textit{fitness} de um indivíduos são o erro médio absoluto (MAE), o error médio
 quadrado (MSE) e a raiz do erro médio quadrado (RMSE). Independente da métrica
 utilizada para calcular a \textit{fitness}, o objetivo é minimizar o erro.
 
@@ -370,393 +380,395 @@ gerador utilizado na implementação é o \texttt{32-bit Mersenne Twister}. Os
 testes são repetidos para cada linha contida no arquivo contendo as
 \textit{seeds}.
 
+Após a bateria de testes, o sistema retorna um relatório contendo a média e o
+desvio padrão das seguintes estatísticas de cada geração: menor, maior, média,
+mediana, desvio padrão, variância da \textit{fitness} da população, quantidade
+de indivíduos melhores que a média da população anterior e a quantidade de
+indivíduos únicos na população. Esse relatório pode ser salvo em um arquivo
+\texttt{*.csv}, caso o usuário forneça o nome do arquivo de destino através da
+opção \texttt{-o [nome-do-arquivo]}.
+
 \subsection{Desempenho}
 
-Conforme mensionado nas seções anteriores, as escolhas da representação dos
+Conforme mencionado nas seções anteriores, as escolhas da representação dos
 indivíduos foi feita tendo em vista a performance do sistema. Um fator a ser
 explorado é a performance do sistema com a introdução de paralelismo.
 
 \subsection{Compilação}
-A implementação do algoritmo foi feito em \texttt{C++}. A compilação pode ser
-complexa devido a quantidade de depências em bibliotecas para leitura de
+A implementação do algoritmo foi feita em \texttt{C++}. A compilação pode ser
+complexa devido a quantidade de dependêcias em bibliotecas para leitura de
 arquivos \texttt{*.csv} e \textit{parser} dos argumentos. Para contornar essa
 complexidade, o CMake foi utilizado para gerar o projeto de modo que o sistema
-utilize o compilador \texttt{C++} disponível no sistema. Os comandos necessários
-para compilar e executar o programa utilizando o Linux pode ser visto no
-\hyperref[lst:code]{Código~\ref*{lst:code}}.
+utilize o compilador \texttt{C++} disponível no sistema. Outro aspecto
+importante é que o código depende da \textit{standard} 17 da linguagem, portanto
+é necessário que o compilador ofereça suporte a essa especificação da
+linguagem. O sistema foi testado utilizando os compiladores GNU GCC 10.0.1 e o
+MSVC19, ambos os compiladores foram capazes de compilar o sistema. Os comandos
+necessários para compilar e executar o programa no Linux ou Windows podem ser
+vistos no \hyperref[lst:code_1]{Código~\ref*{lst:code_1}} ou
+\hyperref[lst:code_2]{Código~\ref*{lst:code_2}}, respectivamente.
 
-\begin{lstlisting}[language=bash, caption={Comandos para compilar utilizando o Linux},
-    label={lst:code}, frame=shadowbox, frameround=fttt]
+\begin{lstlisting}[language=bash, caption={Comandos para compilar no Linux},
+    label={lst:code_1}, frame=shadowbox, frameround=fttt]
+  mkdir bin && cd bin    
+  cmake .. && cmake --build .  
+  cd src           
+  ./sreg [parametros]
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash, caption={Comandos para compilar no Windows},
+    label={lst:code_2}, frame=shadowbox, frameround=fttt]
   mkdir bin 
   cd bin    
   cmake ..  
   cmake --build .  
-  cd src           
-  ./sreg [parameters]
-                    
+  cd src/Debug/           
+  sreg.exe [parametros]
 \end{lstlisting}
+
+Os parâmetros que o sistema suporta são apresentados na
+\hyperref[tbl:parameters]{Tabela~\ref*{tbl:parameters}}. Os parâmetros que não
+possuem argumentos são aqueles que aceitam um intervalo númerico (inteiro ou
+real), não necessitam de argumentos ou aceitam uma string, como nome de arquivo,
+por exemplo.
+
+
+\noindent\begin{table}[h]
+  \center
+  \caption{Parâmetros do Sistema}
+  \label{tbl:parameters}
+  \begin{tabular}{|c|r|p{1.8cm}|r|}
+    \hline
+    Parâmetro & Comando & Argumentos & Exemplo \\ \hline
+    Arquivo de entrada & 1º parâmetro & & \texttt{./sreg ../data/concrete.csv}\\ \hline
+    Ajuda & \texttt{-h}, \texttt{--help} & & \texttt{-h} \\ \hline
+    Relatório & \texttt{-o}, \texttt{--output} & & \texttt{-o report.csv} \\ \hline
+    \# de variáveis & \texttt{-n}, \texttt{--variables} & & \texttt{-n 8} \\ \hline
+    Tamanho da população & \texttt{--population-size} & & \texttt{--population-size 500} \\ \hline
+    Limite de gerações & \texttt{--max-generation} & & \texttt{--max-generation 100} \\ \hline
+    Método de geração & \texttt{--generation-method} & ramped-hh, full, grow & \texttt{--generation-method ramped-hh} \\ \hline
+    Profundidade da árvore & \texttt{--max-depth} & & \texttt{--max-depth 7} \\ \hline
+    Método de seleção & \texttt{--selection-method} & roulette, tournament & \texttt{--selection-method tournament} \\ \hline
+    k (tamanho do torneio) & \texttt{-k}, \texttt{--k-tournament} & & \texttt{-k 7} \\ \hline
+    Prob. \textit{crossover} & \texttt{-pc}, \texttt{--prob-crossover} & & \texttt{-pc 0.9} \\ \hline
+    Prob. mutação & \texttt{-pm}, \texttt{--prob-mutation} & & \texttt{-pm 0.05} \\ \hline
+    Métrica de erro & \texttt{--error-metric} & mae, mse, rmse & \texttt{--error-metric rmse} \\ \hline
+    \textit{Fitness threshold} & \texttt{--fitness-threshold} & & \texttt{--fitness-threshold 0.001} \\ \hline
+    Eletismo  & \texttt{-E}, \texttt{--eletism} & & \texttt{-E} \\ \hline
+    Seeds & \texttt{--seeds} & & \texttt{--seeds ../data/seeds.csv} \\ \hline
+  \end{tabular}
+\end{table}
 
 \section{Experimentos}
 Nesta seção é apresentado resultados dos experimentos realizados. Os resultados
-apresentados são estatísticas geradas a partir da execução dos parâmetros
-mantidos fixos e alterando apenas as \textit{seeds} do gerador
-pseudo-aleatório. São fornecidos para o teste 31 sementes, cada uma contendo 20
-números inteiros gerados aleatóriamente.  Ao aplicar o mesmo conjunto de
-sementes, os resultados devem ser reproduzíveis.
+apresentados são estatísticas geradas a partir da execução do sistema diversas
+vezes alterando as \textit{seeds} do gerador pseudo-aleatório. São fornecidos
+para o teste 31 sementes, cada uma contendo 20 números inteiros gerados
+aleatóriamente.  Ao aplicar o mesmo conjunto de sementes, os resultados devem
+ser reproduzíveis.
 
 \subsection{Dataset Experiamental}
-Este dataset possui uma versão sem ruído e uma versão ruidosa. O algoritmo será
-aplicado em ambas as versões.
+Este dataset possui uma versão sem ruído e uma versão ruidosa de uma função
+matemática desconhecida. O algoritmo será aplicado em ambas as versões. Esse
+dataset foi escolhido pois simula um fenômeno físico hipotético, no qual a
+regressão simbólica pode ser aplicada para gerar uma função algébrica para ele.
 
 O primeiro teste tem o objetivo de identificar qual o tamanho da população que
-atinge o menor valor de \textit{fitness} em média. Para isso, o tamanho da
-população é variado e os demais parâmetros são mantidos constantes. As
-estatísticas da repetição do algoritmo para cada tamanho de população é
-apresentado na \hyperref[tbl:default_param]{Tabela~\ref*{tbl:default_param}},
-onde cada coluna representa uma informação da população e cada linha representa
-estatísticas dos resultadas da repetição do algoritmo para diferentes
-\textit{seeds}.
+atinge o melhor valor de \textit{fitness} em média. Para isso, o tamanho da
+população é variado e os demais parâmetros são mantidos constantes. Os valores
+testados variam de uma população pequena (50 indivíduos) até uma população
+grande (500 indivíduos). Os resultados estam presentes na
+\hyperref[fig:sr_div_pop_sz]{Figura~\ref*{fig:sr_div_pop_sz}}, onde é possível
+verificar que a qualidade da \textit{fitness} aumenta proporcinalmente em
+relação ao tamanho da população. Como cada indivíduo evolui de modo
+independente, o espaço de soluções é explorado conforme a quantidade de
+indivíduos aumenta, fato que é demonstrado na figura. Pelo fato da população
+com 500 indivíduos ter a melhor solução, os próximos testes tem o tamanho da
+população fixa em 500 indivíduos.
 
-\noindent
-\begin{table}
-  \center
-  \caption{Parâmetros \textit{default}}
-  \label{tbl:default_param}
-  \begin{tabular}{| c | c | c | c | c | c | c | c | c | c |}
-    \hline
-    \# Vars & MaxG & MG & MD & MS & $p_c$ & $p_m$ & ME & T & E \\
-    \hline
-    1 & 40 & \textit{Ramped HH} & 7 & 3-Tournament & 0.9 & 0.05 & MAE & $10^{-9}$ & 0 \\
-    \hline
-  \end{tabular}
-  \begin{minipage}{.9\textwidth}{\center \setstretch{0.1} \footnotesize \# Vars indica a quantidade de
-      váriaveis. MaxG é o limite de gerações. MG é método de geração da
-      população. MD é a profundidade máxima dos indivíduos. MS é o método de
-      seleção.  $p_c$ e $p_m$ são a probabilidade de crossover e mutação,
-      repectivamente. ME é a métrica de erro, T é o threshold mínimo e E indica
-      a presença de eletismo.}\end{minipage}
-\end{table}
-
-Os valores testados da população são 50, 100, 300 e 500 indivíduos. Os resultados
-são apresentados na \hyperref[tbl:result_pop]{Tabela~\ref*{tbl:result_pop}}.
-As estatísticas coletadas são a quantidade de indivíduos únicos, a quantidade de
-indíduos melhores que a mediana da geração passada, a menor, a maior, a mediana,
-o desvio padrão e a média da \textit{fitness} da população após as atingir as
-40 gerações. Como o teste foi repetido 31 vezes com sementes diferentes, as
-estatísticas da população final de todas elas são sumarizadas. Os resultados
-indicam que com a população de 500 indivíduos a média da \textit{fitness} mínima
-da população é de 0.19, portanto, os próximos experimentos serão realizados
-mantendo-se a população com 500 indivíduos.
-
-\noindent
-\begin{table}[h!]
-  \center
-  \caption{Resultado do tamanho da população}
-  \label{tbl:result_pop}
-  \begin{tabular}{| c | c | c | c | c | c | c | c | c |}
-    \hline
-    &  \# U & \# M & min. & max. & median. & stddev & avg. & Pop. \\ \hline \hline
-    avg. & 4.93 & 2.96 & 0.195 & 925.24 & 0.199 & 129.83 & 18.93 &  \multirow{5}{1.5cm}{50} \\ \cline{1-8}
-    stddev & 6.9 & 8.002 & 0.035 & 3227.92 & 0.015 & 451.81 & 64.51 & \\ \cline{1-8}
-    CV & 1.39 & 2.69 & 0.179 & 3.48 & 0.076 & 3.479 & 3.408 & \\ \cline{1-8}
-    max. & 42 & 30 & 0.21 & 16756.27 & 0.21 & 2345.84 & 335.39 & \\ \cline{1-8}
-    min. & 3 & 0 & 0.01 & 0.47 & 0.12 & 0.05 & 0.21 & \\ \hline \hline
-    avg. & 7.03 & 3.6129 & 0.199 & 17006.21 & 0.201 & 1692.58 & 170.83 & \multirow{5}{1.5cm}{100} \\ \cline{1-8}
-    stddev & 0.83 & 11.03 & 0.006 & 58480.12 & 0.005 & 5818.47 & 585.48 & \\ \cline{1-8}
-    CV & 0.118 & 3.05 & 0.03 & 3.44 & 0.028 & 3.44 & 3.43 & \\ \cline{1-8}
-    max. & 10 & 54 & 0.21 & 240038.24 & 0.21 & 23883.07 & 2404.89  & \\ \cline{1-8}
-    min. & 6 & 0 & 0.18 & 1.568724 & 0.19 & 0.25 & 0.26 & \\ \hline \hline
-    avg. & 19.29 & 14.03 & 0.20 & 19350.68 & 0.20 & 1128.70 & 69.31 & \multirow{5}{1.5cm}{300} \\ \cline{1-8}
-    stddev & 6.83 & 30.98 & 0.01 & 55837.68 & 0 & 3219.99 & 188.27 & \\ \cline{1-8}
-    CV & 0.35 & 2.21 & 0.03 & 2.89 & 0.02 & 2.85 & 2.72 & \\ \cline{1-8}
-    max. & 50.00 & 115.00 & 0.20 & 293033.57 & 0.21 & 16889.95 & 981.34 & \\ \cline{1-8}
-    min. & 16.00 & 0.00 & 0.17 & 11.10 & 0.20 & 0.70 & 0.30 & \\ \hline \hline
-    avg. & 43.52 & 77.61 & 0.19 & 281293.46 & 0.20 & 12618.11 & 576.70 & \multirow{5}{1.5cm}{500} \\ \cline{1-8}
-    stddev & 55.94 & 76.42 & 0.03 & 1080461.83 & 0.01 & 48259.57 & 2159.41 & \\ \cline{1-8}
-    CV & 1.29 & 0.98 & 0.19 & 3.84 & 0.03 & 3.82 & 3.74 & \\ \cline{1-8}
-    max. & 306.00 & 218.00 & 0.20 & 5960136.66 & 0.21 & 266278.53 & 11925.03 & \\ \cline{1-8}
-    min. & 26.00 & 0.00 & 0.01 & 16.40 & 0.20 & 1.04 & 0.34 & \\ \hline
-  \end{tabular}
-  \begin{minipage}{0.9\textwidth}
-    {\center \footnotesize
-      \# U: quantidade de indivíduos únicos. \# M: quantidade de indivíduos melhores
-      que a mediana da população anterior. min.: Fitness mínima atingida. max.:
-      Fitness máxima atingida. median.: mediana da Fitness da população final.
-      stddev: Desvio Padrão da Fitness da população final. avg.: Média aritmética.
-      Pop.: Tamanho da população.
-    }
-  \end{minipage}
-\end{table}
-
-O próximo experimento é do efeito das probabilidade de mutação e
-\textit{crossover}.  Como o teste anterior manteve os parâmetros de $p_c=0.9$ e
-de $p_m=0.05$, os próximos experimentos verificam o efeito de aumentar a
-probabilidade de mutação e , por consequência, diminuir a probabilidade de
-\textit{crossover}.
-
-\begin{table}
-  \center
-  \caption{Variação da probabilidade de crossover e mutação}
-  \label{tbl:var_cross_mut}
-  \begin{tabular}{| c | c | c | c | c | c | c | c | c |}
-    \hline
-    &  \# U & \# M & min. & max. & median. & stddev & avg. & $p_c$/$p_m$. \\ \hline
-    avg.    & 274.35 & 130.71 & 0.13 & 1793669.61 & 0.20 & 81221.52 & 3873.49 & \multirow{5}{1.5cm}{$p_c=0.6$\\$p_m=0.3$} \\ \cline{1-8}
-    stddev. & 131.73 & 25.82 & 0.08 & 6382322.66 & 0.03 & 284986.57 & 12753.39 & \\ \cline{1-8}
-    CV      & 0.48 & 0.20 & 0.63 & 3.56 & 0.14 & 3.51 & 3.29 & \\ \cline{1-8}
-    max.    & 468.00 & 174.00 & 0.20 & 33708402.01 & 0.21 & 1505976.37 & 67438.93 & \\ \cline{1-8}
-    min.    & 156.00 & 64.00 & 0.00 & 314.24 & 0.08 & 19.12 & 2.13 & \\ \hline \hline
-    avg.    & 176.19 & 161.68 & 0.16 & 608201.55 & 0.20 & 27274.88 & 1293.95 & \multirow{5}{1.5cm}{$p_c=0.7$\\$p_m=0.2$} \\ \cline{1-8}
-    stddev  & 123.60 & 49.49 & 0.06 & 1590846.25 & 0.03 & 71090.51 & 3294.17 & \\ \cline{1-8}
-    CV      & 0.70 & 0.31 & 0.38 & 2.62 & 0.17 & 2.61 & 2.55 & \\ \cline{1-8}
-    max.    & 467.00 & 203.00 & 0.20 & 8429830.05 & 0.21 & 376746.76 & 17498.51 & \\ \cline{1-8}
-    min.    & 102.00 & 0.00 & 0.00 & 429.51 & 0.03 & 19.85 & 2.32 & \\ \hline \hline
-    avg.    & 91.32 & 202.90 & 0.19 & 6679069.20 & 0.21 & 299038.87 & 13859.07 & \multirow{5}{1.5cm}{$p_c=0.85$\\$p_m=0.15$} \\ \cline{1-8}
-    stddev  & 72.92 & 73.82 & 0.03 & 28313559.15 & 0.01 & 1265314.09 & 57887.15 & \\ \cline{1-8}
-    CV      & 0.80 & 0.36 & 0.17 & 4.24 & 0.03 & 4.23 & 4.18 & \\ \cline{1-8}
-    max.    & 484.00 & 252.00 & 0.20 & 157549013.24 & 0.21 & 7039707.91 & 321514.74 & \\ \cline{1-8}
-    min.    & 75.00 & 0.00 & 0.02 & 628.67 & 0.19 & 36.60 & 4.35 & \\ \hline
-  \end{tabular}
-    \begin{minipage}{0.9\textwidth}
-    {\center \footnotesize
-      Mesmos que da \hyperref[tbl:result_pop]{Tabela~\ref*{tbl:result_pop}}.
-      $p_c$: Probabilidade de crossover. $p_m$: Probabilidade de mutação.
-    }
-  \end{minipage}
-\end{table}
-
-Com a variação da probabilidade é possível concluir a partir da
-\hyperref[tbl:var_cross_mut]{Tabela~\ref*{tbl:var_cross_mut}} que o algoritmo
-atinge a menor \textit{fitness} em média quando a probabilidade de crossover é
-menor.  A menor \textit{fitness} média é de 0.13 com $p_c = 0.6$ e $ p_m = 0.3
-$, porém a quantidade de indivíduos gerados que são melhores do que a mediana da
-população anterior é maior para o último caso, onde $p_c = 0.85$ e $ p_m =
-0.15$. Para os próximos experimentos o valor de $p_c = 0.6$ e $ p_m = 0.3$ serão
-fixados.
-
-Outro característica a ser testado é tamanho do torneio, isto é, o parâmetro k
-do método de seleção \textit{Tournament}. Os teste anteriores foram realizados
-com o parâmetro k fixo e com valor 3. Os demais testes modificam o valor de k
-para 5, 7 e 10. Os resultados estão presentes na
-\hyperref[tbl:var_k]{Tabela~\ref*{tbl:var_k}}. Os resultados indicam que o valor
-de $k=5$ são os que resultam no menor valor de \textit{fitness} em média. Para o
-último experimento o tamanho do torneio é fixado em $k=5$.
+Os próximos parâmetros a serem variados são a probabilidade de
+\textit{crossover} e de mutação. Como os eles estão diretamente relacionados,
+eles devem ser variados de modo proporcional. Esses parâmetros têm impacto na
+\textit{exploration} e \textit{explotation} da solução. O \textit{crossover} faz
+com que as melhores soluções sejam combinadas para gerar soluções aperfeiçoadas,
+enquanto que a mutação faz que novos indivíduos sejam gerados, trazendo novidade
+para a população. No caso do GP, o \textit{crossover} tem impacto semelhante ao
+da mutação, pois não há contexto envolvido, o que faz que os indivíduos não
+necessariamente leve a indivíduos melhores que os pais. A
+\hyperref[fig:sr_div_pc_pm]{Figura~\ref*{fig:sr_div_pc_pm}} demonstra esse
+efeito. A população gerada com a probabilidade de \textit{crossover} mais
+elevada atige máximos locais e permanece neles, enquanto que as populaçõeos com
+maior taxa de mutação explora novas soluções com maior frequência e,
+eventualmente, encontra soluções melhores. Com base nos resultados obtidos, os
+próximos experimentos são realizados mantendo-se $p_c=60\%$ e $p_m=30\%$.
 
 
-\begin{table}
-  \centering
-  \caption{Variação do parâmetro k}
-  \label{tbl:var_k}
-  \begin{tabularx}{1\textwidth}{| X | X | X | X | X | X | X | X | X |}
-    \hline
-    &  \# U & \# M & min. & max. & median. & stddev & avg. & $k$ \\ \hline \hline
-avg. & 299.19 & 158.16 & 0.10 & 360372.62 & 0.21 & 16253.90 & 758.62 & \multirow{5}{1.5cm}{$k=5$} \\ \cline{1-8}
-stddev & 107.66 & 19.55 & 0.08 & 1767685.76 & 0.10 & 78952.58 & 3532.77 & \\ \cline{1-8}
-CV & 0.36 & 0.12 & 0.81 & 4.91 & 0.49 & 4.86 & 4.66 & \\ \cline{1-8}
-max. & 464.00 & 209.00 & 0.20 & 9867700.84 & 0.44 & 440855.16 & 19742.83 & \\ \cline{1-8}
-min. & 145.00 & 132.00 & 0.00 & 74.91 & 0.03 & 4.87 & 0.89 & \\ \hline \hline
-avg. & 265.87 & 154.23 & 0.11 & 141705.79 & 0.23 & 6368.16 & 303.79 & \multirow{5}{1.5cm}{$k=7$} \\ \cline{1-8}
-stddev & 95.11 & 12.26 & 0.07 & 331306.45 & 0.10 & 14808.40 & 675.54 & \\ \cline{1-8}
-CV & 0.36 & 0.08 & 0.59 & 2.34 & 0.43 & 2.33 & 2.22 & \\ \cline{1-8}
-max. & 448.00 & 183.00 & 0.20 & 1400507.65 & 0.47 & 62569.32 & 2853.22 & \\ \cline{1-8}
-min. & 144.00 & 128.00 & 0.00 & 27.26 & 0.04 & 1.86 & 0.54 & \\ \hline \hline
-avg. & 218.68 & 148.97 & 0.12 & 8627.45 & 0.25 & 418.71 & 28.16 & \multirow{5}{1.5cm}{$k=10$}\\ \cline{1-8}
-stddev & 73.40 & 32.59 & 0.06 & 20553.19 & 0.11 & 952.17 & 57.26 & \\ \cline{1-8}
-CV. & 0.34 & 0.22 & 0.45 & 2.38 & 0.46 & 2.27 & 2.03 & \\ \cline{1-8}
-max. & 358.00 & 199.00 & 0.18 & 99365.38 & 0.57 & 4597.18 & 270.40 & \\ \cline{1-8}
-min. & 129.00 & 0.00 & 0.00 & 50.11 & 0.12 & 4.11 & 1.04 & \\ \hline 
-  \end{tabularx}
-  \begin{minipage}{0.9\textwidth}
-    {\center \footnotesize
-      Mesmos que da \hyperref[tbl:result_pop]{Tabela~\ref*{tbl:result_pop}}.
-      $k$ é o parâmetro do método de seleção \textit{Tournament}.
-    }
-  \end{minipage}
-  
-\end{table}
+Outro aspecto importante é a pressão seletiva imposta à população. Uma das
+formas de controlar a pressão seletiva é configurando o método de seleção. Para
+o caso do método $k$-\textit{tournament}, a pressão seletiva pode ser controlada
+através do parâmetro $k$, que representa a quantidade de indivíduos que são
+selecionados para o torneio, onde o indivíduo que possui a melhor
+\textit{fitness} (a maior para um problema o maximização ou a menor para um
+problema de minimização) é retornado. Os valores maiores de $k$ aumentam a
+pressão seletiva, pois a probabilidade dos indivíduos que possuem valoers
+maiores de \textit{fitness} serem selecionados é maior, e, consequentemente,
+indivíduos com \textit{fitness} menores tem menor probabilidade de serem
+selecionados para cruzamento. A consequência disso é que há a possíbilidade de
+indíviduos que atinjam máximos/mínimos locais sejam selecionados com maior
+frequência e levem a população para uma convergência prematura para um ótimo
+local. Os efeitos da variação do parâmetro $k$ na população pode ser visto na
+\hyperref[fig:sr_div_k]{Figura~\ref*{fig:sr_div_k}}. Como a figura indica, as
+populações como o tamanho do torneio maior possuem uma queda da \textit{fitness}
+abrupta no começo, porém estagnam com o passar das gerações, pois indivíduos que
+atingem máximos locais dominam a população e exploram as melhores soluções já
+encontradas ao invés de buscar novas. Por outro lado, a população com o tamanho
+do torneio pequeno tem a convergência inicial baixa, porém ao explorar o espaço
+de soluções entra soluções melhores do que as soluções encontradas em população
+com o tamanho do torneio grande. Um fator importante a ser considerado é que o
+eletismo está ativado, portanto más soluções não têm grande impacto na melhor
+solução, porém sem eletismo o tamanho do torneio pode levar a populações que não
+convirjam devido a baixa pressão seletiva. Para os demais teste, o tamanho do
+torneio é mantido em $k=3$.
 
-Por fim, o último parâmetro experimentado é como a presença do eletismo. Os
-teste anteriores foram realizados sem eletismo e o próximo experimento é
-realizado com o eletismo ativado. Os resultados estão apresentados na
-\hyperref[tbl:var_eletism]{Tabela~\ref*{tbl:var_eletism}}. Comparando os resultados
-da presença ou ausência de eletimos. Os resultados indicam que a ausência de
-eletismo possui o valor da \textit{fitness} menor do que quando ativado. Porém,
-outro aspectivo é a diferença no valor máximo da \textit{fitness} entre eles.
-Quando o eletismo está ativo, o melhor e o pior indivíduo não estão tão distantes
-quando se comparado com os indivíduos gerados com o eletismo desativado.
+O último parâmetro explorado é o efeito do eletismo que pode afetar a
+convergência ou não da população conforme mencionado acima. O eletismo evita que
+soluções boas sejam perdidas e garante que elas serão mantidas caso novas
+soluções melhores do que as atuais não sejam encontradas, porém pode levar a
+convergência pematura, uma vez que soluções ótimas locais são mantidas e pouco
+espaço é dado a novas soluções. Os resultados da presença do eletismo na
+população fica evidente analisando a \textit{fitness} da população com e sem o
+efeito do eletismo, conforme apresentado na
+\hyperref[fig:sr_div_eletism]{Figura~\ref*{fig:sr_div_eletism}}. Na figura é
+possível ver que sem o eletismo, não há convergência. Esse efeito está
+relacionado a baixa pressão seletiva do parâmetro $k$ do método de seleção, pois
+a pressão seletiva é baixa e soluções ótimas encontradas durante a exploração do
+espaço de busca não são mantidas na população.
 
-\begin{table}
-  \center
-  \caption{Efeitos do eletismo}
-  \label{tbl:var_eletism}
-  \begin{tabular}{| c | c | c | c | c | c | c | c | c |}
-    \hline
-    &  \# U & \# M & min. & max. & median. & stddev & avg. & E \\ \hline \hline
-avg. & 299.19 & 158.16 & 0.10 & 360372.62 & 0.21 & 16253.90 & 758.62 & \multirow{5}{1.5cm}{0} \\ \cline{1-8}
-stddev & 107.66 & 19.55 & 0.08 & 1767685.76 & 0.10 & 78952.58 & 3532.77 & \\ \cline{1-8}
-CV & 0.36 & 0.12 & 0.81 & 4.91 & 0.49 & 4.86 & 4.66 & \\ \cline{1-8}
-max. & 464.00 & 209.00 & 0.20 & 9867700.84 & 0.44 & 440855.16 & 19742.83 & \\ \cline{1-8}
-min. & 145.00 & 132.00 & 0.00 & 74.91 & 0.03 & 4.87 & 0.89 & \\ \hline \hline
-avg. & 13.45 & 28.10 & 0.12 & 0.13 & 0.13 & 0.00 & 0.13 & \multirow{5}{1.5cm}{1} \\ \cline{1-8}
-stddev & 36.93 & 39.89 & 0.06 & 0.05 & 0.05 & 0.00 & 0.05 & \\ \cline{1-8}
-CV. & 2.75 & 1.42 & 0.47 & 0.42 & 0.42 & 2.72 & 0.43 & \\ \cline{1-8}
-max. & 207.00 & 172.00 & 0.18 & 0.18 & 0.18 & 0.02 & 0.18 & \\ \cline{1-8}
-min. & 1.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & \\ \hline 
-  \end{tabular}
-    \begin{minipage}{0.9\textwidth}
-    {\center \footnotesize
-      Mesmos que da \hyperref[tbl:result_pop]{Tabela~\ref*{tbl:result_pop}}.
-      E indica a presença ou ausência de eletismo.
-    }
-  \end{minipage}
-\end{table}
+\begin{figure}[h]
+  \caption{Resultados da \textit{fitness}}
+  \label{fig:sr_div_fitness}
+  \begin{subfigure}[t]{0.5\textwidth}
+      \includegraphics[width=\textwidth]{sr_div_pop_sz}
+      \caption{Tamanho da população}
+      \label{fig:sr_div_pop_sz}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.5\textwidth}
+      \includegraphics[width=\textwidth]{sr_div_pc_pm}
+      \caption{Probabilidade de \textit{crossover} e mutação}
+      \label{fig:sr_div_pc_pm}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.5\textwidth}
+      \includegraphics[width=\textwidth]{sr_div_k}
+      \caption{Tamanho do torneio}
+      \label{fig:sr_div_k}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.5\textwidth}
+      \includegraphics[width=\textwidth]{sr_div_eletism}
+      \caption{Efeito do eletismo}
+      \label{fig:sr_div_eletism}
+    \end{subfigure}
+\end{figure}
 
-Através dos experimentos realizados, obteve-se que a maior população (500
-indivíduos), com maior probabilidade de mutação ($p_c=0.6$ e $p_m=0.3$), com o
-parâmetro k do método de seleção \textit{k-Tournament} com 1\% do tamanho da
-população ($k=5$) e sem eletismo, atingem o menor valor de \textit{fitness}
-entre todos os experimentos conduzidos. Para verificar a robustez do algoritmo
-os parâmetros obtidos são também aplicados para o dataset que contém ruídos.
+Agora, para verificar a robustez do sistema, a mesma abordagem é aplicada ao
+dataset com ruído para verificar a capacidade de adaptação do algoritmo. Os
+resultados são semelhantes aos obtidos no dataset sem ruídos até a seleção do
+parâmetro $k$, onde o torneio muito pequeno faz com que a população não
+convirja. O valor do torneio que retornou atingiu o melhor valor para a
+\textit{fitness} foi $k=7$. Outro teste feito foi do efeito do eletismo na
+população e os resultados indicam que a presença ou ausência do eletismo não
+altera significativamente a \textit{fitness} da população, isso se deve ao
+tamanho do torneio, que gera um aumento da pressão seletiva entre os indivíduos
+independente da presença de eletismo. A
+\hyperref[fig:noise]{Figura~\ref*{fig:noise}} apresenta esses resultados.
 
-Os resultados apresentados na
-\hyperref[tbl:noise_dataset]{Tabela~\ref*{tbl:noise_dataset}} são semelhantes ao
-resultados obtidos sem a presença de ruído, conforme pode ser observado na
-\hyperref[tbl:var_eletism]{Tabela~\ref*{tbl:var_eletism}}. O que indica que o
-modelo criado é capaz de gerar uma função mesmo na presença de ruído.
+\begin{figure}[h]
+  \caption{Resultados para o dataset com ruídos}
+  \label{fig:noise}
+  \begin{subfigure}[t]{0.5\textwidth}
+    \includegraphics[width=\textwidth]{sr_noise_k}
+    \caption{Efeito do tamanho do torneio na população}
+    \label{fig:noise_k}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.5\textwidth}
+    \includegraphics[width=\textwidth]{sr_noise_eletism}
+    \caption{Efeito do eletismo na população}
+    \label{fig:noise_eletism}
+  \end{subfigure}
+\end{figure}
 
-\begin{table}
-  \center
-  \caption{Resultados da aplicação no dataset com ruídos}
-  \label{tbl:noise_dataset}
-  \begin{tabular}{| c | c | c | c | c | c | c | c |}
-    \hline
-    &  \# U & \# M & min. & max. & median. & stddev & avg. \\ \hline 
-avg. & 299.19 & 158.16 & 0.10 & 360372.62 & 0.21 & 16253.90 & 758.62 \\ \hline 
-stddev & 107.66 & 19.55 & 0.08 & 1767685.76 & 0.10 & 78952.58 & 3532.77 \\ \hline 
-CV & 0.36 & 0.12 & 0.81 & 4.91 & 0.49 & 4.86 & 4.66 \\ \hline 
-max. & 464.00 & 209.00 & 0.20 & 9867700.84 & 0.44 & 440855.16 & 19742.83 \\ \hline 
-min. & 145.00 & 132.00 & 0.00 & 74.91 & 0.03 & 4.87 & 0.8 \\ \hline
-  \end{tabular}
-  \begin{minipage}{0.7\textwidth}
-    {\center \footnotesize
-      Mesmos que da \hyperref[tbl:result_pop]{Tabela~\ref*{tbl:result_pop}}.
-    }
-  \end{minipage}
-\end{table}
+Um exemplo de solução gerada para o dataset com ruídos (direita) e sem ruídos
+(esquerda) pelo algoritmo pode ser vista abaixo, onde o erro médio absoluto foi
+de $0.0352019$ e $0.000256972$, respectivamente:
+
+\noindent\begin{minipage}[t]{0.5\textwidth}
+\begin{equation*}
+\frac{\frac{\frac{1}{x+x}}{3.046875}+\frac{1}{(7.5-x-5.625/x)}}{4.453125-(\sqrt{\sqrt{x}}-(\sqrt{5.234375}+\frac{1}{7.5}))}+x
+\end{equation*}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+  \begin{equation*}
+    x+\frac{\frac{\frac{1}{x}\cdot\frac{1}{-7.1875}}{\frac{1}{7.109375^{-2.890625}}}-(\frac{1}{x}\cdot\frac{1}{-8.359375})\cdot\frac{1}{x/x}}{4.765625}
+  \end{equation*}
+\end{minipage}
+\vspace{0.5cm}
+
+
+A \hyperref[fig:best_sdn]{Figura~\ref*{fig:best_sdn}} demostra a aproximação da
+solução gerado com os dados contidos no dataset com ruídos e a
+\hyperref[fig:best_sd]{Figura~\ref*{fig:best_sd}} demonstra o melhor indivíduo
+para o dataset sem ruídos. Em ambas as figuras, os pontos do dataset são
+representados por pontos (azuis ou vermelhos) e a aproximação é representada por
+uma curva tracejada preta. Como é possível verificar, a curva gerada é uma boa
+aproximação para os dados do dataset, validando-se assim os resultados da
+aplicação.
+
+\begin{figure}[h]
+  \caption{Demonstração de indivíduos gerados com ou sem ruído no dataset}
+  \label{fig:demonstration}
+  \begin{subfigure}[t]{0.5\textwidth}
+    \includegraphics[width=\textwidth]{best_individual_noise}
+    \caption{Melhor indivíduo gerado (com ruído)}
+    \label{fig:best_sd}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.5\textwidth}
+    \includegraphics[width=\textwidth]{best_individual}
+    \caption{Melhor indivíduo gerado (sem ruído)}
+    \label{fig:best_sdn}
+  \end{subfigure}
+\end{figure}
 
 \subsection{Dataset Real}
-Neste experimento, o sistema é testado com um dataset real. Este dataset contêm
-9 colunas. Portanto, a regressão utiliza até 8 diferentes variáveis. A metodologia
-é a mesma empregada para no dataset artificial:
-\begin{ilist}
-\item identificar o tamanho da população
-\item identificar a profundidade da árvore
-\item identificar o tamanho do torneio (k)
-  \item identificar os melhores valores de $p_c$ e $p_m$
-\end{ilist}.
+Neste experimento, o sistema é testado com um dataset que contêm dados sobre
+concreto. Este dataset contêm 9 colunas. Portanto, a regressão utiliza até 8
+diferentes variáveis. O procedimento para encontrar o conjunto de parâmetros que
+resulta na melhor \textit{fitness} é: \begin{ilist} \item identificar o tamanho
+  da população,
+\item identificar a probabilidade de mutação e de \textit{crossover}, \item
+  identificar o tamanho do torneio (k) e
+  \item identificar o efeito da ausência de eletismo \end{ilist}.
 
-Para encontrar os melhores valores de cada parâmetro os demais devem ser fixados.
-Os valores iniciais de cada parâmetro são: \textit{Ramped Half-and-Half} como
-método de geração, \textit{5-Tournament} como método de seleção, o limite de
-gerações é 60, a profundidade da árvore é 7, a probabilidade de crossover e de
-mutação são $p_c=0.6$ e $p_m=0.3$, respectivamente.
+Para executar os experimentos, quando um deles é variado, os demais permanecem
+constantes. Os valores iniciais dos parâmetros são: 8 variáveis independentes,
+profundidade da árvore igual 7, limite de gerações igual a 100, eletismo ativado,
+probabilidade de \textit{crossover} igual a 90\%, probabilidade de mutação igual
+a 5\%, probabilidade de reprodução igual a 5\%,
+10 funções, 5 operadores e constantes variando de -10 a +10.
 
-A princípio, para identificar o tamanho da população os seguintes tamanhos serão
-avaliados: 600, 800 e 1200. A \hyperref[fig:var_pop]{Figura~\ref*{fig:var_pop}}
-apresenta o valor da menor \textit{fitness} de cada geração para os três tamanhos
-de população. O valor final da \textit{fitness} na última geração foi de 5.76
-para a população com 800 indivíduos, portanto, este valor é mantido para os
-demais experimentos.
+Para identificar o tamanho da população, os seguintes valores foram testados:
+50, 100, 300 e 500. Espera-se que com o aumento do tamanho da população haja um
+aumento da qualidade da \textit{fitness}, pois há mais \textit{exporation} e
+\textit{explotation} do que com uma população menor. Os resultados para cada
+população pode ser vista na
+\hyperref[fig:concrete_pop_sz_e]{Figura~\ref*{fig:concrete_pop_sz_e}}. A melhor
+\textit{fitness} é atingida quando o tamanho da população é máximo, o que é
+justificado pelo argumento apresentado acima. A população pequena não explora o
+espaço de soluções, por isso a \textit{fitness} (erro médio absoluto) não reduz
+significativamente, ao passo que, quando a população aumenta o espaço explorado
+também aumenta e soluções melhores são encontradas. Para os demais experimentos,
+o tamanho da população é fixado em 500 indivíduos.
 
+Os próximos parâmetros testados são a probabilidade de \textit{crossover}
+($p_c$) e mutação ($p_m$). Os resultados anteriores foram executados com
+$p_c=90\%$ e $p_m=5\%$ e são usados como referência para os pares de
+probabilidades testados:  $p_c=80\%, p_m=15\%$; $p_c=70\%, p_m=25\%$ e
+$p_c=60\%, p_m=30\%$. Conforme citado em diversos trabalhos, em PG, o
+\textit{crossover} não possui nenhum signifcado semântico e se comporta
+semenhantes a mutação, portanto, diferentemente do GA, a probabilidade de
+mutação mais alto deve gerar melhores resultados do que com a probabilidade de
+\textit{crossover} elevado. Os resultados dos testes estão presentes na
+\hyperref[fig:concrete_pc_pm_e]{Figura~\ref*{fig:concrete_pc_pm_e}}, onde é
+possível verificar que a \textit{fitness} atinge o melhor valor quando a
+probabilidade de mutação é máximo. Isso se deve ao fato que a mutação leva a
+maior \textit{exploration} do espaço de solução, por isso a população gerada com
+alta taxa de mutação obtêm \textit{fitness} menores. Para o próximos testes, os
+valores $p_c = 70\%$ e $p_m = 25\%$ é mantido.
 
-O segundo parâmetro a verificar é a profundidade máxima da árvore. Os valores
-testados são: 6, 7, 8 e 9. Os valores que a menor \textit{fitness} assume ao
-longo das gerações para cada profundidade pode ser visto na
-\hyperref[fig:var_d]{Figura~\ref*{fig:var_d}}. Os resultados indicam que a menor
-\textit{fitness} é alcançada quando o tamanho da árvore é igual a 8, onde o
-valor na última geração é igual a $5.5796$. Quando a profundidade os valores que
-\textit{fitness} os indivíduos com profundidade 6, 7 ou 9 assumem são $8.6567$,
-$8.7384$ e $6.7258$, respectivamente, indicando que a profundidade igual a 8 é
-um ponto de mínimo. Para os próximos teste a profundidade é fixada em 8.
+Outro parâmetro explorado é o tamanho do torneio, isto é, o $k$ do método de
+seleção $k$-\textit{tournament}. O valor de $k$ tem impacto na pressão seletiva
+da população. Isso ocorre pois conforme o tamanho do torneio aumenta, mais
+indivíduos são selecionados para o torneio, aumentando a probabilidade de que
+indivíduos que estão nas posições iniciais no torneio (os mais bem adaptados;
+melhores \textit{fitness}) o que faz com eles sejam seleciodados com maior
+frequência do que os que estão nas posições mais inferiores. Os valores testados
+para $k$ devem ser proporcionais ao tamanho da população, pois valores muito
+pequenos gera indivíduos que não convergem. Os seguintes valores são
+experimentados: $k=7$, $k=10$ e $k=13$. Os resutados do experimentos podem ser
+vistos na \hyperref[fig:concrete_k_e]{Figura~\ref*{fig:concrete_k_e}}. Os
+resultados indicam que o melhor valor para o tamanho do torneio para este caso é
+$k=7$, pois gera a melhor \textit{fitness}. Como explicado acima, os valores
+maiores tem a convergência rápida inicialmente, porém são conservadores e não
+exploram o espaço de solução como os que possuem valores menores. Para os
+próximo experimento o valor do tamanho do torneio é mantido em $k=7$.
 
+Por fim, o último parâmetro explorado é a presença ou ausência de eletismo. O
+eletismo faz com que a melhor solução encontrada (o indivíduos com a melhor
+\textit{fitness}) seja mantido, porém há redução do espaço de busca, pois novas
+soluções (indivíduos diferentes) devem competir com indivíduos que atingiram um
+mínimo (ou máximo) local. O eletismo também pode interferir nos efeitos da
+mutação e cruzamento geral da população, pois quando dois indivíduos são
+cruzados ou um indivíduo é mutados, o decendente concorre implicitamente com os
+pais para a próxima geração. Isso faz com que apenas mutações e cruzamentos que
+melhorem a \textit{fitness} da população sejam mantidas. Os resultados da
+presença ou ausência de eletismo estão presentes na
+\hyperref[fig:concrete_e]{Figura~\ref*{fig:concrete_e}}. Os resultados comprovam
+o que foi citado acima e a ausência de eletismo gerou indivíduos com melhores
+soluções.
 
-O terceiro parâmetro testado é o tamanho do torneio, ou seja, o valor de $k$.
-Os valores testados foram: 8, 10, 12 e 15. Os valores da menor \textit{fitness}
-para cada geração para os valores testados podem ser vistos na
-\hyperref[fig:var_k]{Figura~\ref*{fig:var_k}}.  Os resultados indicam que o
-menor valor é atingindo quando k=8, onde o valor da \textit{fitness} atinge
-$5.5796$ ao longo das 60 gerações. Os próximos testes são realizados mantendo-se
-o valor de k fixo e igual a 8.
-
-O quarto parâmetro verificado é a probabilidade de \textit{crossover}. Os
-valores testados são: $p_c=0.6$, $p_c=0.7$ e $p_c=0.8$. A
-\hyperref[fig:var_pc]{Figura~\ref*{fig:var_pc}} mostram os valores da menor
-\textit{fitness} em cada geração para cada valor de probabilidade verificado.  O
-menor valor atingido em 60 gerações foi $6.1097$ para a população gerada com
-$p_c=0.6$. Pelo fato da probabilidade \textit{crossover} estar baixa leva a
-probabilidade de recombinação e mutação a estar mais elevada. Esses dois
-operadores podem aumentar o \textit{exploration} e \textit{explotation}, pois a
-recombinação seleciona os invidíduos mais bem adaptados da população anterior
-(\textit{explotation}), já a mutação faz com que novas soluções do espaço de
-soluções sejam experimentadas (\textit{exploration}). Essa combinação de
-probabilidades de \textit{crossover}, mutação e recombinação são os responsáveis
-por atingirem a menor \textit{fitness}. Para o próximo experimento, o valor de
-$p_c$ é mantido fixo em $p_c=0.6$.
-
-Para determinar o efeito da mutação e da recombinação, o último teste é variar o
-valor de $p_m$. Os valores experimentados são: $p_m=0.1$, $p_m=0.15$,
-$p_m=0.20$, $p_m=0.25$ e $p_m=0.30$. Os valores da menor \textit{fitness} de
-cada geração para a população gerada com os valores de $p_m$ variados podem ser
-vistos na \hyperref[fig:var_pm]{Figura~\ref*{fig:var_pm}}. Os resultados que o
-menor valor atingido ocorre quando $p_m=0.30$, onde o valor da \textit{fitness}
-é igual a $5.57966$. Isso prova que a mutação tem impacto mais significativo do
-que a recombinação, ou seja, neste caso o \textit{exploration} é mais importante
-do que o \textit{explotation}.
-
-\begin{figure}[h!]
-  \begin{minipage}{0.5\textwidth}
-    \includegraphics[width=\textwidth]{var_pop}
-    \caption{Variação do tamanho da população}
-    \label{fig:var_pop}
-  \end{minipage}
-  \begin{minipage}{0.5\textwidth}
-    \includegraphics[width=\textwidth]{var_d}
-    \caption{Variação da profundidade da árvore}
-    \label{fig:var_d}
-  \end{minipage}
-  \begin{minipage}{0.5\textwidth}
-    \includegraphics[width=\textwidth]{var_k}
-    \caption{Variação do tamanho do torneio}
-    \label{fig:var_k}
-  \end{minipage}
-  \begin{minipage}{0.5\textwidth}
-    \includegraphics[width=\textwidth]{var_pc}
-    \caption{Variação da probabilidade de \textit{crossover}}
-    \label{fig:var_pc}
-  \end{minipage}
+Em resumo, os melhores indivíduos são gerados quando o tamanho da população é
+500, a probabilidade de \textit{crossover} é $70\%$, a probabilidade de mutação
+é $25\%$, o tamanho do torneio é $7$ e a presença do eletismo está
+desativada. Esse fatores indicam que o elemento fundamental para encontrar as
+melhores solução está no \textit{exploration}, em contraste com o
+\textit{explotation}.
+ 
+\begin{figure}[h]
+  \caption{Resultados da \textit{fitness}}
+  \label{fig:concrete_fitness}
+  \begin{subfigure}[t]{0.5\textwidth}
+      \includegraphics[width=\textwidth]{concrete_pop_sz_e}
+      \caption{Tamanho da população}
+      \label{fig:concrete_pop_sz_e}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.5\textwidth}
+      \includegraphics[width=\textwidth]{concrete_pc_pm_e}
+      \caption{Probabilidade de \textit{crossover} e mutação}
+      \label{fig:concrete_pc_pm_e}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.5\textwidth}
+      \includegraphics[width=\textwidth]{concrete_k_e}
+      \caption{Tamanho do torneio}
+      \label{fig:concrete_k_e}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.5\textwidth}
+      \includegraphics[width=\textwidth]{concrete_e}
+      \caption{Efeito do eletismo}
+      \label{fig:concrete_e}
+    \end{subfigure}
 \end{figure}
-\begin{figure}[h!]
-  \begin{minipage}{0.5\textwidth}
-    \includegraphics[width=\textwidth]{var_pm}
-    \caption{Variação da probabilidade de mutação}
-    \label{fig:var_pm}
-  \end{minipage}
-\end{figure}
-\newpage
+
 \section{Conclusão}
-Os resultados obtidos indicam a importância entre o balanceamento dos diversos
-parâmetros do GP. A probabilidade de mutação, $p_m$, tem grande impacto no valor
-mínimo da \textit{fitness}, devido a exploração do espaço de soluções. Outro
-fator importante é o tamanho da árvore, pois quando mais complexo os dados,
-maior deve ser a profundidade da árvore para obter maior expressividade dos
-indivíduos.
+Os resultados demonstram a importância no balanceamento dos parâmetros na busca
+por soluções ótimas e na importância entre dois fatores que competem entre si:
+\textit{exploration} e \textit{explotation}. Os parâmetros que aumentam um
+desses fatores faz com que o outro diminua e vice-versa. Portanto, é importante
+encontrar o equilíbrio entre eles.
 
-Outro aspacto à ser estudado é o tamanho da \textit{fitness}, $5.57966$. Se
-comparado com a média do label do dataset \texttt{concrete.csv}, que é
-$35.81796$, é possível verificar que o erro é aproximadamente 15\% da magnitude
-da média, ou seja, muito elevado. 
+Em termos de implementação, o sistema desenvolvido é robusto e altamente
+flexível, pois permite aos usuários definirem novas funções e operadores em
+apenas uma linha de código. Outros fatores que podem ser alterados são a
+profundidade da árvore, método de geração, método de seleção, métrica de erro,
+quantidade de variáveis independentes, tipo de mutação (sub-árvore ou mutação de
+ponto), entre outros.
 
-\newpage
+Por fim, algumas melhorias podem ser incorporadas nas próximas versões, como
+plotagem da \textit{fitness} em tempo-real, ajuste de parâmetros durante a
+execução do algoritmo, ajustar a probabilidade dos operadores e funções de
+acordo com os resultados obtidos das soluções que os utilizam, isto é, uma
+função que faz com que os indivíduos tenham \textit{fitness} de baixa qualidade
+devem ser selecionadas com menos frequência do que as que geram \textit{fitness}
+de melhor qualidade.
+
+
 \bibliographystyle{plainnat}
 \bibliography{bibliography}
 \end{document}

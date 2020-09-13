@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.6.29) (preloaded format=pdflatex 2020.8.17)  7 SEP 2020 11:17
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.6.29) (preloaded format=pdflatex 2020.8.17)  12 SEP 2020 22:50
 entering extended mode
 **./report.tex
 (report.tex
@@ -712,33 +712,58 @@ File: tikzlibrarytopaths.code.tex 2020/01/08 v3.1.5b (3.1.5b)
 ries/tikzlibrarytrees.code.tex
 File: tikzlibrarytrees.code.tex 2020/01/08 v3.1.5b (3.1.5b)
 )
-\c@ilisti=\count310
-\enitdp@ilist=\count311
+(/home/matheusc/.miktex/texmfs/install/tex/latex/caption/caption.sty
+Package: caption 2020/05/30 v3.4k Customizing captions (AR)
+
+(/home/matheusc/.miktex/texmfs/install/tex/latex/caption/caption3.sty
+Package: caption3 2020/07/20 v1.12b caption3 kernel (AR)
+Package caption3 Info: TeX engine: e-TeX on input line 61.
+\captionmargin=\dimen288
+\captionmargin@=\dimen289
+\captionwidth=\dimen290
+\caption@tempdima=\dimen291
+\caption@indent=\dimen292
+\caption@parindent=\dimen293
+\caption@hangindent=\dimen294
+Package caption Info: Standard document class detected.
+)
+\c@caption@flags=\count310
+\c@continuedfloat=\count311
+Package caption Info: hyperref package is loaded.
+Package caption Info: listings package is loaded.
+)
+(/home/matheusc/.miktex/texmfs/install/tex/latex/caption/subcaption.sty
+Package: subcaption 2020/01/22 v1.3d Sub-captions (AR)
+\c@subfigure=\count312
+\c@subtable=\count313
+)
+\c@ilisti=\count314
+\enitdp@ilist=\count315
 
 (/home/matheusc/.miktex/texmfs/install/tex/latex/l3backend/l3backend-pdfmode.de
 f
 File: l3backend-pdfmode.def 2020-08-07 L3 backend support: PDF mode
-\l__kernel_color_stack_int=\count312
+\l__kernel_color_stack_int=\count316
 \l__pdf_internal_box=\box64
 ) (report.aux)
 \openout1 = `report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -774,9 +799,9 @@ LaTeX Font Info:    ... okay on input line 27.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-\c@lstlisting=\count313
+\c@lstlisting=\count317
 \AtBeginShipoutBox=\box65
-Package hyperref Info: Link coloring OFF on input line 27.
+Package hyperref Info: Link coloring OFF on input line 29.
 (/home/matheusc/.miktex/texmfs/install/tex/latex/hyperref/nameref.sty
 Package: nameref 2019/09/16 v2.46 Cross-referencing by name of section
 
@@ -787,11 +812,11 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 g.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count314
+\c@section@level=\count318
 )
-LaTeX Info: Redefining \ref on input line 27.
-LaTeX Info: Redefining \pageref on input line 27.
-LaTeX Info: Redefining \nameref on input line 27.
+LaTeX Info: Redefining \ref on input line 29.
+LaTeX Info: Redefining \pageref on input line 29.
+LaTeX Info: Redefining \nameref on input line 29.
  (report.out) (report.out)
 \@outlinefile=\write4
 \openout4 = `report.out'.
@@ -799,33 +824,36 @@ LaTeX Info: Redefining \nameref on input line 27.
 
 (/home/matheusc/.miktex/texmfs/install/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count315
-\scratchdimen=\dimen288
+\scratchcounter=\count319
+\scratchdimen=\dimen295
 \scratchbox=\box66
-\nofMPsegments=\count316
-\nofMParguments=\count317
+\nofMPsegments=\count320
+\nofMParguments=\count321
 \everyMPshowfont=\toks38
-\MPscratchCnt=\count318
-\MPscratchDim=\dimen289
-\MPnumerator=\count319
-\makeMPintoPDFobject=\count320
+\MPscratchCnt=\count322
+\MPscratchDim=\dimen296
+\MPnumerator=\count323
+\makeMPintoPDFobject=\count324
 \everyMPtoPDFconversion=\toks39
 )
 (/home/matheusc/.miktex/texmfs/install/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 85.
-) ABD: EveryShipout initializing macros [1
+) ABD: EveryShipout initializing macros
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: End \AtBeginDocument code.
+ [1
 
 {/home/matheusc/.miktex/texmfs/data/pdftex/config/pdftex.map}] [2]
-Overfull \hbox (4.68593pt too wide) in paragraph at lines 237--246
+Overfull \hbox (4.68593pt too wide) in paragraph at lines 247--256
 \OT1/cmr/m/n/10 Dois op-er-adores de selec~ao que s~ao fre-quente-mente uti-li
 za-dos s~ao o \OT1/cmr/m/it/10 Roulette Wheel \OT1/cmr/m/n/10 e o \OT1/cmr/m/it
 /10 k-Tournament\OT1/cmr/m/n/10 .
  []
 
 [3] [4]
-Overfull \hbox (2.22221pt too wide) in paragraph at lines 348--358
+Overfull \hbox (2.22221pt too wide) in paragraph at lines 358--368
 $[]$ $[]$ 
  []
 
@@ -835,154 +863,164 @@ File: lstlang1.sty 2020/03/24 1.8d listings language file
 (/home/matheusc/.miktex/texmfs/install/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2020/03/24 1.8d listings language file
 )
-[5] [6]
-Overfull \hbox (17.11092pt too wide) in paragraph at lines 501--526
+[5]
+Overfull \hbox (1.64618pt too wide) in paragraph at lines 442--442
+[]|\OT1/cmr/m/n/10 Argumentos| 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 449--449
+[]|\OT1/cmr/m/n/10 ramped-hh,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 451--451
+[]|\OT1/cmr/m/n/10 roulette,
+ []
+
+
+Underfull \hbox (badness 5288) in paragraph at lines 455--455
+[]|\OT1/cmr/m/n/10 mae, mse,
+ []
+
+
+Overfull \hbox (35.81064pt too wide) in paragraph at lines 440--460
  [] 
  []
 
+[6]
+<./images/sr_div_pop_sz.jpg, id=180, 867.24pt x 433.62pt>
+File: ./images/sr_div_pop_sz.jpg Graphic file (type jpg)
+<use ./images/sr_div_pop_sz.jpg>
+Package pdftex.def Info: ./images/sr_div_pop_sz.jpg  used on input line 551.
+(pdftex.def)             Requested size: 213.39568pt x 106.69768pt.
+<./images/sr_div_pc_pm.jpg, id=181, 867.24pt x 433.62pt>
+File: ./images/sr_div_pc_pm.jpg Graphic file (type jpg)
+<use ./images/sr_div_pc_pm.jpg>
+Package pdftex.def Info: ./images/sr_div_pc_pm.jpg  used on input line 556.
+(pdftex.def)             Requested size: 213.39568pt x 106.69768pt.
+<./images/sr_div_k.jpg, id=182, 867.24pt x 433.62pt>
+File: ./images/sr_div_k.jpg Graphic file (type jpg)
+<use ./images/sr_div_k.jpg>
+Package pdftex.def Info: ./images/sr_div_k.jpg  used on input line 561.
+(pdftex.def)             Requested size: 213.39568pt x 106.69768pt.
+<./images/sr_div_eletism.jpg, id=183, 867.24pt x 433.62pt>
+File: ./images/sr_div_eletism.jpg Graphic file (type jpg)
+<use ./images/sr_div_eletism.jpg>
+Package pdftex.def Info: ./images/sr_div_eletism.jpg  used on input line 566.
+(pdftex.def)             Requested size: 213.39568pt x 106.69768pt.
 
-Overfull \hbox (7.80107pt too wide) in paragraph at lines 568--568
-[]|\OT1/cmr/m/n/10 360372.62| 
+Overfull \hbox (2.22221pt too wide) in paragraph at lines 550--570
+[][] []
  []
 
 
-Overfull \hbox (2.80106pt too wide) in paragraph at lines 568--568
-[]|\OT1/cmr/m/n/10 16253.90| 
+Overfull \hbox (2.22221pt too wide) in paragraph at lines 550--570
+[] [] 
  []
 
 
-Overfull \hbox (7.70229pt too wide) in paragraph at lines 568--568
-[]|[]| 
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+<./images/sr_noise_k.jpg, id=185, 867.24pt x 433.62pt>
+File: ./images/sr_noise_k.jpg Graphic file (type jpg)
+<use ./images/sr_noise_k.jpg>
+Package pdftex.def Info: ./images/sr_noise_k.jpg  used on input line 588.
+(pdftex.def)             Requested size: 213.39568pt x 106.69768pt.
+<./images/sr_noise_eletism.jpg, id=186, 867.24pt x 433.62pt>
+File: ./images/sr_noise_eletism.jpg Graphic file (type jpg)
+<use ./images/sr_noise_eletism.jpg>
+Package pdftex.def Info: ./images/sr_noise_eletism.jpg  used on input line 593.
+
+(pdftex.def)             Requested size: 213.39568pt x 106.69768pt.
+
+Overfull \hbox (2.22221pt too wide) in paragraph at lines 587--597
+[][] [] 
  []
 
 
-Overfull \hbox (12.80109pt too wide) in paragraph at lines 568--568
-[]|\OT1/cmr/m/n/10 1767685.76| 
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Overfull \hbox (2.22221pt too wide) in paragraph at lines 603--614
+[] []
+ []
+
+[7]
+<./images/best_individual_noise.jpg, id=195, 867.24pt x 433.62pt>
+File: ./images/best_individual_noise.jpg Graphic file (type jpg)
+<use ./images/best_individual_noise.jpg>
+Package pdftex.def Info: ./images/best_individual_noise.jpg  used on input line
+ 629.
+(pdftex.def)             Requested size: 213.39568pt x 106.69768pt.
+<./images/best_individual.jpg, id=196, 867.24pt x 433.62pt>
+File: ./images/best_individual.jpg Graphic file (type jpg)
+<use ./images/best_individual.jpg>
+Package pdftex.def Info: ./images/best_individual.jpg  used on input line 634.
+(pdftex.def)             Requested size: 213.39568pt x 106.69768pt.
+
+Overfull \hbox (2.22221pt too wide) in paragraph at lines 628--638
+[][] [] 
  []
 
 
-Overfull \hbox (2.80106pt too wide) in paragraph at lines 568--568
-[]|\OT1/cmr/m/n/10 78952.58| 
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[8 <./images/sr_div_pop_sz.jpg> <./images/sr_div_pc_pm.jpg> <./images/sr_div_k.
+jpg> <./images/sr_div_eletism.jpg> <./images/sr_noise_k.jpg> <./images/sr_noise
+_eletism.jpg>] [9 <./images/best_individual_noise.jpg> <./images/best_individua
+l.jpg>]
+<./images/concrete_pop_sz_e.jpg, id=221, 867.24pt x 433.62pt>
+File: ./images/concrete_pop_sz_e.jpg Graphic file (type jpg)
+<use ./images/concrete_pop_sz_e.jpg>
+Package pdftex.def Info: ./images/concrete_pop_sz_e.jpg  used on input line 728
+.
+(pdftex.def)             Requested size: 213.39568pt x 106.69768pt.
+<./images/concrete_pc_pm_e.jpg, id=222, 867.24pt x 433.62pt>
+File: ./images/concrete_pc_pm_e.jpg Graphic file (type jpg)
+<use ./images/concrete_pc_pm_e.jpg>
+Package pdftex.def Info: ./images/concrete_pc_pm_e.jpg  used on input line 733.
+
+(pdftex.def)             Requested size: 213.39568pt x 106.69768pt.
+<./images/concrete_k_e.jpg, id=223, 867.24pt x 433.62pt>
+File: ./images/concrete_k_e.jpg Graphic file (type jpg)
+<use ./images/concrete_k_e.jpg>
+Package pdftex.def Info: ./images/concrete_k_e.jpg  used on input line 738.
+(pdftex.def)             Requested size: 213.39568pt x 106.69768pt.
+<./images/concrete_e.jpg, id=224, 867.24pt x 433.62pt>
+File: ./images/concrete_e.jpg Graphic file (type jpg)
+<use ./images/concrete_e.jpg>
+Package pdftex.def Info: ./images/concrete_e.jpg  used on input line 743.
+(pdftex.def)             Requested size: 213.39568pt x 106.69768pt.
+
+Overfull \hbox (2.22221pt too wide) in paragraph at lines 727--747
+[][] []
  []
 
 
-Overfull \hbox (12.80109pt too wide) in paragraph at lines 568--568
-[]|\OT1/cmr/m/n/10 9867700.84| 
+Overfull \hbox (2.22221pt too wide) in paragraph at lines 727--747
+[] [] 
  []
 
-
-Overfull \hbox (7.80107pt too wide) in paragraph at lines 568--568
-[]|\OT1/cmr/m/n/10 440855.16| 
- []
-
-
-Overfull \hbox (2.80106pt too wide) in paragraph at lines 568--568
-[]|\OT1/cmr/m/n/10 19742.83| 
- []
-
-
-Overfull \hbox (7.80107pt too wide) in paragraph at lines 568--568
-[]|\OT1/cmr/m/n/10 141705.79| 
- []
-
-
-Overfull \hbox (7.70229pt too wide) in paragraph at lines 568--568
-[]|[]| 
- []
-
-
-Overfull \hbox (7.80107pt too wide) in paragraph at lines 568--568
-[]|\OT1/cmr/m/n/10 331306.45| 
- []
-
-
-Overfull \hbox (2.80106pt too wide) in paragraph at lines 568--568
-[]|\OT1/cmr/m/n/10 14808.40| 
- []
-
-
-Overfull \hbox (12.80109pt too wide) in paragraph at lines 568--568
-[]|\OT1/cmr/m/n/10 1400507.65| 
- []
-
-
-Overfull \hbox (2.80106pt too wide) in paragraph at lines 568--568
-[]|\OT1/cmr/m/n/10 62569.32| 
- []
-
-
-Overfull \hbox (7.70229pt too wide) in paragraph at lines 568--568
-[]|[]| 
- []
-
-
-Overfull \hbox (2.80106pt too wide) in paragraph at lines 568--568
-[]|\OT1/cmr/m/n/10 20553.19| 
- []
-
-
-Overfull \hbox (2.80106pt too wide) in paragraph at lines 568--568
-[]|\OT1/cmr/m/n/10 99365.38| 
- []
-
-[7] [8]
-<./images/var_pop.png, id=208, 602.25pt x 372.39125pt>
-File: ./images/var_pop.png Graphic file (type png)
-<use ./images/var_pop.png>
-Package pdftex.def Info: ./images/var_pop.png  used on input line 718.
-(pdftex.def)             Requested size: 213.39568pt x 131.95264pt.
-<./images/var_d.png, id=210, 602.25pt x 372.39125pt>
-File: ./images/var_d.png Graphic file (type png)
-<use ./images/var_d.png>
-Package pdftex.def Info: ./images/var_d.png  used on input line 723.
-(pdftex.def)             Requested size: 213.39568pt x 131.95264pt.
-<./images/var_k.png, id=211, 602.25pt x 372.39125pt>
-File: ./images/var_k.png Graphic file (type png)
-<use ./images/var_k.png>
-Package pdftex.def Info: ./images/var_k.png  used on input line 728.
-(pdftex.def)             Requested size: 213.39568pt x 131.95264pt.
-<./images/var_pc.png, id=212, 602.25pt x 372.39125pt>
-File: ./images/var_pc.png Graphic file (type png)
-<use ./images/var_pc.png>
-Package pdftex.def Info: ./images/var_pc.png  used on input line 733.
-(pdftex.def)             Requested size: 213.39568pt x 131.95264pt.
-
-Overfull \hbox (2.22221pt too wide) in paragraph at lines 717--737
-[]$[]$ $[]$
- []
-
-
-Overfull \hbox (2.22221pt too wide) in paragraph at lines 717--737
-[]$ $[]$ 
- []
-
-<./images/var_pm.png, id=213, 602.25pt x 372.39125pt>
-File: ./images/var_pm.png Graphic file (type png)
-<use ./images/var_pm.png>
-Package pdftex.def Info: ./images/var_pm.png  used on input line 740.
-(pdftex.def)             Requested size: 213.39568pt x 131.95264pt.
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-[9 <./images/var_pop.png> <./images/var_d.png> <./images/var_k.png> <./images/v
-ar_pc.png>] [10 <./images/var_pm.png>] (report.bbl) [11]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 762.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 762.
+(report.bbl [10 <./images/concrete_pop_sz_e.jpg> <./images/concrete_pc_pm_e.jpg
+> <./images/concrete_k_e.jpg> <./images/concrete_e.jpg>]) [11]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 774.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 774.
  (report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 762.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 762.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 774.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 774.
 Package rerunfilecheck Info: File `report.out' has not changed.
 (rerunfilecheck)             Checksum: B8396718C65DD3557B75A542F2D61971;1185.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 762.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 774.
  ) 
 Here is how much of TeX's memory you used:
- 20731 strings out of 483120
- 377452 string characters out of 2956793
- 872559 words of memory out of 3000000
- 35623 multiletter control sequences out of 15000+200000
- 543391 words of font info for 58 fonts, out of 3000000 for 9000
+ 22005 strings out of 483120
+ 401879 string characters out of 2956793
+ 852308 words of memory out of 3000000
+ 36888 multiletter control sequences out of 15000+200000
+ 543683 words of font info for 59 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
- 60i,14n,60p,412b,1360s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 60i,14n,60p,412b,1856s stack positions out of 5000i,500n,10000p,200000b,50000s
  </home/matheusc/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1
 000.pk> </home/matheusc/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/
 tcrm0600.pk> </home/matheusc/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dp
@@ -992,24 +1030,26 @@ sfonts/cm/cmbx12.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/public/
 amsfonts/cm/cmbxti10.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/pub
 lic/amsfonts/cm/cmex10.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1/p
 ublic/amsfonts/cm/cmmi10.pfb></home/matheusc/.miktex/texmfs/install/fonts/type1
-/public/amsfonts/cm/cmmi6.pfb></home/matheusc/.miktex/texmfs/install/fonts/type
+/public/amsfonts/cm/cmmi5.pfb></home/matheusc/.miktex/texmfs/install/fonts/type
 1/public/amsfonts/cm/cmmi7.pfb></home/matheusc/.miktex/texmfs/install/fonts/typ
-e1/public/amsfonts/cm/cmmi8.pfb></home/matheusc/.miktex/texmfs/install/fonts/ty
-pe1/public/amsfonts/cm/cmr10.pfb></home/matheusc/.miktex/texmfs/install/fonts/t
-ype1/public/amsfonts/cm/cmr12.pfb></home/matheusc/.miktex/texmfs/install/fonts/
-type1/public/amsfonts/cm/cmr6.pfb></home/matheusc/.miktex/texmfs/install/fonts/
-type1/public/amsfonts/cm/cmr7.pfb></home/matheusc/.miktex/texmfs/install/fonts/
-type1/public/amsfonts/cm/cmr8.pfb></home/matheusc/.miktex/texmfs/install/fonts/
-type1/public/amsfonts/cm/cmsy10.pfb></home/matheusc/.miktex/texmfs/install/font
+e1/public/amsfonts/cm/cmr10.pfb></home/matheusc/.miktex/texmfs/install/fonts/ty
+pe1/public/amsfonts/cm/cmr12.pfb></home/matheusc/.miktex/texmfs/install/fonts/t
+ype1/public/amsfonts/cm/cmr5.pfb></home/matheusc/.miktex/texmfs/install/fonts/t
+ype1/public/amsfonts/cm/cmr6.pfb></home/matheusc/.miktex/texmfs/install/fonts/t
+ype1/public/amsfonts/cm/cmr7.pfb></home/matheusc/.miktex/texmfs/install/fonts/t
+ype1/public/amsfonts/cm/cmr8.pfb></home/matheusc/.miktex/texmfs/install/fonts/t
+ype1/public/amsfonts/cm/cmr9.pfb></home/matheusc/.miktex/texmfs/install/fonts/t
+ype1/public/amsfonts/cm/cmsy10.pfb></home/matheusc/.miktex/texmfs/install/fonts
+/type1/public/amsfonts/cm/cmsy5.pfb></home/matheusc/.miktex/texmfs/install/font
 s/type1/public/amsfonts/cm/cmsy7.pfb></home/matheusc/.miktex/texmfs/install/fon
 ts/type1/public/amsfonts/cm/cmti10.pfb></home/matheusc/.miktex/texmfs/install/f
 onts/type1/public/amsfonts/cm/cmti12.pfb></home/matheusc/.miktex/texmfs/install
-/fonts/type1/public/amsfonts/cm/cmti8.pfb></home/matheusc/.miktex/texmfs/instal
+/fonts/type1/public/amsfonts/cm/cmti9.pfb></home/matheusc/.miktex/texmfs/instal
 l/fonts/type1/public/amsfonts/cm/cmtt10.pfb></home/matheusc/.miktex/texmfs/inst
 all/fonts/type1/public/amsfonts/latxfont/lcircle1.pfb>
-Output written on report.pdf (11 pages, 385615 bytes).
+Output written on report.pdf (11 pages, 1578041 bytes).
 PDF statistics:
- 328 PDF objects out of 1000 (max. 8388607)
- 64 named destinations out of 1000 (max. 500000)
- 182 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 334 PDF objects out of 1000 (max. 8388607)
+ 63 named destinations out of 1000 (max. 500000)
+ 217 words of extra memory for PDF output out of 10000 (max. 10000000)
 

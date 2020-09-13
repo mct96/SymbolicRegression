@@ -2,6 +2,7 @@
 #include <iterator>
 #include <algorithm>
 #include <cmath>
+#include <stdexcept>
 
 #include "node.hpp"
 

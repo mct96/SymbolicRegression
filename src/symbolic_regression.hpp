@@ -274,6 +274,7 @@ public:
     individual_handler_t& _hdl;
     random_t& _rd;
     gp_operators_t _gpo;
+    std::size_t _crossover_better;
 };
 
 //}
