@@ -19,22 +19,22 @@
 +---------------------------+--------------------------------------+------------+
 |   Parameter               |   Arguments                          | Needed     |
 +---------------------------+--------------------------------------+------------+
-|	[input dataset].csv     | Position argument MUST be the first  |     *      |
-|	-h, --help              |                                      |            |
-|	-o, --output            | [filename].csv                       |            |
-|	-n, --variables         | Integer                              |            |
-|	--population-size       | Integer                              |            |
-|	--max-generation        | Integer                              |            |
-|	--generation-method     | ramped-hh, full, grow                |            |
-|	--max-depth             | Integer                              |            |
-|	--selection-method      | roulette, tournament                 |            |
-|	-k, --k-tournament      | Integer                              |            |
-|	-pm, --prob-mutation    | Real                                 |            |
-|	-pc, --prob-crossover   | Real                                 |            |
-|	--error-metric          | mae, mse, rmse                       |            |
-|	--fitness-threshold     | Real                                 |            |
-|	-E, --eletism           |                                      |            |
-|	--seeds                 | [filename].csv                       |     *      |
+|   [input dataset].csv     | Position argument MUST be the first  |     *      |
+|   -h, --help              |                                      |            |
+|   -o, --output            | [filename].csv                       |            |
+|   -n, --variables         | Integer                              |            |
+|   --population-size       | Integer                              |            |
+|   --max-generation        | Integer                              |            |
+|   --generation-method     | ramped-hh, full, grow                |            |
+|   --max-depth             | Integer                              |            |
+|   --selection-method      | roulette, tournament                 |            |
+|   -k, --k-tournament      | Integer                              |            |
+|   -pm, --prob-mutation    | Real                                 |            |
+|   -pc, --prob-crossover   | Real                                 |            |
+|   --error-metric          | mae, mse, rmse                       |            |
+|   --fitness-threshold     | Real                                 |            |
+|   -E, --eletism           |                                      |            |
+|   --seeds                 | [filename].csv                       |     *      |
 +---------------------------+--------------------------------------+------------+
 |   Repository: https://github.com/MatheusCTeixeira/SymbolicRegression          |
 |   E-mail: matheuscandido2009@gmail.com, matheus.candido@dcc.ufmg.br           |
