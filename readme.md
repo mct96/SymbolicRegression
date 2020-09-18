@@ -1,3 +1,4 @@
+```bash
 +-------------------------------------------------------------------------------+                                     
 |                              Symbolic Regression                              |
 |                              -------------------                              |
@@ -38,3 +39,4 @@
 |   Repository: https://github.com/MatheusCTeixeira/SymbolicRegression          |
 |   E-mail: matheuscandido2009@gmail.com, matheus.candido@dcc.ufmg.br           |
 +-------------------------------------------------------------------------------+
+```
